@@ -15,7 +15,7 @@
 */
 /**
  * Licensed Materials - Property of IBM
- * © Copyright IBM Corp. 2015
+ * ï¿½ Copyright IBM Corp. 2015
 */
 package com.example;
 
@@ -82,16 +82,13 @@ public class ProducerRunnable implements Runnable
 
 				Thread.sleep(1000);
 			}
-			catch (final InterruptedException e)
-			{
-                System.out.println("Producer/Consumer loop has been unexpectedly interrupted");
-                shutdown();
-            }
 			catch(final Exception e)
 			{
-	            e.printStackTrace();
-	            shutdown();
-	        }
+	       e.printStackTrace();
+	       shutdown();
+         // Consumer will hang forever, so exit program.
+         System.exit(-1);
+	    }
 		}
 
 		System.out.println(ProducerRunnable.class.toString() + " is shutting down.");

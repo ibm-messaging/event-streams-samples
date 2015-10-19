@@ -15,7 +15,7 @@
 */
 /**
  * Licensed Materials - Property of IBM
- * © Copyright IBM Corp. 2015
+ * ï¿½ Copyright IBM Corp. 2015
 */
 package com.example;
 
@@ -78,31 +78,31 @@ public class MessageList
 	{
 		final JsonFactory jsonFactory = new JsonFactory();
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        JsonGenerator jsonGenerator = null;
+    JsonGenerator jsonGenerator = null;
 
-        jsonGenerator = jsonFactory.createGenerator(outputStream);
+    jsonGenerator = jsonFactory.createGenerator(outputStream);
 
-        // [
-        jsonGenerator.writeStartArray();
+    // [
+    jsonGenerator.writeStartArray();
 
-        // Write each message as a JSON object in
-        // the form:
-        // { "value": base_64_string }
-        for(int i = 0; i < this.messages.size(); i++)
-        {
-	        jsonGenerator.writeStartObject();
-	        jsonGenerator.writeFieldName("value");
-	        jsonGenerator.writeObject(this.messages.get(i));
-	        jsonGenerator.writeEndObject();
-        }
+    // Write each message as a JSON object in
+    // the form:
+    // { "value": base_64_string }
+    for(int i = 0; i < this.messages.size(); i++)
+    {
+      jsonGenerator.writeStartObject();
+      jsonGenerator.writeFieldName("value");
+      jsonGenerator.writeObject(this.messages.get(i));
+      jsonGenerator.writeEndObject();
+    }
 
-        // ]
-        jsonGenerator.writeEndArray();
+    // ]
+    jsonGenerator.writeEndArray();
 
-        // Close underlying streams and return string representation.
-        jsonGenerator.close();
-        outputStream.close();
+    // Close underlying streams and return string representation.
+    jsonGenerator.close();
+    outputStream.close();
 
-        return new String(outputStream.toByteArray());
+    return new String(outputStream.toByteArray());
 	}
 }

@@ -15,7 +15,7 @@
 */
 /**
  * Licensed Materials - Property of IBM
- * © Copyright IBM Corp. 2015
+ * ï¿½ Copyright IBM Corp. 2015
 */
 package com.example;
 
@@ -35,54 +35,54 @@ public class KafkaNativeSample
 
 	public static void main(String args[]) throws InterruptedException, ExecutionException, IOException
 	{
-		if(args.length != 3) 
+		if(args.length != 3)
 		{
 			System.err.println("Usage: <file_name>.jar <kafka_endpoint> <rest_endpoint> <api_key>");
 			return;
 		}
-		
+
 		String kafkaHost = args[0];
 		String restHost = args[1];
 		String apiKey = args[2];
 		String topic = "mytopic";
-        Thread consumerThread, producerThread;
-        RESTRequest restApi = new RESTRequest(restHost, apiKey);
+    Thread consumerThread, producerThread;
+    RESTRequest restApi = new RESTRequest(restHost, apiKey);
 
-        System.out.println("Kafka Endpoint: " + kafkaHost);
-        System.out.println("Rest API Endpoint: " + restHost);
-        
-        // Create a topic, ignore a 422 response - this means that the
-        // topic name already exists.
-        restApi.post(
-        		"/admin/topics", 
-        		"{ \"topicName\": \"" + topic + "\" }",
-        		new int[] { 422 });
-        
-        String topics = restApi.get("/admin/topics", false);
-        
-        System.out.println("Topics: " + topics);
+    System.out.println("Kafka Endpoint: " + kafkaHost);
+    System.out.println("Rest API Endpoint: " + restHost);
 
-        producerThread = createMessageProducer(kafkaHost, apiKey, topic);
-        consumerThread = createMessageConsumer(kafkaHost, apiKey, topic);
+    // Create a topic, ignore a 422 response - this means that the
+    // topic name already exists.
+    restApi.post(
+    		"/admin/topics",
+    		"{ \"topicName\": \"" + topic + "\" }",
+    		new int[] { 422 });
 
-        // Start producer and consumer threads.
-        if(consumerThread != null)
-        {
-        	consumerThread.start();
-        }
-        else
-        {
-        	System.err.println("Consumer thread is null. Make sure all provided details are valid.");
-        }
+    String topics = restApi.get("/admin/topics", false);
 
-        if(producerThread != null)
-        {
-        	producerThread.start();
-        }
-        else
-        {
-        	System.err.println("Producer thread is null. Make sure all provided details are valid.");
-        }
+    System.out.println("Topics: " + topics);
+
+    producerThread = createMessageProducer(kafkaHost, apiKey, topic);
+    consumerThread = createMessageConsumer(kafkaHost, apiKey, topic);
+
+    // Start producer and consumer threads.
+    if(consumerThread != null)
+    {
+    	consumerThread.start();
+    }
+    else
+    {
+    	System.err.println("Consumer thread is null. Make sure all provided details are valid.");
+    }
+
+    if(producerThread != null)
+    {
+    	producerThread.start();
+    }
+    else
+    {
+    	System.err.println("Producer thread is null. Make sure all provided details are valid.");
+    }
 	}
 
 	/**
@@ -96,7 +96,7 @@ public class KafkaNativeSample
 	public static Thread createMessageConsumer(String broker, String apiKey, String topic)
 	{
 		ConsumerRunnable consumerRunnable = new ConsumerRunnable(broker, apiKey, topic);
-        return new Thread(consumerRunnable);
+    return new Thread(consumerRunnable);
 	}
 
 	/**
@@ -126,7 +126,7 @@ public class KafkaNativeSample
 		Properties props = new Properties();
 		InputStream propsStream;
 		String fileName;
-		
+
 		if(isProducer)
 		{
 			fileName = "producer.properties";
@@ -135,21 +135,21 @@ public class KafkaNativeSample
 		{
 			fileName = "consumer.properties";
 		}
-		
-		try 
+
+		try
 		{
 			propsStream = KafkaNativeSample.class.getClassLoader().getResourceAsStream("resources/" + fileName);
 			props.load(propsStream);
-		} 
+		}
 		catch (IOException e)
 		{
 			System.err.println("Could not load properties from file");
 			return props;
 		}
-		
+
 		props.put("bootstrap.servers", broker);
 		props.put("client.id", apiKey);
-        
-        return props;
+
+    return props;
 	}
 }

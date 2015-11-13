@@ -25,6 +25,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
 
 public class RESTRequest 
 {
@@ -46,7 +48,7 @@ public class RESTRequest
 	 */
 	public String get(String target, boolean acceptHeader) 
 	{
-		HttpURLConnection connection = null;
+		HttpsURLConnection connection = null;
 		
 		if(!target.startsWith("/"))
 		{
@@ -55,9 +57,13 @@ public class RESTRequest
 		
 		try 
 		{
-			// Create connection to the REST URL.
-			URL url = new URL(baseUrl + target);
-			connection = (HttpURLConnection)url.openConnection();
+			// Create secure connection to the REST URL.
+			SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
+	        sslContext.init(null, null, null);
+
+	        URL url = new URL(baseUrl + target);
+	        connection = (HttpsURLConnection)url.openConnection();
+	        connection.setSSLSocketFactory(sslContext.getSocketFactory());
 			connection.setRequestMethod("GET");
 			// Apply API key header and kafka content type Accept header if
 			// the 'acceptHeader' flag is set to true.
@@ -110,7 +116,7 @@ public class RESTRequest
 	 */
 	public String post(String target, String body, int[] ignoredErrorCodes)
 	{
-		HttpURLConnection connection = null;
+		HttpsURLConnection connection = null;
 		int responseCode = 0;
 		
 		if(!target.startsWith("/"))
@@ -120,14 +126,22 @@ public class RESTRequest
 		
 		try 
 		{
-			// Create connection to the REST URL.
+			
+			
+			// Create secure connection to the REST URL.
+			SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
+	        sslContext.init(null, null, null);	
+			
 			URL url = new URL(baseUrl + target);
-			connection = (HttpURLConnection)url.openConnection();
+	        connection = (HttpsURLConnection)url.openConnection();
+	        connection.setSSLSocketFactory(sslContext.getSocketFactory());
 			connection.setDoOutput(true);
 			connection.setRequestMethod("POST");
+			
 			// Apply headers, in this case, the API key and Kafka content type.
 			connection.setRequestProperty("X-Auth-Token", this.apiKey);
 			connection.setRequestProperty("Content-Type", "application/json");
+			
 
 			// Send the request, writing the body data
 			// to the output stream.

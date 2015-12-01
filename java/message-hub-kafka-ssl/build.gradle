@@ -23,58 +23,73 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 version = '1.0'
 
-// Read from lib/ directory
 repositories {
-  flatDir {
-    dirs 'lib'
-  }
+    mavenCentral()
+
+    // Read from lib/ directory
+    flatDir {
+        dirs 'lib'
+    }
 }
 
 // Compile tools.jar and all jars in lib folder as dependencies
 dependencies {
-  compile files("${System.properties['java.home']}/../lib/tools.jar")
-  compile fileTree(dir: 'lib', include: ['*.jar'])
+    compile 'org.apache.kafka:kafka-clients:0.9.0.0'
+    compile 'log4j:log4j:1.2.17'
+    compile 'org.slf4j:slf4j-log4j12:1.7.6'
+    compile 'com.fasterxml.jackson.core:jackson-core:2.5.4'
+    compile fileTree(dir: 'lib-message-hub', include: ['*.jar'])
+}
+
+copy {
+    from configurations.runtime
+    into 'lib'
+}
+
+copy {
+  from 'lib-message-hub'
+  into 'lib'
 }
 
 // Compile source code
 compileJava {
-  source = 'src'
-  options.encoding = 'ISO-8859-1'
+    source = 'src'
+    options.encoding = 'ISO-8859-1'
 }
 
-// Copy contents of all libraries (except tools.jar)
-// into the extr folder.
 copy {
-  configurations.runtime.files.collect {
-    if(it.name != 'tools.jar') {
-      from zipTree('lib/' + it.name)
-      into 'build/extr'
+    configurations.runtime.files.collect {
+        if(it.name != 'lz4-1.2.0.jar' &&
+            it.name != 'snappy-java-1.1.1.7.jar') {
+
+            from zipTree('lib/' + it.name)
+            into 'build/extracted'
+        }
     }
-  }
 }
 
 copy {
-  from 'resources'
-  into 'build/libs/resources'
+    from 'resources'
+    into 'build/libs/resources'
 }
 
 // Create the output JAR file.
 jar {
-  // Provide Main-Class so the JAR executes properly, along with the required classpath data.
-  manifest {
-    attributes('Main-Class': 'com.example.KafkaNativeSample',
-      'Class-Path': '. ./ ' + configurations.runtime.files.collect { it.name }.join(' '))
-  }
+    // Provide Main-Class so the JAR executes properly, along with the required classpath data.
+    manifest {
+        attributes('Main-Class': 'com.example.KafkaNativeSample',
+        'Class-Path': '. ./ ' + configurations.runtime.files.collect { it.name }.join(' '))
+    }
 
-  // Copy extracted JARs from earlier into this JAR.
-  from 'build/extr'
+    // Copy extracted JARs from earlier into this JAR.
+    from 'build/extracted'
 }
 
 // Save JAR in build directory.
 uploadArchives {
-  repositories {
-    flatDir {
-      dirs 'build'
+    repositories {
+        flatDir {
+            dirs 'build'
+        }
     }
-  }
 }

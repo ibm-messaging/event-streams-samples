@@ -15,7 +15,7 @@
  */
 /**
  * Licensed Materials - Property of IBM
- * � Copyright IBM Corp. 2015
+ * (c) Copyright IBM Corp. 2015
  */
 package com.example;
 
@@ -33,133 +33,133 @@ import java.util.concurrent.ExecutionException;
  * @author IBM
  */
 public class KafkaNativeSample {
-	public static final int MAX_PASSED_MESSAGES = 3;
+    public static final int MAX_PASSED_MESSAGES = 3;
 
-	public static void main(String args[]) throws InterruptedException,
-			ExecutionException, IOException {
-		if (args.length != 3) {
-			System.err
-					.println("Usage: <file_name>.jar <kafka_endpoint> <rest_endpoint> <api_key>");
-			return;
-		}
+    public static void main(String args[]) throws InterruptedException,
+            ExecutionException, IOException {
+        if (args.length != 3) {
+            System.err
+                    .println("Usage: <file_name>.jar <kafka_endpoint> <rest_endpoint> <api_key>");
+            return;
+        }
 
-		String kafkaHost = args[0];
-		String restHost = args[1];
-		String apiKey = args[2];
-		String topic = "mytopic";
-		Thread consumerThread, producerThread;
-		RESTRequest restApi = new RESTRequest(restHost, apiKey);
+        String kafkaHost = args[0];
+        String restHost = args[1];
+        String apiKey = args[2];
+        String topic = "mytopic";
+        Thread consumerThread, producerThread;
+        RESTRequest restApi = new RESTRequest(restHost, apiKey);
 
-		System.out.println("Kafka Endpoint: " + kafkaHost);
-		System.out.println("Rest API Endpoint: " + restHost);
+        System.out.println("Kafka Endpoint: " + kafkaHost);
+        System.out.println("Rest API Endpoint: " + restHost);
 
-		// Create a topic, ignore a 422 response - this means that the
-		// topic name already exists.
-		restApi.post("/admin/topics", "{ \"topicName\": \"" + topic + "\" }",
-				new int[] { 422 });
+        // Create a topic, ignore a 422 response - this means that the
+        // topic name already exists.
+        restApi.post("/admin/topics", "{ \"topicName\": \"" + topic + "\" }",
+                new int[] { 422 });
 
-		String topics = restApi.get("/admin/topics", false);
+        String topics = restApi.get("/admin/topics", false);
 
-		System.out.println("Topics: " + topics);
+        System.out.println("Topics: " + topics);
 
-		producerThread = createMessageProducer(kafkaHost, apiKey, topic);
-		consumerThread = createMessageConsumer(kafkaHost, apiKey, topic);
+        producerThread = createMessageProducer(kafkaHost, apiKey, topic);
+        consumerThread = createMessageConsumer(kafkaHost, apiKey, topic);
 
-		// Start producer and consumer threads.
-		if (consumerThread != null) {
-			consumerThread.start();
-		} else {
-			System.err
-					.println("Consumer thread is null. Make sure all provided details are valid.");
-		}
+        // Start producer and consumer threads.
+        if (consumerThread != null) {
+            consumerThread.start();
+        } else {
+            System.err
+                    .println("Consumer thread is null. Make sure all provided details are valid.");
+        }
 
-		if (producerThread != null) {
-			producerThread.start();
-		} else {
-			System.err
-					.println("Producer thread is null. Make sure all provided details are valid.");
-		}
-	}
+        if (producerThread != null) {
+            producerThread.start();
+        } else {
+            System.err
+                    .println("Producer thread is null. Make sure all provided details are valid.");
+        }
+    }
 
-	/**
-	 * Create a message consumer, returning the thread object it will run on.
-	 * 
-	 * @param broker
-	 *            {String} The host and port of the broker to interact with.
-	 * @param apiKey
-	 *            {String} The API key used to connect to the Message Hub
-	 *            service.
-	 * @param topic
-	 *            {String} The topic to consume on.
-	 * @return {Thread} Thread object that the consumer will run on.
-	 */
-	public static Thread createMessageConsumer(String broker, String apiKey,
-			String topic) {
-		ConsumerRunnable consumerRunnable = new ConsumerRunnable(broker,
-				apiKey, topic);
-		return new Thread(consumerRunnable);
-	}
+    /**
+     * Create a message consumer, returning the thread object it will run on.
+     * 
+     * @param broker
+     *            {String} The host and port of the broker to interact with.
+     * @param apiKey
+     *            {String} The API key used to connect to the Message Hub
+     *            service.
+     * @param topic
+     *            {String} The topic to consume on.
+     * @return {Thread} Thread object that the consumer will run on.
+     */
+    public static Thread createMessageConsumer(String broker, String apiKey,
+            String topic) {
+        ConsumerRunnable consumerRunnable = new ConsumerRunnable(broker,
+                apiKey, topic);
+        return new Thread(consumerRunnable);
+    }
 
-	/**
-	 * Create a message producer, returning the thread object it will run on.
-	 * 
-	 * @param broker
-	 *            {String} The host and port of the broker to interact with.
-	 * @param apiKey
-	 *            {String} The API key used to connect to the Message Hub
-	 *            service.
-	 * @param topic
-	 *            {String} The topic to consume on.
-	 * @param message
-	 *            {String} String representation of a JSON array of messages to
-	 *            send.
-	 * @return {Thread} Thread object that the producer will run on.
-	 */
-	public static Thread createMessageProducer(String broker, String apiKey,
-			String topic) {
-		ProducerRunnable producerRunnable = new ProducerRunnable(broker,
-				apiKey, topic);
-		return new Thread(producerRunnable);
-	}
+    /**
+     * Create a message producer, returning the thread object it will run on.
+     * 
+     * @param broker
+     *            {String} The host and port of the broker to interact with.
+     * @param apiKey
+     *            {String} The API key used to connect to the Message Hub
+     *            service.
+     * @param topic
+     *            {String} The topic to consume on.
+     * @param message
+     *            {String} String representation of a JSON array of messages to
+     *            send.
+     * @return {Thread} Thread object that the producer will run on.
+     */
+    public static Thread createMessageProducer(String broker, String apiKey,
+            String topic) {
+        ProducerRunnable producerRunnable = new ProducerRunnable(broker,
+                apiKey, topic);
+        return new Thread(producerRunnable);
+    }
 
-	/**
-	 * Retrieve client configuration information, using a properties file, for
-	 * connecting to secure Kafka.
-	 * 
-	 * @param broker
-	 *            {String} A string representing a list of brokers the producer
-	 *            can contact.
-	 * @param apiKey
-	 *            {String} The API key of the Bluemix Message Hub service.
-	 * @param isProducer
-	 *            {Boolean} Flag used to determine whether or not the
-	 *            configuration is for a producer.
-	 * @return {Properties} A properties object which stores the client
-	 *         configuration info.
-	 */
-	public static final Properties getClientConfiguration(String broker,
-			String apiKey, boolean isProducer) {
-		Properties props = new Properties();
-		InputStream propsStream;
-		String fileName;
+    /**
+     * Retrieve client configuration information, using a properties file, for
+     * connecting to secure Kafka.
+     * 
+     * @param broker
+     *            {String} A string representing a list of brokers the producer
+     *            can contact.
+     * @param apiKey
+     *            {String} The API key of the Bluemix Message Hub service.
+     * @param isProducer
+     *            {Boolean} Flag used to determine whether or not the
+     *            configuration is for a producer.
+     * @return {Properties} A properties object which stores the client
+     *         configuration info.
+     */
+    public static final Properties getClientConfiguration(String broker,
+            String apiKey, boolean isProducer) {
+        Properties props = new Properties();
+        InputStream propsStream;
+        String fileName;
 
-		if (isProducer) {
-			fileName = "producer.properties";
-		} else {
-			fileName = "consumer.properties";
-		}
+        if (isProducer) {
+            fileName = "producer.properties";
+        } else {
+            fileName = "consumer.properties";
+        }
 
-		try {
-			propsStream = new FileInputStream(System.getProperty("user.dir") + File.separator + "resources" + File.separator + fileName);
-			props.load(propsStream);
-		} catch (IOException e) {
-			System.err.println("Could not load properties from file");
-			return props;
-		}
+        try {
+            propsStream = new FileInputStream(System.getProperty("user.dir")
+                    + File.separator + "resources" + File.separator + fileName);
+            props.load(propsStream);
+        } catch (IOException e) {
+            System.err.println("Could not load properties from file");
+            return props;
+        }
 
-		props.put("bootstrap.servers", broker);
-		props.put("client.id", apiKey);
+        props.put("bootstrap.servers", broker);
 
-		return props;
-	}
+        return props;
+    }
 }

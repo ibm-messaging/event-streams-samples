@@ -55,7 +55,7 @@ public class KafkaNativeSample {
 
         // Create a topic, ignore a 422 response - this means that the
         // topic name already exists.
-        restApi.post("/admin/topics", "{ \"topicName\": \"" + topic + "\" }",
+        restApi.post("/admin/topics", "{ \"name\": \"" + topic + "\" }",
                 new int[] { 422 });
 
         String topics = restApi.get("/admin/topics", false);

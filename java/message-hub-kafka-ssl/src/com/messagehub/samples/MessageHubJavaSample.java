@@ -52,24 +52,6 @@ public class MessageHubJavaSample {
     private static String userDir, resourceDir;
     private static boolean isDistribution;
     
-    private static void getAllFiles(File curDir) {
-
-        File[] filesList = curDir.listFiles();
-        for(File f : filesList){
-            if(f.isDirectory())
-                getAllFiles(f);
-            if(f.isFile()){
-                try {
-                    System.out.println(f.getCanonicalPath());
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-        }
-
-    }
-    
     public static void main(String args[]) throws InterruptedException,
             ExecutionException, IOException {
 

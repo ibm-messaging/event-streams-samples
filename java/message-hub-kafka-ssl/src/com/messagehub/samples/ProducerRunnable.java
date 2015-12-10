@@ -17,13 +17,16 @@
  * Licensed Materials - Property of IBM
  * (c) Copyright IBM Corp. 2015
  */
-package com.example;
+package com.messagehub.samples;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 public class ProducerRunnable implements Runnable {
+    private static final Logger logger = Logger.getLogger(ProducerRunnable.class);
     private KafkaProducer<byte[], byte[]> kafkaProducer;
     private String topic;
     private boolean closing = false;
@@ -47,12 +50,12 @@ public class ProducerRunnable implements Runnable {
         this.topic = topic;
         // Create a Kafka producer, providing client configuration.
         this.kafkaProducer = new KafkaProducer<byte[], byte[]>(
-                KafkaNativeSample.getClientConfiguration(broker, apiKey, true));
+                MessageHubJavaSample.getClientConfiguration(broker, apiKey, true));
     }
 
     @Override
     public void run() {
-        System.out.println(ProducerRunnable.class.toString() + " is starting.");
+        logger.log(Level.INFO, ProducerRunnable.class.toString() + " is starting.");
 
         while (!closing) {
             String fieldName = "records";
@@ -71,16 +74,9 @@ public class ProducerRunnable implements Runnable {
 
                 // Synchronously wait for a response from Message Hub / Kafka.
                 RecordMetadata m = kafkaProducer.send(record).get();
-
-                System.out.println("Message produced, offset: " + m.offset());
-
-                // After a predefined number of messages are received, shut
-                // down.
-                // This will also exit the produce loop and stop the thread it
-                // is running on.
-                if (++producedMessages >= KafkaNativeSample.MAX_PASSED_MESSAGES) {
-                    shutdown();
-                }
+                producedMessages++;
+                
+                logger.log(Level.INFO, "Message produced, offset: " + m.offset());
 
                 Thread.sleep(1000);
             } catch (final Exception e) {
@@ -91,8 +87,7 @@ public class ProducerRunnable implements Runnable {
             }
         }
 
-        System.out.println(ProducerRunnable.class.toString()
-                + " is shutting down.");
+        logger.log(Level.INFO, ProducerRunnable.class.toString() + " is shutting down.");
     }
 
     public void shutdown() {

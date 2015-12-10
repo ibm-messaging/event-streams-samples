@@ -18,7 +18,9 @@
 // © Copyright IBM Corp. 2015
 //
 apply plugin: 'java'
+apply plugin: 'application'
 
+mainClassName = 'com.messagehub.samples.MessageHubJavaSample'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 version = '1.0'
@@ -37,52 +39,51 @@ dependencies {
     compile 'org.apache.kafka:kafka-clients:0.9.0.0'
     compile 'log4j:log4j:1.2.17'
     compile 'org.slf4j:slf4j-log4j12:1.7.6'
-    compile 'com.fasterxml.jackson.core:jackson-core:2.5.4'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.7.0-rc1'
     compile fileTree(dir: 'lib-message-hub', include: ['*.jar'])
-}
-
-copy {
-    from configurations.runtime
-    into 'lib'
-}
-
-copy {
-  from 'lib-message-hub'
-  into 'lib'
 }
 
 // Compile source code
 compileJava {
+    doFirst {
+        copy {
+            from configurations.runtime
+            into 'lib'
+        }
+
+        copy {
+          from 'lib-message-hub'
+          into 'lib'
+        }
+    }
+
     source = 'src'
     options.encoding = 'ISO-8859-1'
 }
 
-copy {
-    configurations.runtime.files.collect {
-        if(it.name != 'lz4-1.2.0.jar' &&
-            it.name != 'snappy-java-1.1.1.7.jar') {
-
-            from zipTree('lib/' + it.name)
-            into 'build/extracted'
-        }
-    }
-}
-
-copy {
-    from 'resources'
-    into 'build/libs/resources'
-}
-
 // Create the output JAR file.
 jar {
-    // Provide Main-Class so the JAR executes properly, along with the required classpath data.
-    manifest {
-        attributes('Main-Class': 'com.example.KafkaNativeSample',
-        'Class-Path': '. ./ ' + configurations.runtime.files.collect { it.name }.join(' '))
+    copy {
+        from 'resources'
+        into 'build/libs/resources'
+        exclude 'log4j.properties'
     }
 
-    // Copy extracted JARs from earlier into this JAR.
-    from 'build/extracted'
+    copy {
+        from 'resources/log4j.properties'
+        into 'build/libs'
+    }
+
+    copy {
+        from 'lib'
+        into 'build/libs/lib'
+    }
+
+    // Provide Main-Class so the JAR executes properly, along with the required classpath data.
+    manifest {
+        attributes('Main-Class': mainClassName,
+        'Class-Path': '. ./ ./lib ' + configurations.runtime.files.collect { './lib/' + it.name }.join(' '))
+    }
 }
 
 // Save JAR in build directory.
@@ -90,6 +91,22 @@ uploadArchives {
     repositories {
         flatDir {
             dirs 'build'
+        }
+    }
+}
+
+['Zip', 'Tar'].each { suffix ->
+    "dist$suffix" {
+        def basePath = baseName + '-' + version
+
+        from('resources') {
+            into { basePath + '/bin/resources' }
+            exclude 'log4j.properties'
+        }
+
+        from('resources') {
+            into { basePath + '/lib' }
+            include 'log4j.properties'
         }
     }
 }

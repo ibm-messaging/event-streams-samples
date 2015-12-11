@@ -5,7 +5,6 @@ applications:
   memory: 256M
   disk_quota: 512M
   path: build/distributions/message-hub-kafka-ssl-1.0.zip
-  domain: mybluemix.net
   no-route: true
   services:
     - "message-hub-service"

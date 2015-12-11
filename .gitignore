@@ -1,2 +1,3 @@
 nodejs/bluemix-chat-sample/node_modules
 *.~lock.*
+*.classpath

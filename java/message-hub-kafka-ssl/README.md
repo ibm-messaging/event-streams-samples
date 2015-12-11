@@ -1,4 +1,4 @@
-### message-hub-kafka-ssl
+# message-hub-kafka-ssl
 This Java sample can connect to one of the Message Hub Kafka endpoints. It can be
 used on multiple platforms - [IBM Bluemix](https://console.ng.bluemix.net/) or your own machine!
 

@@ -17,7 +17,7 @@
  * Licensed Materials - Property of IBM
  * (c) Copyright IBM Corp. 2015
  */
-package com.example;
+package com.messagehub.samples;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -26,23 +26,23 @@ import java.util.Iterator;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 public class ConsumerRunnable implements Runnable {
+    private static final Logger logger = Logger.getLogger(ConsumerRunnable.class);
     private KafkaConsumer<byte[], byte[]> kafkaConsumer;
     private ArrayList<String> topicList;
     private boolean closing;
-    private int receivedMessages;
 
     ConsumerRunnable(String broker, String apiKey, String topic) {
         closing = false;
-        receivedMessages = 0;
-
         topicList = new ArrayList<String>();
 
         // Provide configuration and deserialisers
         // for the key and value fields received.
         kafkaConsumer = new KafkaConsumer<byte[], byte[]>(
-                KafkaNativeSample.getClientConfiguration(broker, apiKey, false),
+                MessageHubJavaSample.getClientConfiguration(broker, apiKey, false),
                 new ByteArrayDeserializer(), new ByteArrayDeserializer());
 
         topicList.add(topic);
@@ -51,7 +51,7 @@ public class ConsumerRunnable implements Runnable {
 
     @Override
     public void run() {
-        System.out.println(ConsumerRunnable.class.toString() + " is starting.");
+        logger.log(Level.INFO, ConsumerRunnable.class.toString() + " is starting.");
 
         while (!closing) {
             try {
@@ -69,28 +69,22 @@ public class ConsumerRunnable implements Runnable {
                     final String message = new String(record.value(),
                             Charset.forName("UTF-8"));
 
-                    System.out.println("Message: " + message);
-
-                    if (++receivedMessages >= KafkaNativeSample.MAX_PASSED_MESSAGES) {
-                        shutdown();
-                    }
+                    logger.log(Level.INFO, "Message: " + message);
                 }
 
                 kafkaConsumer.commitSync();
 
                 Thread.sleep(1000);
             } catch (final InterruptedException e) {
-                System.err
-                        .println("Producer/Consumer loop has been unexpectedly interrupted");
+                logger.log(Level.ERROR, "Producer/Consumer loop has been unexpectedly interrupted");
                 shutdown();
             } catch (final Exception e) {
-                System.err.println("Consumer has failed with exception: " + e);
+                logger.log(Level.ERROR, "Consumer has failed with exception: " + e);
                 shutdown();
             }
         }
 
-        System.out.println(ConsumerRunnable.class.toString()
-                + " is shutting down.");
+        logger.log(Level.INFO, ConsumerRunnable.class.toString() + " is shutting down.");
         kafkaConsumer.close();
     }
 

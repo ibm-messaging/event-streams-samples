@@ -175,6 +175,7 @@ io.on('connection', function(socket) {
    * via the WebUI. The message is pushed into Message Hub.
   */
   socket.on('new_message', function(data) {
+    console.log(socket.id + ' pushing message: ' + data);
     pushMessage(socket.id, data);
   });
 
@@ -214,6 +215,8 @@ var start = function(restEndpoint, apiKey, callback) {
       consumerInstance.get('livechat')
         .then(function(data) {
           if(data.length > 0) {
+            console.log('Recieved data: ' + data);
+
             for(var index in data) {
               data[index] = JSON.parse(data[index]);
             }

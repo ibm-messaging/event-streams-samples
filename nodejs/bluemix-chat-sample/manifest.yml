@@ -1,0 +1,11 @@
+applications:
+- path: .
+  buildpack: sdk-for-nodejs
+  memory: 256M
+  instances: 1
+  domain: mybluemix.net
+  name: message-hub-chat
+  random-route: true
+  disk_quota: 512M
+  services:
+    - "message-hub-service"

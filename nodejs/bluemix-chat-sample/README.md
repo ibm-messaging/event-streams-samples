@@ -4,29 +4,23 @@ This Node.js sample can be used on multiple platforms - [IBM Bluemix](https://co
 ## Prerequisites (Bluemix)
 To run the sample on Bluemix, you will need the following:
 
-* A provisioned Bluemix application running the __SDK for Node.js__
-* A Message Hub service instance created
-* ```cf``` tool installed
-* Application files downloaded to your local machine
-
-If you have not done this, you can follow the [linked instructions](https://www.ng.bluemix.net/docs/services/MessageHub/index.html) to get the
-prerequisites set up.
+* [Message Hub Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) provisioned in [IBM Bluemix](https://console.ng.bluemix.net/)
+* [Cloud Foundry Command Line Interface](https://github.com/cloudfoundry/cli/releases) installed
 
 ## Prerequisites (Local)
 The run the sample on your local machine, you will need the following:
 
-* A Message Hub service instance created
-* ```cf``` tool installed
-* Application files downloaded to your local machine
+* [Message Hub Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) provisioned in [IBM Bluemix](https://console.ng.bluemix.net/)
 * Node.js 0.12.x or above
 
 ## Building and Running the Sample (Bluemix)
 The build and run the sample on Bluemix, all that needs to be done is the following:
 
-* Copy the sample `bluemix-chat-sample` files into your Bluemix application file directory.
-* Run `cf push <project_name>` where 'project_name' is the name of your project in Bluemix.
+* Open the `manifest.yml` file and rename the `"message-hub-service"` entry to that of your own
+Message Hub Service Instance name.
+* Run `cf push` where 'project_name' is the name of your project in Bluemix.
 
-Once the files have been pushed to Bluemix and your application has been restarted, open a web browser and navigate to the endpoint provided by Bluemix.
+Once the files have been pushed to Bluemix, open a web browser and navigate to the endpoint provided by Bluemix.
 
 ## Building and Running the Sample (Local)
 To build and run the sample, you will first need to install its dependencies. To do this, run
@@ -51,4 +45,5 @@ HTTP server started on port 6003
 Consumer Instance created.
 ```
 
-Once the topic and consumer instance have been created, open a web browser and navigate to `http://localhost:port`.
+Once the topic and consumer instance have been created, open a web browser and navigate to `http://localhost:port`, where `port` is
+the port number described in the output produced when the application starts.

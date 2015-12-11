@@ -63,22 +63,24 @@ compileJava {
 
 // Create the output JAR file.
 jar {
-    copy {
-        from 'resources'
-        into 'build/libs/resources'
-        exclude 'log4j.properties'
+    doLast {
+        copy {
+            from 'resources'
+            into 'build/libs/resources'
+            exclude 'log4j.properties'
+        }
+    
+        copy {
+            from 'resources/log4j.properties'
+            into 'build/libs'
+        }
+    
+        copy {
+            from 'lib'
+            into 'build/libs/lib'
+        }
     }
-
-    copy {
-        from 'resources/log4j.properties'
-        into 'build/libs'
-    }
-
-    copy {
-        from 'lib'
-        into 'build/libs/lib'
-    }
-
+    
     // Provide Main-Class so the JAR executes properly, along with the required classpath data.
     manifest {
         attributes('Main-Class': mainClassName,

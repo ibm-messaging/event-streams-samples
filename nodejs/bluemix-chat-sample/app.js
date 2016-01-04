@@ -114,6 +114,9 @@ io.on('connection', function(socket) {
     list.push(JSON.stringify(message));
 
     instance.produce('livechat', list.messages)
+      .then(function(response) {
+          console.log(response);
+      })
       .fail(function(error) {
         throw new Error(error);
       });
@@ -231,27 +234,32 @@ var start = function(restEndpoint, apiKey, callback) {
 
   }, 250);
 
-  // Make web server listen on listed port.
-  http.listen(appEnv.port, function() {
-    console.log('HTTP server started on port ' + appEnv.port);
-    // Set up a consumer group of the provided name.
-    instance.topics.create('livechat')
-      .then(function(response) {
-        console.log('"livechat" topic created.');
-        return instance.consume(consumerGroupName, consumerInstanceName, { 'auto.offset.reset': 'largest' });
-      })
-      .then(function(response) {
-        consumerInstance = response[0];
-        console.log('Consumer Instance created.');
-        if(callback) {
-          callback();
-        }
-      })
-      .fail(function(error) {
-        console.log(error);
-        stop(1);
-      });
-  });
+  instance.topics.create('livechat')
+    .then(function(response) {
+      console.log('"livechat" topic created.');
+      // Set up a consumer group of the provided name.
+      return instance.consume(consumerGroupName, consumerInstanceName, { 'auto.offset.reset': 'largest' });
+    })
+    .then(function(response) {
+      consumerInstance = response[0];
+      console.log('Consumer Instance created.');
+      // Set offset for current consumer instance.
+      return consumerInstance.get('livechat');
+    })
+    .then(function() {
+        // Make web server listen on listed port.
+        http.listen(appEnv.port, function() {
+          console.log('HTTP server started on port ' + appEnv.port);
+
+          if(callback) {
+            callback();
+          }
+        });
+    })
+    .fail(function(error) {
+      console.log(error);
+      stop(1);
+    });
 };
 
 var stop = function(exitCode) {

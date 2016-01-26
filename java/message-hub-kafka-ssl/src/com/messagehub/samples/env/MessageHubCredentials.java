@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class MessageHubCredentials {
 
     private String apiKey, kafkaRestUrl, user, password;
-    private String[] kafkaBrokers, kafkaBrokersSasl;
+    private String[] kafkaBrokersSasl;
 
     @JsonProperty("api_key")
     public String getApiKey() {
@@ -66,16 +66,6 @@ public class MessageHubCredentials {
     @JsonProperty
     public void setPassword(String password) {
         this.password = password;
-    }
-    
-    @JsonProperty("kafka_brokers")
-    public String[] getKafkaBrokers() {
-        return kafkaBrokers;
-    }
-
-    @JsonProperty("kafka_brokers")
-    public void setKafkaBrokers(String[] kafkaBrokers) {
-        this.kafkaBrokers = kafkaBrokers;
     }
     
     @JsonProperty("kafka_brokers_sasl")

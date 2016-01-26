@@ -25,6 +25,8 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import com.messagehub.samples.env.MessageList;
+
 public class ProducerRunnable implements Runnable {
     private static final Logger logger = Logger.getLogger(ProducerRunnable.class);
     private KafkaProducer<byte[], byte[]> kafkaProducer;
@@ -34,7 +36,7 @@ public class ProducerRunnable implements Runnable {
 
     /**
      * Produce a message on the provided topic.
-     * 
+     *
      * @param broker
      *            {String} A string representing a list of brokers the producer
      *            can contact.
@@ -69,13 +71,14 @@ public class ProducerRunnable implements Runnable {
                 // name, field name and message. The field name and
                 // message are converted to UTF-8.
                 ProducerRecord<byte[], byte[]> record = new ProducerRecord<byte[], byte[]>(
-                        topic, fieldName.getBytes("UTF-8"), list.build()
-                                .getBytes("UTF-8"));
+                    topic,
+                    fieldName.getBytes("UTF-8"),
+                    list.toString().getBytes("UTF-8"));
 
                 // Synchronously wait for a response from Message Hub / Kafka.
                 RecordMetadata m = kafkaProducer.send(record).get();
                 producedMessages++;
-                
+
                 logger.log(Level.INFO, "Message produced, offset: " + m.offset());
 
                 Thread.sleep(1000);

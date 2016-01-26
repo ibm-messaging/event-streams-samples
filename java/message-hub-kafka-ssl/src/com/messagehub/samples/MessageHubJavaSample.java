@@ -37,21 +37,23 @@ import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.messagehub.samples.env.CreateTopicParameters;
 import com.messagehub.samples.env.MessageHubCredentials;
 import com.messagehub.samples.env.MessageHubEnvironment;
 
 /**
  * Sample used for interacting with Message Hub over Secure Kafka / Kafka Native
  * channels.
- * 
+ *
  * @author IBM
  */
 public class MessageHubJavaSample {
-    
+
+    private static final String JAAS_CONFIG_PROPERTY = "java.security.auth.login.config";
     private static final Logger logger = Logger.getLogger(MessageHubJavaSample.class);
     private static String userDir, resourceDir;
     private static boolean isDistribution;
-    
+
     public static void main(String args[]) throws InterruptedException,
             ExecutionException, IOException {
 
@@ -61,9 +63,9 @@ public class MessageHubJavaSample {
         String apiKey = null;
         Thread consumerThread, producerThread;
         RESTRequest restApi = null;
-        
+
         userDir = System.getProperty("user.dir");
-        
+
         isDistribution = new File(userDir + File.separator + ".java-buildpack").exists();
 
         if(isDistribution) {
@@ -73,14 +75,14 @@ public class MessageHubJavaSample {
             logger.log(Level.INFO, "Running in local mode.");
             resourceDir = userDir + File.separator + "resources";
         }
-        
+
         // Set JAAS configuration property.
-        if(System.getProperty("java.security.auth.login.config") == null) {
-            System.setProperty("java.security.auth.login.config", resourceDir + File.separator + "jaas.conf");
+        if(System.getProperty(JAAS_CONFIG_PROPERTY) == null) {
+            System.setProperty(JAAS_CONFIG_PROPERTY, resourceDir + File.separator + "jaas.conf");
         }
 
         logger.log(Level.INFO, "Starting Message Hub Java Sample");
-        
+
         if(args.length == 3) {
             // Arguments parsed from the command line.
             kafkaHost = args[0];
@@ -90,22 +92,22 @@ public class MessageHubJavaSample {
             // Arguments parsed via VCAP_SERVICES environment variable.
             String vcapServices = System.getenv("VCAP_SERVICES");
             ObjectMapper mapper = new ObjectMapper();
-            
+
             if(vcapServices != null) {
                 try {
                     // Parse VCAP_SERVICES into Jackson JsonNode, then map the 'messagehub' entry
                     // to an instance of MessageHubEnvironment.
                     JsonNode vcapServicesJson = mapper.readValue(vcapServices, JsonNode.class);
                     ObjectMapper envMapper = new ObjectMapper();
-                    
+
                     if(vcapServicesJson.has("messagehub")) {
                         MessageHubEnvironment messageHubEnvironment = envMapper.readValue(vcapServicesJson.get("messagehub").get(0).toString(), MessageHubEnvironment.class);
                         MessageHubCredentials credentials = messageHubEnvironment.getCredentials();
-                        
+
                         kafkaHost = credentials.getKafkaBrokersSasl()[0];
                         restHost = credentials.getKafkaRestUrl();
                         apiKey = credentials.getApiKey();
-                        
+
                         updateJaasConfiguration(credentials);
                     } else {
                         logger.log(Level.ERROR, "Error while parsing VCAP_SERVICES: A Message Hub service instance is not bound to this application.");
@@ -117,21 +119,22 @@ public class MessageHubJavaSample {
                 }
             } else {
                 logger.log(Level.ERROR, "VCAP_SERVICES environment variable is null, are you running outside of Bluemix? If you are, consider the following usage:\n\n" +
-                        "java -Djava.security.auth.login.config=resources/jaas.conf -jar <name_of_jar>.jar <kafka_endpoint> <rest_endpoint> <api_key>");
+                        "java -D" + JAAS_CONFIG_PROPERTY + "=resources/jaas.conf -jar <name_of_jar>.jar <kafka_endpoint> <rest_endpoint> <api_key>");
                 return;
             }
         }
-        
+
         logger.log(Level.INFO, "Sample will run until interrupted.");
         logger.log(Level.INFO, "Resource directory: " + resourceDir);
         logger.log(Level.INFO, "Kafka Endpoint: " + kafkaHost);
         logger.log(Level.INFO, "Rest API Endpoint: " + restHost);
-        
+
         restApi = new RESTRequest(restHost, apiKey);
 
         // Create a topic, ignore a 422 response - this means that the
         // topic name already exists.
-        restApi.post("/admin/topics", "{ \"name\": \"" + topic + "\" }",
+        restApi.post("/admin/topics",
+                new CreateTopicParameters(topic, 1).toString(),
                 new int[] { 422 });
 
         String topics = restApi.get("/admin/topics", false);
@@ -157,7 +160,7 @@ public class MessageHubJavaSample {
 
     /**
      * Create a message consumer, returning the thread object it will run on.
-     * 
+     *
      * @param broker
      *            {String} The host and port of the broker to interact with.
      * @param apiKey
@@ -176,7 +179,7 @@ public class MessageHubJavaSample {
 
     /**
      * Create a message producer, returning the thread object it will run on.
-     * 
+     *
      * @param broker
      *            {String} The host and port of the broker to interact with.
      * @param apiKey
@@ -199,7 +202,7 @@ public class MessageHubJavaSample {
     /**
      * Retrieve client configuration information, using a properties file, for
      * connecting to secure Kafka.
-     * 
+     *
      * @param broker
      *            {String} A string representing a list of brokers the producer
      *            can contact.
@@ -233,14 +236,14 @@ public class MessageHubJavaSample {
         }
 
         props.put("bootstrap.servers", broker);
-        
+
         if(isDistribution) {
             props.put("ssl.truststore.location", userDir + "/.java-buildpack/open_jdk_jre/lib/security/cacerts");
         }
 
         return props;
     }
-    
+
     /**
      * Updates JAAS config file with provided credentials.
      * @param credentials {MessageHubCredentials} Object which stores Message Hub credentials
@@ -250,19 +253,19 @@ public class MessageHubJavaSample {
         String templatePath = resourceDir + File.separator + "templates" + File.separator + "jaas.conf.template";
         String path = resourceDir + File.separator + "jaas.conf";
         OutputStream jaasStream = null;
-        
+
         logger.log(Level.INFO, "Updating JAAS configuration");
-        
+
         try {
             String templateContents = new String(Files.readAllBytes(Paths.get(templatePath)));
             jaasStream = new FileOutputStream(path, false);
-            
+
             // Replace username and password in template and write
             // to jaas.conf in resources directory.
             String fileContents = templateContents
                 .replace("$USERNAME", credentials.getUser())
                 .replace("$PASSWORD", credentials.getPassword());
-            
+
             jaasStream.write(fileContents.getBytes(Charset.forName("UTF-8")));
         } catch (final FileNotFoundException e) {
             logger.log(Level.ERROR, "Could not load JAAS config file at: " + path);

@@ -1,6 +1,8 @@
 # bluemix-chat-sample
 This Node.js sample can be used on multiple platforms - [IBM Bluemix](https://console.ng.bluemix.net/) or your own machine!
 
+__Important Note__: This sample creates a topic on your behalf with one partition - this will incur a fee if the topic does not already exist on your account.
+
 ## Prerequisites (Bluemix)
 To run the sample on Bluemix, you will need the following:
 

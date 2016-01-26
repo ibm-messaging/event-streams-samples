@@ -2,6 +2,8 @@
 This Java sample can connect to one of the Message Hub Kafka endpoints. It can be
 used on multiple platforms - [IBM Bluemix](https://console.ng.bluemix.net/) or your own machine!
 
+__Important Note__: This sample creates a topic on your behalf with one partition - this will incur a fee if the topic does not already exist on your account.
+
 ## Global Prerequisites
 To build and run the sample, you must have the following installed:
 * [git](https://git-scm.com/)

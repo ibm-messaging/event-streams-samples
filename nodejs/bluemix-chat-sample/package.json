@@ -8,7 +8,7 @@
   "dependencies": {
     "cfenv": "1.0.x",
     "express": "4.12.x",
-    "message-hub-rest": "^1.0.3",
+    "message-hub-rest": "^1.0.4",
     "q": "1.4.1",
     "socket.io": "^1.3.7"
   },

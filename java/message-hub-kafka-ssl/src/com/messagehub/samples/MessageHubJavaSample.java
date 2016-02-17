@@ -88,6 +88,7 @@ public class MessageHubJavaSample {
             kafkaHost = args[0];
             restHost = args[1];
             apiKey = args[2];
+            updateJaasConfiguration(apiKey.substring(0, 16), apiKey.substring(16));
         } else {
             // Arguments parsed via VCAP_SERVICES environment variable.
             String vcapServices = System.getenv("VCAP_SERVICES");
@@ -119,7 +120,7 @@ public class MessageHubJavaSample {
                 }
             } else {
                 logger.log(Level.ERROR, "VCAP_SERVICES environment variable is null, are you running outside of Bluemix? If you are, consider the following usage:\n\n" +
-                        "java -D" + JAAS_CONFIG_PROPERTY + "=resources/jaas.conf -jar <name_of_jar>.jar <kafka_endpoint> <rest_endpoint> <api_key>");
+                        "java -jar <name_of_jar>.jar <kafka_endpoint> <rest_endpoint> <api_key>");
                 return;
             }
         }
@@ -250,6 +251,10 @@ public class MessageHubJavaSample {
      *      retrieved from the VCAP_SERVICES environment variable.
      */
     private static void updateJaasConfiguration(MessageHubCredentials credentials) {
+        updateJaasConfiguration(credentials.getUser(), credentials.getPassword());
+    }
+    
+    private static void updateJaasConfiguration(String username, String password) {
         String templatePath = resourceDir + File.separator + "templates" + File.separator + "jaas.conf.template";
         String path = resourceDir + File.separator + "jaas.conf";
         OutputStream jaasStream = null;
@@ -263,8 +268,8 @@ public class MessageHubJavaSample {
             // Replace username and password in template and write
             // to jaas.conf in resources directory.
             String fileContents = templateContents
-                .replace("$USERNAME", credentials.getUser())
-                .replace("$PASSWORD", credentials.getPassword());
+                .replace("$USERNAME", username)
+                .replace("$PASSWORD", password);
 
             jaasStream.write(fileContents.getBytes(Charset.forName("UTF-8")));
         } catch (final FileNotFoundException e) {

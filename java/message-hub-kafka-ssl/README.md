@@ -12,7 +12,8 @@ To build and run the sample, you must have the following installed:
 * [Message Hub Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) provisioned in [IBM Bluemix](https://console.ng.bluemix.net/)
 
 ## Prerequisites (Local)
-[View the video tutorial](https://www.youtube.com/watch?v=tt-bLtFzC_4)
+[View the video tutorial](https://www.youtube.com/watch?v=tt-bLtFzC_4) 
+__Note:__ You no longer need to update the SASL configuration manually.
 
 #### Updating the Properties Files
 Firstly, you will need to update the consumer and producer properties files. These can be found
@@ -25,12 +26,7 @@ producer properties files are the following:
   * If you have not changed the password, the default is _changeit_
 
 #### Updating SASL Configuration
-Finally, the `jaas.conf` configuration file needs to be updated. Most fields are filled out for you already, however, the fields listed below need to be updated:
-
-* username
-  * Set to the username described in your Message Hub Bluemix credentials
-* password
-  * Set to the password described in your Message Hub Bluemix credentials
+You no longer need to update the SASL Configuration manually - it is generated at run-time.
 
 ## Prerequisites (Bluemix)
 * [Cloud Foundry Command Line Interface](https://github.com/cloudfoundry/cli/releases) installed
@@ -54,8 +50,6 @@ java -Djava.security.auth.login.config=resources/jaas.conf -jar <name_of_jar>.ja
 ```
 
 The sample will run indefinitely until interrupted. To stop the process, use `Ctrl+C`, for example.
-
-__Note:__ As the sample now uses SASL, the port required for the Kafka endpoint is 9094, rather than 9093.
 
 ## Running the Sample (Bluemix)
 Connect to Bluemix with the Cloud Foundry Command Line Interface, then run the following command in
@@ -82,9 +76,9 @@ a topic for you.
 [2015-12-11 11:12:12,531] INFO class com.messagehub.samples.ConsumerRunnable is starting. (com.messagehub.samples.ConsumerRunnable)
 [2015-12-11 11:12:12,531] INFO class com.messagehub.samples.ProducerRunnable is starting. (com.messagehub.samples.ProducerRunnable)
 [2015-12-11 11:12:14,208] INFO Message produced, offset: 0 (com.messagehub.samples.ProducerRunnable)
-[2015-12-11 11:12:14,308] INFO Message: [{"value":"This is a test message0"}] (com.messagehub.samples.ConsumerRunnable)
+[2015-12-11 11:12:14,308] INFO Message: [{"value":"This is a test message0","timestamp":"Mon Feb 01 14:11:28 GMT 2016"}] (com.messagehub.samples.ConsumerRunnable)
 [2015-12-11 11:12:15,343] INFO Message produced, offset: 1 (com.messagehub.samples.ProducerRunnable)
-[2015-12-11 11:12:15,443] INFO Message: [{"value":"This is a test message1"}] (com.messagehub.samples.ConsumerRunnable)
+[2015-12-11 11:12:15,443] INFO Message: [{"value":"This is a test message1","timestamp":"Mon Feb 01 14:11:29 GMT 2016"}] (com.messagehub.samples.ConsumerRunnable)
 [2015-12-11 11:12:16,480] INFO Message produced, offset: 2 (com.messagehub.samples.ProducerRunnable)
-[2015-12-11 11:12:16,580] INFO Message: [{"value":"This is a test message2"}] (com.messagehub.samples.ConsumerRunnable)
+[2015-12-11 11:12:16,580] INFO Message: [{"value":"This is a test message2","timestamp":"Mon Feb 01 14:11:30 GMT 2016"}] (com.messagehub.samples.ConsumerRunnable)
 ```

@@ -29,6 +29,7 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Iterator;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
@@ -37,6 +38,7 @@ import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.messagehub.samples.env.CreateTopicConfig;
 import com.messagehub.samples.env.CreateTopicParameters;
 import com.messagehub.samples.env.MessageHubCredentials;
 import com.messagehub.samples.env.MessageHubEnvironment;
@@ -50,6 +52,7 @@ import com.messagehub.samples.env.MessageHubEnvironment;
 public class MessageHubJavaSample {
 
     private static final String JAAS_CONFIG_PROPERTY = "java.security.auth.login.config";
+    private static final long HOUR_IN_MILLISECONDS = 3600000L;
     private static final Logger logger = Logger.getLogger(MessageHubJavaSample.class);
     private static String userDir, resourceDir;
     private static boolean isDistribution;
@@ -100,20 +103,33 @@ public class MessageHubJavaSample {
                     // to an instance of MessageHubEnvironment.
                     JsonNode vcapServicesJson = mapper.readValue(vcapServices, JsonNode.class);
                     ObjectMapper envMapper = new ObjectMapper();
+                    String vcapKey = null;
+                    Iterator<String> it = vcapServicesJson.fieldNames();
 
-                    if(vcapServicesJson.has("messagehub")) {
-                        MessageHubEnvironment messageHubEnvironment = envMapper.readValue(vcapServicesJson.get("messagehub").get(0).toString(), MessageHubEnvironment.class);
-                        MessageHubCredentials credentials = messageHubEnvironment.getCredentials();
+                    // Find the Message Hub service bound to this application.
+                    while (it.hasNext() && vcapKey == null) {
+                        String potentialKey = it.next();
 
-                        kafkaHost = credentials.getKafkaBrokersSasl()[0];
-                        restHost = credentials.getKafkaRestUrl();
-                        apiKey = credentials.getApiKey();
+                        if (potentialKey.startsWith("messagehub")) {
+                            logger.log(Level.INFO, "Using the '" + potentialKey + "' key from VCAP_SERVICES.");
+                            vcapKey = potentialKey;
+                        }
+                    }
 
-                        updateJaasConfiguration(credentials);
-                    } else {
-                        logger.log(Level.ERROR, "Error while parsing VCAP_SERVICES: A Message Hub service instance is not bound to this application.");
+                    if (vcapKey == null) {
+                        logger.log(Level.ERROR,
+                                   "Error while parsing VCAP_SERVICES: A Message Hub service instance is not bound to this application.");
                         return;
                     }
+                    
+                    MessageHubEnvironment messageHubEnvironment = envMapper.readValue(vcapServicesJson.get(vcapKey).get(0).toString(), MessageHubEnvironment.class);
+                    MessageHubCredentials credentials = messageHubEnvironment.getCredentials();
+
+                    kafkaHost = credentials.getKafkaBrokersSasl()[0];
+                    restHost = credentials.getKafkaRestUrl();
+                    apiKey = credentials.getApiKey();
+
+                    updateJaasConfiguration(credentials);
                 } catch(final Exception e) {
                     e.printStackTrace();
                     return;
@@ -135,7 +151,7 @@ public class MessageHubJavaSample {
         // Create a topic, ignore a 422 response - this means that the
         // topic name already exists.
         restApi.post("/admin/topics",
-                new CreateTopicParameters(topic, 1).toString(),
+                new CreateTopicParameters(topic, 1, new CreateTopicConfig(HOUR_IN_MILLISECONDS * 24)).toString(),
                 new int[] { 422 });
 
         String topics = restApi.get("/admin/topics", false);

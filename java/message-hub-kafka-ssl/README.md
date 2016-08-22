@@ -52,6 +52,11 @@ java -Djava.security.auth.login.config=resources/jaas.conf -jar <name_of_jar>.ja
 The sample will run indefinitely until interrupted. To stop the process, use `Ctrl+C`, for example.
 
 ## Running the Sample (Bluemix)
+Once the sample jar has been compiled, run the following command to build the distribution.
+```shell
+gradle distZip
+```
+
 Connect to Bluemix with the Cloud Foundry Command Line Interface, then run the following command in
 the same directory as the `manifest.yml` file:
 ```shell
@@ -70,7 +75,7 @@ a topic for you.
 [2015-12-11 11:12:10,086] INFO Starting Message Hub Java Sample (com.messagehub.samples.MessageHubJavaSample)
 [2015-12-11 11:12:10,086] INFO Sample will run until interrupted. (com.messagehub.samples.MessageHubJavaSample)
 [2015-12-11 11:12:10,087] INFO Resource directory: <directory_name> (com.messagehub.samples.MessageHubJavaSample)
-[2015-12-11 11:12:10,087] INFO Kafka Endpoint: kafka01-prod01.messagehub.services.us-south.bluemix.net:9094 (com.messagehub.samples.MessageHubJavaSample)
+[2015-12-11 11:12:10,087] INFO Kafka Endpoint: kafka01-prod01.messagehub.services.us-south.bluemix.net:9093 (com.messagehub.samples.MessageHubJavaSample)
 [2015-12-11 11:12:10,087] INFO Rest API Endpoint: https://kafka-rest-prod01.messagehub.services.us-south.bluemix.net:443 (com.messagehub.samples.MessageHubJavaSample)
 [2015-12-11 11:12:12,292] INFO Topics: [{"name":"mytopic","markedForDeletion":false}] (com.messagehub.samples.MessageHubJavaSample)
 [2015-12-11 11:12:12,531] INFO class com.messagehub.samples.ConsumerRunnable is starting. (com.messagehub.samples.ConsumerRunnable)

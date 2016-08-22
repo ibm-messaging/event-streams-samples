@@ -16,26 +16,32 @@
 /**
  * Licensed Materials - Property of IBM
  * (c) Copyright IBM Corp. 2016
+ */
  -->
 <server>
     <applicationMonitor updateTrigger="polled" pollingRate="500ms"
                         dropins="dropins" dropinsEnabled="true"/>
+                        
     <config updateTrigger="polled" monitorInterval="500ms"/>
 
     <featureManager>
         <feature>servlet-3.1</feature>
         <feature>appSecurity-2.0</feature>
+        <feature>wsSecurity-1.1</feature>
     </featureManager>
 
-   <library id="messageHubLoginLib">
-     <fileset dir="${server.config.dir}/apps/MessageHubLibertyApp.war/WEB-INF/lib" includes="messagehub.login-1.0.0.jar"/>
-   </library>
-   <jaasLoginModule id="KafkaClient"
-                className="com.ibm.messagehub.login.MessageHubLoginModule"
-                controlFlag="REQUIRED" libraryRef="messageHubLoginLib">
-       <options serviceName="kafka" username="#USERNAME" password="#PASSWORD"/>
-   </jaasLoginModule>
-   <jaasLoginContextEntry id="KafkaClient" name="KafkaClient" loginModuleRef="KafkaClient"  />
+    <library id="kafkaLoginLib">
+        <fileset dir="${server.config.dir}/apps/MessageHubLibertyApp.war/WEB-INF/lib" includes="kafka-clients-*.jar"/>
+    </library>
+
+    <jaasLoginModule id="KafkaClient"
+                className="org.apache.kafka.common.security.plain.PlainLoginModule"
+                controlFlag="REQUIRED" libraryRef="kafkaLoginLib">
+                
+        <options serviceName="kafka" username="#USERNAME" password="#PASSWORD" />
+    </jaasLoginModule>
+    
+    <jaasLoginContextEntry id="KafkaClient" name="KafkaClient" loginModuleRef="KafkaClient" />
 
     <httpEndpoint id="defaultHttpEndpoint"
                   host="*"

@@ -31,11 +31,15 @@ public class CreateTopicParameters {
 
     @JsonProperty("partitions")
     private final int partitionCount;
+    
+    @JsonProperty("configs")
+    private final CreateTopicConfig config;
 
     @JsonCreator
-    public CreateTopicParameters(String topicName, int partitionCount) {
+    public CreateTopicParameters(String topicName, int partitionCount, CreateTopicConfig config) {
         this.topicName = topicName;
         this.partitionCount = partitionCount;
+        this.config = config;
     }
 
     public String getTopicName() {
@@ -46,7 +50,11 @@ public class CreateTopicParameters {
         return partitionCount;
     }
 
-    /**
+    public CreateTopicConfig getConfig() {
+		return config;
+	}
+
+	/**
      * Convert an instance of this class to its JSON
      * string representation.
      */

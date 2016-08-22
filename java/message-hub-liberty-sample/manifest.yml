@@ -1,8 +1,10 @@
 applications:
-- path: MessageHubLibertyApp.war
-  memory: 512M
+- path: target/defaultServer
+  memory: 256M
   instances: 1
   domain: mybluemix.net 
   name: MessageHubLibertyApp
-  host: MessageHubLibertyApp
   disk_quota: 1024M
+  random-route: true
+  services:
+    - "message-hub-service"

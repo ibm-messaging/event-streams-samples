@@ -1,6 +1,6 @@
 applications:
 - name: message-hub-kafka-ssl
-  buildpack: java_buildpack
+  buildpack: https://github.com/cloudfoundry/java-buildpack.git
   instances: 1
   memory: 256M
   disk_quota: 512M

@@ -1,10 +1,11 @@
 applications:
-- name: message-hub-kafka-ssl
+- name: message-hub-console-sample
   buildpack: https://github.com/cloudfoundry/java-buildpack.git
   instances: 1
   memory: 256M
   disk_quota: 512M
-  path: build/distributions/message-hub-kafka-ssl-1.0.zip
+  path: build/distributions/message-hub-console-sample-2.0.zip
   no-route: true
+  health-check-type: none
   services:
-    - "message-hub-service"
+    - "Message Hub-CHANGEME"

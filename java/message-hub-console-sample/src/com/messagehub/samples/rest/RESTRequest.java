@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 IBM
+ * Copyright 2015-2016 IBM
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,28 @@
  */
 /**
  * Licensed Materials - Property of IBM
- * (c) Copyright IBM Corp. 2015
+ * (c) Copyright IBM Corp. 2015-2016
  */
-package com.messagehub.samples;
+package com.messagehub.samples.rest;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 
-public class RESTRequest {
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
+class RESTRequest {
+    private static final Logger logger = Logger.getLogger(RESTRequest.class);
+    
     private String apiKey, baseUrl;
 
     public RESTRequest(String baseUrl, String apiKey) {
@@ -46,8 +54,9 @@ public class RESTRequest {
      *            {Boolean} A flag to notify the caller whether or not to
      *            include the 'Accept' header in its request.
      * @return {String} The response received from the server.
+     * @throws Exception 
      */
-    public String get(String target, boolean acceptHeader) {
+    public String get(String target, boolean acceptHeader) throws Exception {
         HttpsURLConnection connection = null;
 
         if (!target.startsWith("/")) {
@@ -77,7 +86,7 @@ public class RESTRequest {
             InputStream is = connection.getInputStream();
             BufferedReader rd = new BufferedReader(new InputStreamReader(is));
             String inputLine = "";
-            StringBuffer response = new StringBuffer();
+            StringBuilder response = new StringBuilder();
 
             while ((inputLine = rd.readLine()) != null) {
                 response.append(inputLine);
@@ -87,14 +96,14 @@ public class RESTRequest {
 
             return response.toString();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.ERROR, "REST GET request failed with exception: " + e, e);
+            throw e;
         } finally {
             if (connection != null) {
                 connection.disconnect();
             }
         }
 
-        return "";
     }
 
     /**
@@ -110,8 +119,11 @@ public class RESTRequest {
      *            {int[]} An list of error codes which will be ignored as a
      *            side-effect of the request. Can be provided as null.
      * @return {String} The response received from the server.
+     * @throws IOException 
+     * @throws NoSuchAlgorithmException 
+     * @throws KeyManagementException 
      */
-    public String post(String target, String body, int[] ignoredErrorCodes) {
+    public String post(String target, String body, int[] ignoredErrorCodes) throws IOException, NoSuchAlgorithmException, KeyManagementException {
         HttpsURLConnection connection = null;
         int responseCode = 0;
 
@@ -147,19 +159,8 @@ public class RESTRequest {
             // Retrieve the response, transform it, then
             // return it to the caller.
             InputStream is = connection.getInputStream();
-            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-            StringBuilder response = new StringBuilder();
-            String line;
-
-            while ((line = rd.readLine()) != null) {
-                response.append(line);
-                response.append('\r');
-            }
-
-            rd.close();
-
-            return response.toString();
-        } catch (Exception e) {
+            return inputStreamToString(is);
+        } catch (IOException e) {
             boolean isIgnored = false;
 
             // Filter out error codes which are ignored. If the
@@ -173,8 +174,11 @@ public class RESTRequest {
                 }
             }
 
-            if (!isIgnored) {
-                e.printStackTrace();
+            if (!isIgnored || connection==null ) {
+                logger.log(Level.ERROR, "REST POST request failed with exception: " + e, e); 
+                throw e;
+            } else {
+                return inputStreamToString(connection.getErrorStream());
             }
         } finally {
             if (connection != null) {
@@ -182,6 +186,20 @@ public class RESTRequest {
             }
         }
 
-        return "";
+    }
+
+    private String inputStreamToString(InputStream is) throws IOException {
+        BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+        StringBuilder response = new StringBuilder();
+        String line;
+
+        while ((line = rd.readLine()) != null) {
+            response.append(line);
+            response.append('\r');
+        }
+
+        rd.close();
+
+        return response.toString();
     }
 }

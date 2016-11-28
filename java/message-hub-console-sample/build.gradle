@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 IBM
+ * Copyright 2015-2016 IBM
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,16 @@
 */
 //
 // Licensed Materials - Property of IBM
-// © Copyright IBM Corp. 2015
+// © Copyright IBM Corp. 2015-2016
 //
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'application'
 
-mainClassName = 'com.messagehub.samples.MessageHubJavaSample'
+mainClassName = 'com.messagehub.samples.MessageHubConsoleSample'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
-version = '1.0'
+version = '2.0'
 
 repositories {
     mavenCentral()
@@ -58,16 +58,12 @@ compileJava {
 
 // Create the output JAR file.
 jar {
+    from "resources/log4j.properties"
+    
     doLast {
         copy {
             from 'resources'
             into 'build/libs/resources'
-            exclude 'log4j.properties'
-        }
-    
-        copy {
-            from 'resources/log4j.properties'
-            into 'build/libs'
         }
     
         copy {
@@ -79,7 +75,7 @@ jar {
     // Provide Main-Class so the JAR executes properly, along with the required classpath data.
     manifest {
         attributes('Main-Class': mainClassName,
-        'Class-Path': '. ./ ./lib ' + configurations.runtime.files.collect { './lib/' + it.name }.join(' '))
+        'Class-Path': configurations.runtime.files.collect { './lib/' + it.name }.join(' '))
     }
 }
 
@@ -111,7 +107,7 @@ uploadArchives {
 sourceSets {
     main {
         java {
-            srcDirs = ["src"]
+            srcDirs = ["src", "resources"]
         }
     }
 }

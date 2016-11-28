@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 IBM
+ * Copyright 2015-2016 IBM
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,9 @@
  */
 /**
  * Licensed Materials - Property of IBM
- * (c) Copyright IBM Corp. 2015
+ * (c) Copyright IBM Corp. 2015-2016
  */
-package com.messagehub.samples.env;
+package com.messagehub.samples.rest;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

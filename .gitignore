@@ -1,3 +1,6 @@
 nodejs/bluemix-chat-sample/node_modules
 *.~lock.*
 *.classpath
+.project
+.DS_Store
+

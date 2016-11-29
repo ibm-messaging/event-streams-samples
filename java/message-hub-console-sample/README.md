@@ -23,12 +23,8 @@ Run the following commands on your local machine, after the prerequisites for yo
 gradle clean && gradle build
  ```
 
-This will download the required dependencies and copy any files located in the lib-message-hub directory.
-Once built, the sample can be located in the `build/libs` directory, along with the `resources` folder,
-and any libraries required by the sample.
-
 ## Running the Sample (Local)
-To run the sample, execute the following command:
+Once built, to run the sample, execute the following command:
 ```shell
 java -jar build/libs/message-hub-console-sample-2.0.jar <kafka_brokers_sasl> <kafka_admin_url> <api_key>
 ```

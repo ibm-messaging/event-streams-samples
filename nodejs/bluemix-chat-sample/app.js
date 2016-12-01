@@ -81,7 +81,10 @@ var http = require('http').Server(app);
 var io = require('socket.io').listen(http);
 
 // Retrieve Bluemix environment variables
-var appEnv = Cfenv.getAppEnv();
+var vcapLocal = null;
+try { vcapLocal = require("./vcap-local.json");} catch (e) {}
+var appEnvOpts = vcapLocal ? {vcap:vcapLocal} : {};
+var appEnv = Cfenv.getAppEnv(appEnvOpts);
 var connectedUsers = 0;
 var cleanedUp = false;
 var consumerInstance;

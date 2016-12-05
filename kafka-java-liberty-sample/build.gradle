@@ -1,0 +1,82 @@
+/**
+ * Copyright 2016 IBM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+*/
+//
+// Licensed Materials - Property of IBM
+// © Copyright IBM Corp. 2016
+//
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'eclipse'
+apply plugin: 'war'
+
+group = 'net.wasdev.wlp.sample'
+version = '1.0-SNAPSHOT'
+
+description = """Message Hub Liberty Sample"""
+war.archiveName "MessageHubLibertyApp.war"
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+configurations.all {
+}
+
+repositories {
+     mavenCentral()
+
+     // Read from lib/ directory
+     flatDir {
+         dirs 'lib'
+     }
+}
+
+dependencies {
+    compile 'org.apache.geronimo.specs:geronimo-servlet_3.0_spec:1.0'
+    compile 'org.apache.kafka:kafka-clients:0.10.0.+'
+    compile 'log4j:log4j:1.2.17'
+    compile 'org.slf4j:slf4j-log4j12:1.7.19'
+    compile 'org.slf4j:slf4j-api:1.7.19'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.7.2'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.7.2'
+    compile 'com.fasterxml.jackson.core:jackson-core:2.7.2'
+}
+
+// move generated war file into the DefaultServer/apps diretory
+tasks.withType(Jar) {
+    destinationDir = file("$projectDir/target/defaultServer/apps")
+}
+
+war {
+        from('resources'){
+            include '*'
+            into "resources"
+        }
+        from('src/main/resources'){
+            include '*'
+            into "WEB-INF/lib"
+        }
+        from('log4j'){
+            include '*'
+            into "WEB-INF/classes"
+        }
+
+}
+
+task copyServerXml {
+    copy {
+        from "$projectDir/src/main/wlp/server.xml"
+        into "$projectDir/target/defaultServer"
+    }
+}

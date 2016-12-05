@@ -1,6 +1,5 @@
-nodejs/bluemix-chat-sample/node_modules
+rest-nodejs-express-sample/node_modules
 *.~lock.*
 *.classpath
 .project
-.DS_Store
-
+**.DS_Store

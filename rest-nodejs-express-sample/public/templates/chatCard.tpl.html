@@ -1,0 +1,106 @@
+<!--
+ Copyright 2015 IBM
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<!--
+ * Licensed Materials - Property of IBM
+ * © Copyright IBM Corp. 2015
+-->
+<md-card>
+  <!--
+  Top toolbar, contains a button to the Message Hub Bluemix
+  instructions and either the name of the sample or the ID
+  or the user (depending on the state of the sample).
+  -->
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <md-button
+        class="md-fab md-primary md-hue-1 more-button"
+        aria-label="More on Bluemix"
+        href="https://www.ng.bluemix.net/docs/services/MessageHub/index.html"
+        target="_blank">
+        <img src="images/messagehub-icon.png" class="message-hub-icon" />
+      </md-button>
+      <h2 ng-if="!data.connectionDate" class="md-flex">&nbsp;IBM Message Hub :: Chat Sample</h2>
+      <h2 ng-if="data.connectionDate" class="md-flex">&nbsp;User: {{ data.username }}</h2>
+    </div>
+  </md-toolbar>
+
+  <!--
+  Section used to store markup which is shown when the client is connected
+  to the service. A list of previous messages, as well as a text input fieldset
+  and disconnect button are shown.
+  -->
+  <section layout="column" layout-align="left center" ng-if="data.connectionDate">
+    <md-list class="chat-box">
+      <md-list-item class="md-2-line md-padding" ng-repeat="item in feedMessages">
+        <div class="md-list-item-text">
+          <p>{{item.user}} - {{item.time}}</p>
+          <h3>{{item.message}}</h3>
+        </div>
+      </md-list-item>
+    </md-list>
+
+    <md-card-content>
+
+      <md-input-container>
+        <label>Message</label>
+        <textarea name="message" ng-model="data.message" required md-maxlength="140" minlength="1"></textarea>
+        <div ng-messages="userForm.message.$error" ng-show="userForm.message.$dirty">
+          <div ng-message="required">This is required!</div>
+          <div ng-message="md-maxlength">That's too long!</div>
+          <div ng-message="minlength">That's too short!</div>
+        </div>
+      </md-input-container>
+
+      <md-button class="md-raised md-accent md-hue-1" ng-click="sendMessage()">
+        Send
+      </md-button>
+
+      <md-button class="md-raised md-warn md-hue-1" ng-click="disconnect()">
+        Disconnect
+      </md-button>
+
+    </md-card-content>
+
+    <md-card-footer>
+      Connected since: {{ data.connectionDate }}
+    </md-card-footer>
+  </section>
+
+  <!--
+  Section used to store markup which is shown when the client is not
+  connected to the service. In this case, a brief description of
+  the sample is given, alongside a button to connect to the service.
+  -->
+  <section layout="column" layout-align="center center" ng-if="!data.connectionDate">
+    <img src="images/newapp-icon.png" class="md-card-image new-app md-padding" alt="image caption" />
+
+    <section layout="column" layout-align="center center">
+
+      <div class="md-padding intro-content">
+        Welcome to the Message Hub chat sample! This is a small sample to get you started, and to give
+        you a taste of what Message Hub can do. Click 'Connect' to try out the sample. Open
+        up a new <a href="/" target="_blank">tab</a> and see the messages being passed!
+      </div>
+
+      <md-progress-circular ng-if="data.connecting" md-mode="indeterminate"></md-progress-circular>
+
+      <md-button ng-if="!data.connecting" class="md-raised md-accent md-hue-1" ng-click="connect()">
+        Connect
+      </md-button>
+
+    </section>
+  </section>
+</md-card>

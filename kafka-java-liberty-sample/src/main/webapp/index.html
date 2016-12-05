@@ -1,0 +1,53 @@
+<!--
+ * Copyright 2016 IBM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+/**
+ * Licensed Materials - Property of IBM
+ * (c) Copyright IBM Corp. 2016
+ -->
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Sample Liberty app over Message Hub</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class='nav'>
+        <img class="newappIcon" src='images/mh_featured.png'>
+    </div>
+
+    <div class='brief'>
+        <a class='briefText'>
+            IBM® Bluemix® Message Hub is a scalable, distributed, high throughput messaging service built on the top of Apache Kafka.
+            It underpins the integration of your on-premise and off-premise cloud services and technologies.
+            You can wire micro-services together using open protocols, connect stream data to analytics to realise powerful insight and feed event data to multiple applications to react in real time.
+        </br></br>
+            This repository holds a sample cloud web application that was built using Liberty for Java™.
+            The app will interact with a bound message hub service to produce and consume messages.
+        </a>
+    </div>
+	<p id = "message"></p>
+	<center><input type='button' id='btnPost' value='Produce a Message' onclick='postMessage();' /></center>
+    <div class='wrapper'>
+        <h3> Produced Message </h3>
+        <div id='produceResponse'> <p>No Messages</p></div>
+        <h3> Consumed Message </h3>
+        <div id='consumeResponse'> <p>No Messages</p></div>
+    </div>
+	<!-- Call KafkaServlet  -->
+	<script type="text/javascript" src="index.js"></script>
+</body>
+</html>

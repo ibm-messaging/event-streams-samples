@@ -1,0 +1,11 @@
+applications:
+- name: kafka-nodejs-console-sample
+  buildpack: sdk-for-nodejs
+  instances: 1
+  memory: 256M
+  disk_quota: 512M
+  path: .
+  no-route: true
+  health-check-type: none
+  services:
+    - "Message Hub (devtest)-3q"

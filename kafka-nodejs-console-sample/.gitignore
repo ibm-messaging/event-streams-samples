@@ -1,0 +1,6 @@
+/.project
+*.DS_Store
+/node_modules/*
+!node_modules/node-rdkafka-prebuilt/
+
+/.settings/

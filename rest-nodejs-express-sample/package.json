@@ -1,0 +1,44 @@
+{
+  "name": "MessageHubSample",
+  "version": "0.0.1",
+  "description": "A sample Node.js app for Message Hub on Bluemix",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "cfenv": "1.0.x",
+    "express": "4.12.x",
+    "message-hub-rest": "^1.0.4",
+    "q": "1.4.1",
+    "socket.io": "^1.3.7"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ibm-messaging/message-hub-samples"
+  },
+  "engines": {
+    "node": ">=0.12"
+  },
+  "keywords": [
+    "ibm",
+    "message",
+    "hub",
+    "messagehub",
+    "kafka",
+    "apache",
+    "bluemix",
+    "cloud"
+  ],
+  "author": "IBM",
+  "license": "Apache-2.0",
+  "maintainers": [
+    {
+      "name": "niall-weedon",
+      "email": "nweedo3@uk.ibm.com"
+    },
+    {
+      "name": "kfarmer3",
+      "email": "kfarme3@uk.ibm.com"
+    }
+  ]
+}

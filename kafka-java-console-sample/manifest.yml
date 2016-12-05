@@ -1,0 +1,11 @@
+applications:
+- name: kafka-java-console-sample
+  buildpack: https://github.com/cloudfoundry/java-buildpack.git
+  instances: 1
+  memory: 256M
+  disk_quota: 512M
+  path: build/distributions/kafka-java-console-sample-2.0.zip
+  no-route: true
+  health-check-type: none
+  services:
+    - "Message Hub-5e"

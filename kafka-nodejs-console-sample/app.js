@@ -21,6 +21,7 @@ var Kafka = {};
 var MessageHubAdminRest = require('message-hub-rest');
 var ProducerLoop = require('./producerLoop.js');
 var ConsumerLoop = require('./consumerLoop.js');
+var fs = require('fs');
 
 var adminRestInstance;
 var opts = {};
@@ -53,7 +54,7 @@ if (process.env.VCAP_SERVICES) {
     Kafka = require('node-rdkafka');
     console.log("Running in local mode.");
 
-    if (process.argv.length < 5) {
+    if (process.argv.length < 6) {
         console.log('ERROR: It appears the application is running outside of Bluemix but the arguments are incorrect for local mode.');
         console.log('\nUsage:\n' +
                 'node ' + process.argv[1] + ' <kafka_brokers_sasl> <kafka_admin_url> <api_key> <cert_location> [ -consumer | -producer ]\n');
@@ -83,6 +84,10 @@ if (process.env.VCAP_SERVICES) {
     // Red Hat: '/etc/pki/tls/cert.pem',
     // Mac OS X: select System root certificates from Keychain Access and export as .pem on the filesystem
     opts.calocation = process.argv[5];
+    if (! fs.existsSync(opts.calocation)) {
+        console.error('Error - Failed to access <cert_location> : ' + opts.calocation);
+        process.exit(-1);
+    }
 
     // In local mode the app can run only the producer or only the consumer
     if (process.argv.length === 7) {

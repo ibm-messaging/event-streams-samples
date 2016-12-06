@@ -37,7 +37,7 @@
     "node-rdkafka-prebuilt": "file:./node_modules/node-rdkafka-prebuilt"
   },
   "devDependencies": {
-    "node-rdkafka": "Blizzard/node-rdkafka"
+    "node-rdkafka": "^0.6.1"
   },
   "engines": {
     "node": "6.9"

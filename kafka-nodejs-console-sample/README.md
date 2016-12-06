@@ -12,6 +12,7 @@ To build and run the sample, you must have the following installed:
 
 ## Prerequisites (Local - macOS and Linux only)
 * [Node.js](https://nodejs.org/en/) 6.X LTS
+* [node-gyp] (https://www.npmjs.com/package/node-gyp)
 
 ##### Linux
 * openssl-dev

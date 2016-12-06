@@ -8,4 +8,4 @@ applications:
   no-route: true
   health-check-type: none
   services:
-    - "Message Hub-5e"
+    - "Message Hub-CHANGEME"

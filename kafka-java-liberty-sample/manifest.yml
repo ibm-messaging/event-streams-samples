@@ -8,4 +8,4 @@ applications:
   disk_quota: 1024M
   random-route: true
   services:
-    - "Message Hub-5e"
+    - "message-hub-service"

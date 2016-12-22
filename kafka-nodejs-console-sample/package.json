@@ -37,7 +37,7 @@
     "node-rdkafka-prebuilt": "file:./node_modules/node-rdkafka-prebuilt"
   },
   "devDependencies": {
-    "node-rdkafka": "^0.6.1"
+    "node-rdkafka": "0.6.2"
   },
   "engines": {
     "node": "6.9"

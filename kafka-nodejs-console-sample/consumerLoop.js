@@ -52,6 +52,7 @@ exports.buildConsumer = function(Kafka, consumer_opts, topicName, shutdown) {
     consumer.on('ready', function() {
         console.log('The consumer has started');
 
+        // request metadata for one topic
         consumer.getMetadata({
             topic: topicName,
             timeout: 10000

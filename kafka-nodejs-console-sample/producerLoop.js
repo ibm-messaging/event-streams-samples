@@ -49,8 +49,8 @@ exports.buildProducer = function(Kafka, producer_opts, topicName, shutdown) {
     producer.on('ready', function() {
         console.log('The producer has started');
 
+        // request metadata for all topics
         producer.getMetadata({
-            topic: topicName,
             timeout: 10000
         }, 
         function(err, metadata) {
@@ -59,13 +59,16 @@ exports.buildProducer = function(Kafka, producer_opts, topicName, shutdown) {
                 shutdown(-1);
             } else {
                 console.log('Producer obtained metadata: ' + JSON.stringify(metadata));
-                if (metadata.topics[0].partitions.length === 0) {
+                var topicsByName = metadata.topics.filter(function(t) {
+                    return t.name === topicName;
+                });
+                if (topicsByName.length === 0) {
                     console.error('ERROR - Topic ' + topicName + ' does not exist. Exiting');
                     shutdown(-1);
                 }
             }
         });
-        
+
         // Create a topic object for the Producer to allow passing topic settings
         var topicOpts = { 'request.required.acks': -1 };
         var topic = producer.Topic(topicName, topicOpts);
@@ -79,7 +82,7 @@ exports.buildProducer = function(Kafka, producer_opts, topicName, shutdown) {
             var timeout, interval;
             new Promise(function(resolve, reject) {
                 // Complete the promise when we receive the delivery report back from the broker
-                var deliveryReportListener = function(report) {
+                var deliveryReportListener = function(err, report) {
                     clearTimeout(timeout);
                     clearInterval(interval);
                     resolve(report);

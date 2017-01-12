@@ -1,5 +1,5 @@
 /**
- * Copyright 2015-2016 IBM
+ * Copyright 2015-2017 IBM
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 /**
  * Licensed Materials - Property of IBM
- * © Copyright IBM Corp. 2015-2016
+ * © Copyright IBM Corp. 2015-2017
  */
 var Kafka = {};
 var MessageHubAdminRest = require('message-hub-rest');
@@ -182,7 +182,7 @@ function runLoops() {
 
     var producer_opts = {
         'client.id': 'kafka-nodejs-console-sample-producer',
-        'dr_cb': true  // Enable delivery reports
+        'dr_msg_cb': true  // Enable delivery reports with message payload
     };
 
     // Add the common options to client and producer

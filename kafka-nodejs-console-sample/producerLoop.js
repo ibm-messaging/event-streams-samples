@@ -1,5 +1,5 @@
 /**
- * Copyright 2015-2016 IBM
+ * Copyright 2015-2017 IBM
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 /**
  * Licensed Materials - Property of IBM
- * © Copyright IBM Corp. 2015-2016
+ * © Copyright IBM Corp. 2015-2017
  */
 
 var producer;
@@ -42,8 +42,39 @@ exports.buildProducer = function(Kafka, producer_opts, topicName, shutdown) {
     // Register error listener
     producer.on('error', function(err) {
         console.error('Error from producer:' + JSON.stringify(err));
-
     });
+
+    // Register delivery report listener
+    producer.on('delivery-report', function(err, dr) {
+        if (err) {
+            console.error('Delivery report: Failed sending message ' + dr.value);
+            console.error(err);
+            // We could retry sending the message
+        } else {
+            console.log('Message produced, offset: ' + dr.offset);
+        }
+    });
+
+    function sendMessages(counter, topic, partition) {
+        var message = new Buffer('This is a test message #' + counter);
+        var key = 'Key';
+        // Short sleep for flow control in this sample app
+        // to make the output easily understandable
+        var timeout = 2000;
+        try {
+            producer.produce(topic, partition, message, key);
+            counter++;
+        } catch (err) {
+            console.error('Failed sending message ' + message);
+            console.error(err);
+            timeout = 5000; // Longer wait before retrying
+        }
+        setTimeout(function () {
+            if (producer.isConnected()) {
+                sendMessages(counter, topic, partition);
+            }
+        }, timeout);
+    }
 
     // Register callback invoked when producer has connected
     producer.on('ready', function() {
@@ -75,52 +106,9 @@ exports.buildProducer = function(Kafka, producer_opts, topicName, shutdown) {
         console.log('Topic object created with opts ' + JSON.stringify(topicOpts));
         var counter = 0;
 
-        // Synchronously wait for a response from Message Hub / Kafka on every message produced,
-        // by wrapping the produce(..) call into a Promise and waiting on the delivery report.
-        // For high throughput the delivery-report should be handled asynchronously.
-        var producerLoop = function() {
-            var timeout, interval;
-            new Promise(function(resolve, reject) {
-                // Complete the promise when we receive the delivery report back from the broker
-                var deliveryReportListener = function(err, report) {
-                    clearTimeout(timeout);
-                    clearInterval(interval);
-                    resolve(report);
-                }
-                producer.once('delivery-report', deliveryReportListener);
-                var value = new Buffer('This is a test message #' + counter);
-                var key = 'key';
-                counter++;
-                // If partition is set to null, the client will use the default partitioner to choose one.
-                var partition = null;
-                try {
-                    producer.produce(topic, partition, value, key);
-                    // Keep calling poll() to get delivery reports
-                    interval = setInterval(function() {
-                        producer.poll();
-                    }, 100);
-                    // Fail the promise if we don't receive a delivery report within 5 secs
-                    timeout = setTimeout(function() {
-                        producer.removeListener('delivery-report', deliveryReportListener);
-                        reject(new Error('Timed out while waiting for delivery report for message "' + value.toString()+ '"'));
-                    }, 5000);
-                } catch (err) {
-                    producer.removeListener('delivery-report', deliveryReportListener);
-                    reject(err);
-                }
-            })
-            .then(function(report) {
-                console.log('Message produced, offset: ' + report.offset);
-                // Short wait for flow control in this sample app
-                setTimeout(producerLoop, 2000);
-            })
-            .catch(function (reason) {
-                console.log('Error producing message: ' + reason);
-                // Longer wait before retrying
-                setTimeout(producerLoop, 5000);
-            });
-        }
-        producerLoop();
+        // Start sending messages
+        sendMessages(counter, topic, 0);
+
     });
     return producer;
 }

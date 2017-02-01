@@ -14,9 +14,12 @@ To build and run the sample, you must have the following installed:
 * [Node.js](https://nodejs.org/en/) 6.X LTS
 * [node-gyp] (https://www.npmjs.com/package/node-gyp)
 
+Node-rdkafka will build librdkafka automatically. You must ensure you have the dependencies listed below installed. For more details, see [librdakfka's instructions](../docs/librdkafka.md).
+
 ##### Linux
 * openssl-dev
 * libsasl2-dev
+* libsasl2-modules
 * C++ toolchain
 
 ##### macOS 

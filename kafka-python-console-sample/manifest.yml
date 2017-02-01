@@ -1,0 +1,13 @@
+applications:
+- name: kafka-python-console-sample
+  buildpack: python_buildpack
+  instances: 1
+  memory: 512M
+  disk_quota: 256M
+  path: .
+  no-route: true
+  health-check-type: none
+  services:
+    - "Message Hub-CHANGEME"
+  env:
+    LD_LIBRARY_PATH: /home/vcap/app/confluent_kafka_prebuilt/

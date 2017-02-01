@@ -9,6 +9,7 @@ Information and instructions regarding the use of these samples can be found in 
 * kafka-java-console-sample : Sample Java console application using the Message Hub Kafka API
 * kafka-java-liberty-sample : Sample IBM Websphere Liberty profile application using the Message Hub Kafka API
 * kafka-nodejs-console-sample : Sample Node.js console application using the Message Hub Kafka API
+* kafka-python-console-sample : Sample Python console application using the Message Hub Kafka API
 
 ### MQ Light API:
 * mqlight : MQ Light samples in Java, Python, Node.js and Ruby

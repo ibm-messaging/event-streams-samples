@@ -14,7 +14,7 @@ To build and run the sample, you must have the following installed:
 * [Python](https://www.python.org/) >= 3.4.3
 * [librdkafka](https://github.com/edenhill/librdkafka) >= 0.9.3
 
-For more details regarding librdkafka installation, see [librdakfka's instructions](../docs/librdkafka.md).
+For more details regarding librdkafka installation, see [librdkafka's instructions](../docs/librdkafka.md).
 
 ##### Linux
 * openssl-dev
@@ -26,7 +26,7 @@ For more details regarding librdkafka installation, see [librdakfka's instructio
 ##### macOS
 * [Brew](http://brew.sh/)
 * [Apple Xcode command line tools](https://developer.apple.com/xcode/)
-* `openssl` via Brew
+* `openssl`, `python3` and `librdkafka` via Brew
 * Export `CPPFLAGS=-I/usr/local/opt/openssl/include` and `LDFLAGS=-L/usr/local/opt/openssl/lib`
 * Open Keychain Access, export all certificates in System Roots to a single .pem file
 

@@ -43,6 +43,11 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-databind:2.7.0-rc1'
 }
 
+task downloadDependencies(type: Exec) {
+  configurations.testRuntime.files
+  commandLine 'echo', 'Downloaded all dependencies'
+}
+
 // Compile source code
 compileJava {
     doFirst {

@@ -29,6 +29,8 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Level;
@@ -47,7 +49,10 @@ public class MessageHubConsoleSample {
 
     private static final String JAAS_CONFIG_PROPERTY = "java.security.auth.login.config";
     private static final String APP_NAME = "kafka-java-console-sample-2.0";
-    private static final String TOPIC_NAME = "kafka-java-console-sample-topic";
+    private static final String DEFAULT_TOPIC_NAME = "kafka-java-console-sample-topic";
+    private static final String ARG_CONSUMER = "-consumer";
+    private static final String ARG_PRODUCER_ = "-producer";
+    private static final String ARG_TOPIC = "-topic";
     private static final Logger logger = Logger.getLogger(MessageHubConsoleSample.class);
 
     private static Thread consumerThread = null;
@@ -56,10 +61,11 @@ public class MessageHubConsoleSample {
     private static ProducerRunnable producerRunnable = null;
     private static String resourceDir;
 
-    //add shutdown hooks (intercept CTRL-C etc.)  
+    //add shutdown hooks (intercept CTRL-C etc.)
     static {
         Runtime.getRuntime().addShutdownHook(new Thread() {
-            public void run() { 
+            @Override
+            public void run() {
                 logger.log(Level.WARN, "Shutdown received.");
                 shutdown();
             }
@@ -72,7 +78,32 @@ public class MessageHubConsoleSample {
             }
         });
     }
-    
+
+    private static void printUsage() {
+        System.out.println("\n"
+                + "Usage:\n"
+                + "    java -jar build/libs/" + APP_NAME + ".jar \\\n"
+                + "              <kafka_brokers_sasl> <kafka_admin_url> <api_key> [" + ARG_CONSUMER + "] \\\n"
+                + "              [" + ARG_PRODUCER_ + "] [" + ARG_TOPIC + "]\n"
+                + "Where:\n"
+                + "    kafka_broker_sasl\n"
+                + "        Required. Comma separated list of broker endpoints to connect to, for\n"
+                + "        example \"host1:port1,host2:port2\".\n"
+                + "    kafka_admin_url\n"
+                + "        Required. The URL of the Message Hub Kafka administration REST endpoint.\n"
+                + "    api_key\n"
+                + "        Required. A Message Hub API key used to authenticate access to Kafka.\n"
+                + "    " + ARG_CONSUMER + "\n"
+                + "        Optional. Only consume message (do not produce messages to the topic).\n"
+                + "        If omitted this sample will both produce and consume messages.\n"
+                + "    " + ARG_PRODUCER_ + "\n"
+                + "        Optional. Only produce messages (do not consume messages from the\n"
+                + "        topic). If omitted this sample will both produce and consume messages.\n"
+                + "    " + ARG_TOPIC + "\n"
+                + "        Optional. Specifies the Kafka topic name to use. If omitted the\n"
+                + "        default used is '" + DEFAULT_TOPIC_NAME + "'\n");
+    }
+
     public static void main(String args[])  {
         try {
             final String userDir = System.getProperty("user.dir");
@@ -84,6 +115,7 @@ public class MessageHubConsoleSample {
             String apiKey = null;
             boolean runConsumer = true;
             boolean runProducer = true;
+            String topicName = DEFAULT_TOPIC_NAME;
 
             // Check environment: Bluemix vs Local, to obtain configuration parameters
             if (isRunningInBluemix) {
@@ -103,8 +135,7 @@ public class MessageHubConsoleSample {
                 // If running locally, parse the command line
                 if (args.length < 3) {
                     logger.log(Level.ERROR, "It appears the application is running outside of Bluemix but the arguments are incorrect for local mode.");
-                    System.out.println("\nUsage:\n" +
-                            "java -jar build/libs/" + APP_NAME +".jar <kafka_brokers_sasl> <kafka_admin_url> <api_key> [ -consumer | -producer ]\n");
+                    printUsage();
                     System.exit(-1);
                 }
 
@@ -117,15 +148,31 @@ public class MessageHubConsoleSample {
 
                 updateJaasConfiguration(apiKey.substring(0, 16), apiKey.substring(16));
 
-                // In local mode the app can run only the producer or only the consumer
-                if (args.length == 4) {
-                    if ("-consumer".equals(args[3]))
-                        runProducer = false;
-                    if ("-producer".equals(args[3]))
-                        runConsumer = false;
+                if (args.length > 3) {
+                    try {
+                        final ArgumentParser argParser = ArgumentParser.builder()
+                                .flag(ARG_CONSUMER)
+                                .flag(ARG_PRODUCER_)
+                                .option(ARG_TOPIC)
+                                .build();
+                        final Map<String, String> parsedArgs =
+                                argParser.parseArguments(Arrays.copyOfRange(args, 3, args.length));
+                        if (parsedArgs.containsKey(ARG_CONSUMER) && !parsedArgs.containsKey(ARG_PRODUCER_)) {
+                            runProducer = false;
+                        }
+                        if (parsedArgs.containsKey(ARG_PRODUCER_) && !parsedArgs.containsKey(ARG_CONSUMER)) {
+                            runConsumer = false;
+                        }
+                        if (parsedArgs.containsKey(ARG_TOPIC)) {
+                            topicName = parsedArgs.get(ARG_TOPIC);
+                        }
+                    } catch (IllegalArgumentException e) {
+                        logger.log(Level.ERROR, e.getMessage());
+                        System.exit(-1);
+                    }
                 }
             }
-            
+
             //inject bootstrapServers in configuration, for both consumer and producer
             clientProperties.put("bootstrap.servers", bootstrapServers);
 
@@ -135,8 +182,8 @@ public class MessageHubConsoleSample {
             //Using Message Hub Admin REST API to create and list topics
             //If the topic already exists, creation will be a no-op
             try {
-                logger.log(Level.INFO, "Creating the topic " + TOPIC_NAME);
-                String restResponse = RESTAdmin.createTopic(adminRestURL, apiKey, TOPIC_NAME);
+                logger.log(Level.INFO, "Creating the topic " + topicName);
+                String restResponse = RESTAdmin.createTopic(adminRestURL, apiKey, topicName);
                 logger.log(Level.INFO, "Admin REST response :" +restResponse);
 
                 String topics = RESTAdmin.listTopics(adminRestURL, apiKey);
@@ -149,18 +196,18 @@ public class MessageHubConsoleSample {
             //create the Kafka clients
             if (runConsumer) {
                 Properties consumerProperties = getClientConfiguration(clientProperties, "consumer.properties");
-                consumerRunnable = new ConsumerRunnable(consumerProperties, TOPIC_NAME);
+                consumerRunnable = new ConsumerRunnable(consumerProperties, topicName);
                 consumerThread = new Thread(consumerRunnable, "Consumer Thread");
                 consumerThread.start();
             }
 
             if (runProducer) {
                 Properties producerProperties = getClientConfiguration(clientProperties, "producer.properties");
-                producerRunnable = new ProducerRunnable(producerProperties, TOPIC_NAME);
+                producerRunnable = new ProducerRunnable(producerProperties, topicName);
                 producerThread = new Thread(producerRunnable, "Producer Thread");
                 producerThread.start();
             }
-            
+
             logger.log(Level.INFO, "MessageHubConsoleSample will run until interrupted.");
         } catch (Exception e) {
             logger.log(Level.ERROR, "Exception occurred, application will terminate", e);
@@ -181,8 +228,8 @@ public class MessageHubConsoleSample {
         if (consumerThread != null)
             consumerThread.interrupt();
     }
-    
-    
+
+
     /*
      * Return a CSV-String from a String array
      */
@@ -218,7 +265,7 @@ public class MessageHubConsoleSample {
 
     /*
      * Updates JAAS config file with provided credentials.
-     */ 
+     */
     private static void updateJaasConfiguration(String username, String password) throws IOException {
         // Set JAAS configuration property.
         String jaasConfPath = System.getProperty("java.io.tmpdir") + File.separator + "jaas.conf";

@@ -33,6 +33,9 @@ __Note__: `<kafka_brokers_sasl>` must be a single string enclosed in quotes. For
 
 Alternatively, you can run only the producer or only the consumer by respectively adding `-producer` or `-consumer`  to the command above.
 
+You can also specify the Kafka topic to use by adding the `-topic` argument. For
+example specifying: `-topic mytopic` would use Kafka topic `mytopic`.
+
 The sample will run indefinitely until interrupted. To stop the process, use `Ctrl+C`, for example.
 
 ## Running the Sample (Bluemix)

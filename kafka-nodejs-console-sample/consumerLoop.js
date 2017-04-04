@@ -43,7 +43,7 @@ exports.buildConsumer = function(Kafka, consumer_opts, topicName, shutdown) {
     });
 
     // Register error listener
-    consumer.on('error', function(err) {
+    consumer.on('event.error', function(err) {
         console.error('Error from consumer:' + JSON.stringify(err));
     });
 
@@ -73,7 +73,8 @@ exports.buildConsumer = function(Kafka, consumer_opts, topicName, shutdown) {
         // consumer.consume(...) starts a loop
         // a 'data' event will be emitted for every message received.
         // this swallows any errors - see node-rdkafka API docs
-        consumer.consume([topicName]);
+        consumer.subscribe([topicName]);
+        consumer.consume();
         consumerLoop = setInterval(function () {
             if (consumedMessages.length === 0) {
                 console.log('No messages consumed');

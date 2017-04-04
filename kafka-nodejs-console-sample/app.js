@@ -172,7 +172,8 @@ function runLoops() {
         'ssl.ca.location': opts.calocation,
         'sasl.mechanisms': 'PLAIN',
         'sasl.username': opts.username,
-        'sasl.password': opts.password
+        'sasl.password': opts.password,
+        'api.version.request': true
     };
 
     var consumer_opts = {

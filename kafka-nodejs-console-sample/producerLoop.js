@@ -28,11 +28,12 @@ var exports = module.exports = {};
  * @param {object} producer_opts - producer configuration
  * @param {string} topicName - name of the topic to produce to
  * @param {function} shutdown - shutdown function
-  * @return {Producer} - the Kafka Producer instance
+ * @return {Producer} - the Kafka Producer instance
 */
 exports.buildProducer = function(Kafka, producer_opts, topicName, shutdown) {
     // Create Kafka producer
     producer = new Kafka.Producer(producer_opts);
+    producer.setPollInterval(100);
 
     // Register listener for debug information; only invoked if debug option set in driver_options
     producer.on('event.log', function(log) {
@@ -40,7 +41,7 @@ exports.buildProducer = function(Kafka, producer_opts, topicName, shutdown) {
     });
 
     // Register error listener
-    producer.on('error', function(err) {
+    producer.on('event.error', function(err) {
         console.error('Error from producer:' + JSON.stringify(err));
     });
 

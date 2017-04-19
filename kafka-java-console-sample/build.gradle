@@ -37,10 +37,10 @@ repositories {
 
 // Compile tools.jar and all jars in lib folder as dependencies
 dependencies {
-    compile 'org.apache.kafka:kafka-clients:0.10.0.+'
+    compile 'org.apache.kafka:kafka-clients:0.10.2.+'
     compile 'log4j:log4j:1.2.17'
-    compile 'org.slf4j:slf4j-log4j12:1.7.6'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.7.0-rc1'
+    compile 'org.slf4j:slf4j-log4j12:1.7.21'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.8.5'
 }
 
 task downloadDependencies(type: Exec) {

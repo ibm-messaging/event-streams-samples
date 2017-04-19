@@ -9,3 +9,5 @@ applications:
   health-check-type: none
   services:
     - "Message Hub-CHANGEME"
+  env:
+    JAVA_OPTS: -Xms128m -Xmx256m

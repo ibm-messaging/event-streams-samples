@@ -102,7 +102,10 @@ exports.buildProducer = function(Kafka, producer_opts, topicName, shutdown) {
         });
 
         // Create a topic object for the Producer to allow passing topic settings
-        var topicOpts = { 'request.required.acks': -1 };
+        var topicOpts = {
+            'request.required.acks': -1,
+            'produce.offset.report': true
+        };
         var topic = producer.Topic(topicName, topicOpts);
         console.log('Topic object created with opts ' + JSON.stringify(topicOpts));
         var counter = 0;

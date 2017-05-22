@@ -1,6 +1,6 @@
 applications:
 - name: kafka-python-console-sample
-  buildpack: python_buildpack
+  buildpack: "https://github.com/cloudfoundry/python-buildpack#v1.5.15"
   instances: 1
   memory: 512M
   disk_quota: 256M

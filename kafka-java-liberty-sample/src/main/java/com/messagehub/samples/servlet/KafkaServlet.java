@@ -19,13 +19,9 @@
  */
 package com.messagehub.samples.servlet;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -85,6 +81,7 @@ public class KafkaServlet extends HttpServlet {
     private KafkaProducer<byte[], byte[]> kafkaProducer;
     private ConsumerRunnable consumerRunnable;
     private String kafkaHost, restHost, apiKey, topic = "testTopic";
+    private String user, password;
     private String producedMessage, currentConsumedMessage;
     private int producedMessages = 0;
     private Thread consumerThread = null;
@@ -150,11 +147,11 @@ public class KafkaServlet extends HttpServlet {
                                                                                   MessageHubEnvironment.class);
                 MessageHubCredentials credentials = messageHubEnvironment.getCredentials();
 
-                replaceUsernameAndPassword(credentials.getUser(), credentials.getPassword());
-
                 kafkaHost = credentials.getKafkaBrokersSasl()[0];
                 restHost = credentials.getKafkaRestUrl();
                 apiKey = credentials.getApiKey();
+                user = credentials.getUser();
+                password = credentials.getPassword();
             } catch (final Exception e) {
                 e.printStackTrace();
                 return;
@@ -187,38 +184,6 @@ public class KafkaServlet extends HttpServlet {
             e.printStackTrace();
         }
 
-    }
-
-    /**
-     * Adding in credentials for MessageHub auth
-     */
-    private void replaceUsernameAndPassword(String username, String password) {
-        try {
-            File xmlFile = new File(System.getProperty("server.config.dir") + File.separator + "server.xml");
-            BufferedReader br = new BufferedReader(new FileReader(xmlFile));
-            String newline = System.getProperty("line.separator");
-            StringBuffer sb = new StringBuffer("");
-            String line = null;
-
-            // read in a line at at time
-            while ((line = br.readLine()) != null) {
-                if (line.indexOf("#USERNAME") != -1) {
-                    logger.log(Level.WARN, "Replacing placeholder username and password");
-                    line = line.replaceAll("#USERNAME", username);
-                    line = line.replaceAll("#PASSWORD", password);
-                }
-                sb.append(line).append(newline); // append line to new variable
-            }
-            br.close();
-
-            // write out file again
-            logger.log(Level.WARN, "Writing server.xml back to disk");
-            BufferedWriter bw = new BufferedWriter(new FileWriter(xmlFile));
-            bw.write(sb.toString());
-            bw.close();
-        } catch (IOException e) {
-            logger.log(Level.ERROR, "Couldnt edit server.xml: " + e.getMessage());
-        }
     }
 
     /**
@@ -300,7 +265,12 @@ public class KafkaServlet extends HttpServlet {
         if (!props.containsKey("ssl.truststore.location") || props.getProperty("ssl.truststore.location").length() == 0) {
             props.put("ssl.truststore.location", "/home/vcap/app/.java/jre/lib/security/cacerts");
         }
-
+        
+        //Adding in credentials for MessageHub auth
+        String saslJaasConfig = props.getProperty("sasl.jaas.config");
+        saslJaasConfig = saslJaasConfig.replace("USERNAME", user).replace("PASSWORD", password);
+        props.setProperty("sasl.jaas.config", saslJaasConfig);
+        
         logger.log(Level.WARN, "Using properties: " + props);
 
         return props;

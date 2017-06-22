@@ -30,19 +30,6 @@
         <feature>wsSecurity-1.1</feature>
     </featureManager>
 
-    <library id="kafkaLoginLib">
-        <fileset dir="${server.config.dir}/apps/MessageHubLibertyApp.war/WEB-INF/lib" includes="kafka-clients-*.jar"/>
-    </library>
-
-    <jaasLoginModule id="KafkaClient"
-                className="org.apache.kafka.common.security.plain.PlainLoginModule"
-                controlFlag="REQUIRED" libraryRef="kafkaLoginLib">
-                
-        <options serviceName="kafka" username="#USERNAME" password="#PASSWORD" />
-    </jaasLoginModule>
-    
-    <jaasLoginContextEntry id="KafkaClient" name="KafkaClient" loginModuleRef="KafkaClient" />
-
     <httpEndpoint id="defaultHttpEndpoint"
                   host="*"
                   httpPort="9080">

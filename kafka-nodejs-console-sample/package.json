@@ -34,10 +34,9 @@
   ],
   "dependencies": {
     "message-hub-rest": "^1.2.0",
-    "node-rdkafka-prebuilt": "file:./node_modules/node-rdkafka-prebuilt"
+    "node-rdkafka": "1.0.3"
   },
   "devDependencies": {
-    "node-rdkafka": "0.10.0"
   },
   "engines": {
     "node": "6.10"

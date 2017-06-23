@@ -17,7 +17,7 @@
  * Licensed Materials - Property of IBM
  * © Copyright IBM Corp. 2015-2017
  */
-var Kafka = {};
+var Kafka = require('node-rdkafka');
 var MessageHubAdminRest = require('message-hub-rest');
 var ProducerLoop = require('./producerLoop.js');
 var ConsumerLoop = require('./consumerLoop.js');
@@ -33,7 +33,6 @@ var services;
 
 if (process.env.VCAP_SERVICES) {
     // Running in Bluemix
-    Kafka = require('node-rdkafka-prebuilt');
     console.log("Running in Bluemix mode.");
 
     services = JSON.parse(process.env.VCAP_SERVICES);
@@ -51,7 +50,6 @@ if (process.env.VCAP_SERVICES) {
     
 } else {
     // Running locally on development machine
-    Kafka = require('node-rdkafka');
     console.log("Running in local mode.");
 
     if (process.argv.length < 6) {

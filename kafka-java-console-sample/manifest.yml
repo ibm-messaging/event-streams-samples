@@ -1,7 +1,6 @@
 applications:
 - name: kafka-java-console-sample
-  buildpack: https://github.com/cloudfoundry/java-buildpack.git
-  instances: 1
+  buildpack: "https://github.com/cloudfoundry/java-buildpack#v3.17"
   memory: 1G
   disk_quota: 512M
   path: build/distributions/kafka-java-console-sample-2.0.zip
@@ -9,5 +8,3 @@ applications:
   health-check-type: none
   services:
     - "Message Hub-CHANGEME"
-  env:
-    JAVA_OPTS: -Xms128m -Xmx256m

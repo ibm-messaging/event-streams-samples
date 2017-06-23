@@ -21,14 +21,9 @@ package com.messagehub.samples;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
@@ -47,7 +42,6 @@ import com.messagehub.samples.rest.RESTAdmin;
  */
 public class MessageHubConsoleSample {
 
-    private static final String JAAS_CONFIG_PROPERTY = "java.security.auth.login.config";
     private static final String APP_NAME = "kafka-java-console-sample-2.0";
     private static final String DEFAULT_TOPIC_NAME = "kafka-java-console-sample-topic";
     private static final String ARG_CONSUMER = "-consumer";
@@ -116,6 +110,8 @@ public class MessageHubConsoleSample {
             boolean runConsumer = true;
             boolean runProducer = true;
             String topicName = DEFAULT_TOPIC_NAME;
+            String user;
+            String password;
 
             // Check environment: Bluemix vs Local, to obtain configuration parameters
             if (isRunningInBluemix) {
@@ -128,8 +124,8 @@ public class MessageHubConsoleSample {
                 bootstrapServers = stringArrayToCSV(credentials.getKafkaBrokersSasl());
                 adminRestURL = credentials.getKafkaRestUrl();
                 apiKey = credentials.getApiKey();
-
-                updateJaasConfiguration(credentials.getUser(), credentials.getPassword());
+                user = credentials.getUser();
+                password = credentials.getPassword();
 
             } else {
                 // If running locally, parse the command line
@@ -145,8 +141,8 @@ public class MessageHubConsoleSample {
                 bootstrapServers = args[0];
                 adminRestURL = args[1];
                 apiKey = args[2];
-
-                updateJaasConfiguration(apiKey.substring(0, 16), apiKey.substring(16));
+                user = apiKey.substring(0, 16);
+                password = apiKey.substring(16);
 
                 if (args.length > 3) {
                     try {
@@ -195,14 +191,14 @@ public class MessageHubConsoleSample {
 
             //create the Kafka clients
             if (runConsumer) {
-                Properties consumerProperties = getClientConfiguration(clientProperties, "consumer.properties");
+                Properties consumerProperties = getClientConfiguration(clientProperties, "consumer.properties", user, password);
                 consumerRunnable = new ConsumerRunnable(consumerProperties, topicName);
                 consumerThread = new Thread(consumerRunnable, "Consumer Thread");
                 consumerThread.start();
             }
 
             if (runProducer) {
-                Properties producerProperties = getClientConfiguration(clientProperties, "producer.properties");
+                Properties producerProperties = getClientConfiguration(clientProperties, "producer.properties", user, password);
                 producerRunnable = new ProducerRunnable(producerProperties, topicName);
                 producerThread = new Thread(producerRunnable, "Producer Thread");
                 producerThread.start();
@@ -246,7 +242,7 @@ public class MessageHubConsoleSample {
      * Retrieve client configuration information, using a properties file, for
      * connecting to Message Hub Kafka.
      */
-    static final Properties getClientConfiguration(Properties commonProps, String fileName) {
+    static final Properties getClientConfiguration(Properties commonProps, String fileName, String user, String password) {
         Properties result = new Properties();
         InputStream propsStream;
 
@@ -260,44 +256,11 @@ public class MessageHubConsoleSample {
         }
 
         result.putAll(commonProps);
+        //Adding in credentials for MessageHub auth
+        String saslJaasConfig = result.getProperty("sasl.jaas.config");
+        saslJaasConfig = saslJaasConfig.replace("USERNAME", user).replace("PASSWORD", password);
+        result.setProperty("sasl.jaas.config", saslJaasConfig);
         return result;
     }
 
-    /*
-     * Updates JAAS config file with provided credentials.
-     */
-    private static void updateJaasConfiguration(String username, String password) throws IOException {
-        // Set JAAS configuration property.
-        String jaasConfPath = System.getProperty("java.io.tmpdir") + File.separator + "jaas.conf";
-        System.setProperty(JAAS_CONFIG_PROPERTY, jaasConfPath);
-
-        String templatePath = resourceDir + File.separator + "jaas.conf.template";
-        OutputStream jaasOutStream = null;
-
-        logger.log(Level.INFO, "Updating JAAS configuration");
-
-        try {
-            String templateContents = new String(Files.readAllBytes(Paths.get(templatePath)));
-            jaasOutStream = new FileOutputStream(jaasConfPath, false);
-
-            // Replace username and password in template and write
-            // to jaas.conf in resources directory.
-            String fileContents = templateContents
-                    .replace("$USERNAME", username)
-                    .replace("$PASSWORD", password);
-
-            jaasOutStream.write(fileContents.getBytes(Charset.forName("UTF-8")));
-        } catch (final IOException e) {
-            logger.log(Level.ERROR, "Failed accessing to JAAS config file", e);
-            throw e;
-        } finally {
-            if (jaasOutStream != null) {
-                try {
-                    jaasOutStream.close();
-                } catch(final Exception e) {
-                    logger.log(Level.WARN, "Error closing generated JAAS config file", e);
-                }
-            }
-        }
-    }
 }

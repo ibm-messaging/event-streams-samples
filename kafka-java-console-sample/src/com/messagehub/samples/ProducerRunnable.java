@@ -19,6 +19,7 @@
  */
 package com.messagehub.samples;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Future;
@@ -31,6 +32,7 @@ import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.errors.TimeoutException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.json.JSONException;
 
 
 public class ProducerRunnable implements Runnable {
@@ -38,10 +40,12 @@ public class ProducerRunnable implements Runnable {
 
     private final KafkaProducer<String, String> kafkaProducer;
     private final String topic;
+    private final String jsonURL;
     private volatile boolean closing = false;
 
-    public ProducerRunnable(Properties producerProperties, String topic) {
+    public ProducerRunnable(Properties producerProperties, String topic, String jsonURL) {
         this.topic = topic;
+        this.jsonURL = jsonURL;
 
         // Create a Kafka producer with the provided client configuration
         kafkaProducer = new KafkaProducer<String, String>(producerProperties);
@@ -63,14 +67,13 @@ public class ProducerRunnable implements Runnable {
     @Override
     public void run() {
         // Simple counter for messages sent
-        int producedMessages = 0;
         logger.log(Level.INFO, ProducerRunnable.class.toString() + " is starting.");
 
         try {
             while (!closing) {
                 String key = "key";
-                String message = "This is a test message #" + producedMessages;
-
+                String message = JsonReader.readJsonFromUrl(this.jsonURL).toString();
+                              
                 try {
                     // If a partition is not specified, the client will use the default partitioner to choose one.
                     ProducerRecord<String, String> record = new ProducerRecord<String, String>(
@@ -82,7 +85,6 @@ public class ProducerRunnable implements Runnable {
                     // Synchronously wait for a response from Message Hub / Kafka on every message produced.
                     // For high throughput the future should be handled asynchronously.
                     RecordMetadata recordMetadata = future.get(5000, TimeUnit.MILLISECONDS);
-                    producedMessages++;
 
                     logger.log(Level.INFO, "Message produced, offset: " + recordMetadata.offset());
 
@@ -101,7 +103,13 @@ public class ProducerRunnable implements Runnable {
                     }
                 }
             }
-        } finally {
+        } catch (IOException e2) {
+        	logger.log(Level.ERROR, "JSON from URL not found: " + e2, e2);
+			e2.printStackTrace();
+		} catch (JSONException e2) {
+			logger.log(Level.ERROR, "JSON from URL not found: " + e2, e2);
+			e2.printStackTrace();
+		} finally {
             kafkaProducer.close(5000, TimeUnit.MILLISECONDS);
             logger.log(Level.INFO, ProducerRunnable.class.toString() + " has shut down.");
         }

@@ -21,10 +21,10 @@ import asyncio
 class ProducerTask(object):
 
     def __init__(self, is_bluemix, conf, topic_name):
-        try:
-            from confluent_kafka import Producer
-        except:
+        if is_bluemix:
             from confluent_kafka_prebuilt import Producer
+        else:
+            from confluent_kafka import Producer
         self.topic_name = topic_name
         self.producer = Producer(conf)
         self.counter = 0

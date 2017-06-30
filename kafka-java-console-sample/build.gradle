@@ -41,6 +41,7 @@ dependencies {
     compile 'log4j:log4j:1.2.17'
     compile 'org.slf4j:slf4j-log4j12:1.7.21'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.8.5'
+    compile group: 'org.json', name: 'json', version: '20090211'
 }
 
 task downloadDependencies(type: Exec) {

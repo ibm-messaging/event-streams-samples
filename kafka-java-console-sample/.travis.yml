@@ -1,0 +1,10 @@
+language: java
+jdk:
+- oraclejdk8
+
+##########################
+### BUILD WITH MAVEN
+##########################
+script:
+# Once tests are properly set up remove skip tests
+- mvn clean install

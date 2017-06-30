@@ -5,6 +5,6 @@ jdk:
 ##########################
 ### BUILD WITH MAVEN
 ##########################
-script:
+#script:
 # Once tests are properly set up remove skip tests
 ./kafka-java-console-sample/gradlew check

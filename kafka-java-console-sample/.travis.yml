@@ -7,4 +7,4 @@ jdk:
 ##########################
 script:
 # Once tests are properly set up remove skip tests
-./kafka-java-console-sample/gradle check
+./kafka-java-console-sample/gradlew check

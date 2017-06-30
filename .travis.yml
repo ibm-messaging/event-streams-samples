@@ -1,2 +1,2 @@
 language: java
-script: ./kafka-java-console-sample/gradlew check
+script: ./kafka-java-console-sample/gradlew

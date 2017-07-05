@@ -85,6 +85,17 @@ jar {
     }
 }
 
+//create a single Jar with all dependencies
+task fatJar(type: Jar) {
+	manifest {
+       attributes('Main-Class': mainClassName,
+        'Class-Path': configurations.runtime.files.collect { './lib/' + it.name }.join(' '))
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
 // Save JAR in build directory.
 uploadArchives {
     repositories {

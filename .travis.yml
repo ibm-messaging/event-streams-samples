@@ -1,0 +1,2 @@
+language: java
+script: ./kafka-java-console-sample/gradlew

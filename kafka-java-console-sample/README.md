@@ -3,7 +3,7 @@ This Java console application demonstrates how to connect to [IBM Message Hub](h
 
 It can be run locally on your machine or deployed into [IBM Bluemix](https://console.ng.bluemix.net/).
 
-__Important Note__: This sample creates on your behalf a topic named `kafka-java-console-sample-topic` with one partition - this will incur a fee if the topic does not already exist on your account.
+__Important Note__: This sample creates on your behalf a topic named `kafka-java-console-sample-topic` with one partition - this will incur a fee if the topic does not already exist on your account. The sample application using as default content real-time data from CitiBike in New York City. You can find information more information about this dataset on the website `https://www.citibikenyc.com/system-data`and in the using json file `https://gbfs.citibikenyc.com/gbfs/en/station_information.json`. 
 
 ## Global Prerequisites
 To build and run the sample, you must have the following installed:
@@ -35,6 +35,9 @@ Alternatively, you can run only the producer or only the consumer by respectivel
 
 You can also specify the Kafka topic to use by adding the `-topic` argument. For
 example specifying: `-topic mytopic` would use Kafka topic `mytopic`.
+
+Additionally, you can specify the JSON source file to use by adding the `-json` argument. For
+example specifying: `-json "https://gbfs.citibikenyc.com/gbfs/en/station_information.json"` would use the json file `https://gbfs.citibikenyc.com/gbfs/en/station_information.json`.
 
 The sample will run indefinitely until interrupted. To stop the process, use `Ctrl+C`, for example.
 

@@ -50,8 +50,10 @@ public class MessageHubConsoleSample {
     private static final String JAAS_CONFIG_PROPERTY = "java.security.auth.login.config";
     private static final String APP_NAME = "kafka-java-console-sample-2.0";
     private static final String DEFAULT_TOPIC_NAME = "kafka-java-console-sample-topic";
+    private static final String DEFAULT_JSON_URL = "https://gbfs.citibikenyc.com/gbfs/en/station_information.json";
     private static final String ARG_CONSUMER = "-consumer";
     private static final String ARG_PRODUCER_ = "-producer";
+    private static final String JSON_URL = "-json";
     private static final String ARG_TOPIC = "-topic";
     private static final Logger logger = Logger.getLogger(MessageHubConsoleSample.class);
 
@@ -116,6 +118,7 @@ public class MessageHubConsoleSample {
             boolean runConsumer = true;
             boolean runProducer = true;
             String topicName = DEFAULT_TOPIC_NAME;
+            String jsonURL = DEFAULT_JSON_URL;
 
             // Check environment: Bluemix vs Local, to obtain configuration parameters
             if (isRunningInBluemix) {
@@ -153,6 +156,7 @@ public class MessageHubConsoleSample {
                         final ArgumentParser argParser = ArgumentParser.builder()
                                 .flag(ARG_CONSUMER)
                                 .flag(ARG_PRODUCER_)
+                                .option(JSON_URL)
                                 .option(ARG_TOPIC)
                                 .build();
                         final Map<String, String> parsedArgs =
@@ -162,6 +166,9 @@ public class MessageHubConsoleSample {
                         }
                         if (parsedArgs.containsKey(ARG_PRODUCER_) && !parsedArgs.containsKey(ARG_CONSUMER)) {
                             runConsumer = false;
+                        }
+                        if (parsedArgs.containsKey(JSON_URL)) {
+                            jsonURL = parsedArgs.get(JSON_URL);
                         }
                         if (parsedArgs.containsKey(ARG_TOPIC)) {
                             topicName = parsedArgs.get(ARG_TOPIC);
@@ -203,7 +210,7 @@ public class MessageHubConsoleSample {
 
             if (runProducer) {
                 Properties producerProperties = getClientConfiguration(clientProperties, "producer.properties");
-                producerRunnable = new ProducerRunnable(producerProperties, topicName);
+                producerRunnable = new ProducerRunnable(producerProperties, topicName, jsonURL);
                 producerThread = new Thread(producerRunnable, "Producer Thread");
                 producerThread.start();
             }

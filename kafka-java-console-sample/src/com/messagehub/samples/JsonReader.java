@@ -8,6 +8,7 @@ import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.Charset;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -27,7 +28,15 @@ public class JsonReader {
 	    try {
 	      BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 	      String jsonText = readAll(rd);
-	      JSONObject json = new JSONObject(jsonText);
+	      JSONObject json;
+	      
+	      if(jsonText.startsWith("{")) json = new JSONObject(jsonText);
+	      else if(jsonText.startsWith("[")) {
+	    	  JSONArray jsonArray = new JSONArray(jsonText);
+	    	  json = jsonArray.getJSONObject(0);
+	      }
+	      else json = null;
+	      
 	      return json;
 	    } finally {
 	      is.close();

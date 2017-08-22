@@ -1,6 +1,6 @@
 applications:
 - path: target/defaultServer
-  memory: 256M
+  memory: 512M
   instances: 1
   buildpack: liberty-for-java
   domain: mybluemix.net 

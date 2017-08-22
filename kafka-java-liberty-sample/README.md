@@ -1,5 +1,5 @@
 # IBM Message Hub Kafka Liberty sample application
-IBM® Bluemix® Message Hub is a scalable, distributed, high throughput messaging service built on the top of Apache Kafka. It underpins the integration of your on-premise and off-premise cloud services and technologies. You can wire micro-services together using open protocols, connect stream data to analytics to realise powerful insight and feed event data to multiple applications to react in real time.
+IBM® Message Hub is a scalable, distributed, high throughput messaging service built on the top of Apache Kafka. It underpins the integration of your on-premise and off-premise cloud services and technologies. You can wire micro-services together using open protocols, connect stream data to analytics to realise powerful insight and feed event data to multiple applications to react in real time.
 
 **Liberty for Java™ applications on IBM® Bluemix®** are powered by the IBM WebSphere® Liberty Buildpack. The Liberty profile is a highly composable, fast-to-start, dynamic application server runtime environment. It is part of IBM WebSphere Application Server v8.5.5.
 
@@ -25,7 +25,7 @@ To deploy and run the sample:
 * Add in JVM and LIBERTY licenses
 * Run `gradle build war`
 * Use `cf push` to deploy the app to Bluemix
-* Open a browser and navigate to the app's url
+* Open a browser and navigate to the app's URL
 * Press the button to produce message(s) to Kafka, you can then see the consumed messages.
 
 ## Building the Sample
@@ -41,8 +41,7 @@ To deploy applications using the IBM WebSphere Application Server Liberty Buildp
 
 1. Read the current IBM [Liberty-License][] and the current IBM [JVM-License][].
 2. Extract the `D/N: <License code>` from the Liberty-License and JVM-License.
-3. Add the following environment variables and extracted license codes to the `manifest.yml` file in the directory from which you push your application. For further information on the format of
-the `manifest.yml` file refer to the [manifest documentation][].
+3. Add the following environment variables and extracted license codes to the `manifest.yml` file in the directory from which you push your application. For further information on the format of the `manifest.yml` file refer to the [manifest documentation][].
 
 ```yaml
 env:
@@ -62,26 +61,26 @@ The `cf push` command deploys the sample into Bluemix with a random route and bi
 ```shell
 requested state: started
 instances: 1/1
-usage: 256M x 1 instances
+usage: 512M x 1 instances
 urls: messagehublibertyapp.mybluemix.net
-last uploaded: Mon Feb 29 15:44:29 UTC 2016
+last uploaded: Tue Aug 22 12:49:10 UTC 2017
 stack: cflinuxfs2
-buildpack: Liberty for Java(TM) (SVR-DIR, liberty-2016.2.0_0, buildpack-v2.5-20160209-1336, ibmjdk-1.8.0_20160108, env)
+buildpack: liberty-for-java
  ```
 
 ## Produce and Consume Messages
-Once the sample has been successfully deployed, navigate to the URL stated in the deployment logs. Once here, you can produce a message by clicking on the `Post Message` button.
+Once the sample has been successfully deployed, navigate to the URL stated in the deployment logs. Once here, you can produce a message by clicking on the `Produce a Message` button.
 
 If the message was successfully produced and then consumed, you will then see the prompted message:
 
 ##### Already consumed messages:
 ```shell
-Message: [{"value":"This is a test message, msgId=0"}]. Offset: 1
+Message: [{"value":"This is a test message, msgId=0"}]. Offset: 0
 ```
 
-##### We have produced a message: ```This is a test message, msgId=0```
+##### We have produced a message: ```Message produced:This is a test message, msgId=0```
 ```shell
-Consumed messages: [{"value":"This is a test message, msgId=0"}]. Offset: 1
+Consumed messages: [{"value":"This is a test message, msgId=0"}]. Offset: 0
 ```
  
 [Liberty-License]: http://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/wasdev/downloads/wlp/8.5.5.7/lafiles/runtime/en.html

@@ -32,7 +32,11 @@ var exports = module.exports = {};
 */
 exports.buildProducer = function(Kafka, producer_opts, topicName, shutdown) {
     // Create Kafka producer
-    producer = new Kafka.Producer(producer_opts);
+    var topicOpts = {
+        'request.required.acks': -1,
+        'produce.offset.report': true
+    };
+    producer = new Kafka.Producer(producer_opts, topicOpts);
     producer.setPollInterval(100);
 
     // Register listener for debug information; only invoked if debug option set in driver_options
@@ -100,19 +104,10 @@ exports.buildProducer = function(Kafka, producer_opts, topicName, shutdown) {
                 }
             }
         });
-
-        // Create a topic object for the Producer to allow passing topic settings
-        var topicOpts = {
-            'request.required.acks': -1,
-            'produce.offset.report': true
-        };
-        var topic = producer.Topic(topicName, topicOpts);
-        console.log('Topic object created with opts ' + JSON.stringify(topicOpts));
         var counter = 0;
 
         // Start sending messages
-        sendMessages(counter, topic, 0);
-
+        sendMessages(counter, topicName, 0);
     });
     return producer;
 }

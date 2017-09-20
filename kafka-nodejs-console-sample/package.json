@@ -34,7 +34,7 @@
   ],
   "dependencies": {
     "message-hub-rest": "^1.2.0",
-    "node-rdkafka": "1.0.6"
+    "node-rdkafka": "2.0.0"
   },
   "devDependencies": {
   },

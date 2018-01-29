@@ -23,7 +23,7 @@ WORKDIR /usr/src/app
 
 COPY . /usr/src/app
 
-RUN npm install
+RUN npm install --unsafe-perm
 
 ENTRYPOINT [ "node", "app.js" ]
 CMD [ "" ]

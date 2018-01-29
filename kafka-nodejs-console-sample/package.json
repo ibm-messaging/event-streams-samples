@@ -21,7 +21,7 @@
       "email": "ecomar@uk.ibm.com"
     }
   ],
-   "keywords": [
+  "keywords": [
     "ibm",
     "message",
     "hub",
@@ -34,11 +34,9 @@
   ],
   "dependencies": {
     "message-hub-rest": "^1.2.0",
-    "node-rdkafka": "2.0.0"
-  },
-  "devDependencies": {
+    "node-rdkafka": "2.2.1"
   },
   "engines": {
-    "node": "6.10"
+    "node": "6.12"
   }
 }

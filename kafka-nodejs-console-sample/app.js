@@ -172,7 +172,8 @@ function runLoops() {
         'sasl.username': opts.username,
         'sasl.password': opts.password,
         'api.version.request': true,
-        'broker.version.fallback': '0.10.2.1'
+        'broker.version.fallback': '0.10.2.1',
+        'log.connection.close' : false
     };
 
     var consumer_opts = {

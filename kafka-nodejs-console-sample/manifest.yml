@@ -9,3 +9,5 @@ applications:
   health-check-type: none
   services:
     - "Message Hub-CHANGEME"
+  env:
+    LD_LIBRARY_PATH: /home/vcap/app/node_modules/node-rdkafka/build/deps/

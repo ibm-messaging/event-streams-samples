@@ -57,14 +57,21 @@ class MessageHubSample(object):
 
             if len(args) < 5:
                 print('ERROR: It appears the application is running outside of Bluemix but the arguments are incorrect for local mode.')
-                print('\nUsage:\npython {0} <kafka_brokers_sasl> <kafka_admin_url> <api_key> <cert_location> [ -consumer | -producer ]\n'.format(args[0]))
+                print('\nUsage:\npython {0} <kafka_brokers_sasl> <kafka_admin_url> { <api_key> | <user = token>:<password> } <cert_location> [ -consumer | -producer ]\n'.format(args[0]))
                 sys.exit(-1)
 
             self.opts['brokers'] = args[1]
             self.opts['rest_endpoint'] = args[2]
-            self.opts['api_key'] = args[3]
-            self.opts['username'] = self.opts['api_key'][0:16]
-            self.opts['password'] = self.opts['api_key'][16:48]
+                        
+            if ":" in args[3]:
+                credentials_list = args[3].split(":")
+                self.opts['api_key'] = credentials_list[1]
+                self.opts['username'] = credentials_list[0]
+                self.opts['password'] = credentials_list[1]
+            else:
+                self.opts['api_key'] = args[3]
+                self.opts['username'] = self.opts['api_key'][0:16]
+                self.opts['password'] = self.opts['api_key'][16:48]
 
             # Bluemix/Ubuntu: '/etc/ssl/certs'
             # Red Hat: '/etc/pki/tls/cert.pem',

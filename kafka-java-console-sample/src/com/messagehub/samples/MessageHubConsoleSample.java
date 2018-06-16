@@ -77,7 +77,7 @@ public class MessageHubConsoleSample {
         System.out.println("\n"
                 + "Usage:\n"
                 + "    java -jar build/libs/" + APP_NAME + ".jar \\\n"
-                + "              <kafka_brokers_sasl> <kafka_admin_url> <api_key> [" + ARG_CONSUMER + "] \\\n"
+                + "              <kafka_brokers_sasl> <kafka_admin_url> { <api_key> | <user = token>:<password> } [" + ARG_CONSUMER + "] \\\n"
                 + "              [" + ARG_PRODUCER_ + "] [" + ARG_TOPIC + "]\n"
                 + "Where:\n"
                 + "    kafka_broker_sasl\n"
@@ -85,8 +85,9 @@ public class MessageHubConsoleSample {
                 + "        example \"host1:port1,host2:port2\".\n"
                 + "    kafka_admin_url\n"
                 + "        Required. The URL of the Message Hub Kafka administration REST endpoint.\n"
-                + "    api_key\n"
-                + "        Required. A Message Hub API key used to authenticate access to Kafka.\n"
+                + "    api_key or user/password\n"
+                + "        Required. A Message Hub API key or user/password used to authenticate access to Kafka.\n"
+                + "        Use user/password if the user is defined as \"token\"\n"
                 + "    " + ARG_CONSUMER + "\n"
                 + "        Optional. Only consume message (do not produce messages to the topic).\n"
                 + "        If omitted this sample will both produce and consume messages.\n"
@@ -141,9 +142,16 @@ public class MessageHubConsoleSample {
                 bootstrapServers = args[0];
                 adminRestURL = args[1];
                 apiKey = args[2];
-                user = apiKey.substring(0, 16);
-                password = apiKey.substring(16);
-
+                if (apiKey.contains(":")) {
+                    String[] credentials = apiKey.split(":");
+                    apiKey = credentials[1];
+                    user = credentials[0];
+                    password = credentials[1];
+                } else {
+                    apiKey = args[2];
+                    user = apiKey.substring(0, 16);
+                    password = apiKey.substring(16);
+                }
                 if (args.length > 3) {
                     try {
                         final ArgumentParser argParser = ArgumentParser.builder()

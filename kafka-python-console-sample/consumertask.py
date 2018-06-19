@@ -47,7 +47,7 @@ class ConsumerTask(object):
                     msg.value().decode('utf-8')))
             else:
                 print('No messages consumed')
-            yield from asyncio.sleep(2)
+                yield from asyncio.sleep(2)
         self.consumer.unsubscribe()
         self.consumer.close()
 

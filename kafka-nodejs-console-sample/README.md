@@ -44,7 +44,7 @@ Once built, to run the sample, execute the following command:
 node app.js <kafka_brokers_sasl> <kafka_admin_url> <api_key> <ca_location>
 ```
 
-To find the values for `<kafka_brokers_sasl>`, `<kafka_admin_url>` and `<api_key>`, access your Message Hub instance in Bluemix, go to the `Service Credentials` tab and select the `Credentials` you want to use.
+To find the values for `<kafka_brokers_sasl>`, `<kafka_admin_url>` and `<api_key>`, access your Message Hub instance in Bluemix, go to the `Service Credentials` tab and select the `Credentials` you want to use. If your user value is `token`, specify that with the password seperated by a `:`.
 
 `<ca_location>` is the path where the trusted SSL certificates are stored on your machine and is therefore system dependent. 
 For example:

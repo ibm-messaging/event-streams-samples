@@ -57,7 +57,7 @@ class MessageHubSample(object):
 
             if len(args) < 5:
                 print('ERROR: It appears the application is running outside of Bluemix but the arguments are incorrect for local mode.')
-                print('\nUsage:\npython {0} <kafka_brokers_sasl> <kafka_admin_url> { <api_key> | <user = token>:<password> } <cert_location> [ -consumer | -producer ]\n'.format(args[0]))
+                print('\nUsage:\npython {0} <kafka_brokers_sasl> <kafka_admin_url> {{ <api_key> | <user = token>:<password> }} <cert_location> [ -consumer | -producer ]\n'.format(args[0]))
                 sys.exit(-1)
 
             self.opts['brokers'] = args[1]
@@ -123,7 +123,9 @@ class MessageHubSample(object):
             'sasl.mechanisms': 'PLAIN',
             'sasl.username': self.opts['username'],
             'sasl.password': self.opts['password'],
-            'api.version.request': True
+            'api.version.request': True,
+            'broker.version.fallback': '0.10.2.1',
+            'log.connection.close' : False
         }
         consumer_opts = {
             'client.id': 'kafka-python-console-sample-consumer',

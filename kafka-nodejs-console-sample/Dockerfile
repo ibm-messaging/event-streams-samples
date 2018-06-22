@@ -5,7 +5,7 @@
 # OR
 # docker run --rm -it node-rdkafka <kafka_brokers_sasl> <kafka_admin_url> <api_key> <ca_location>
 #
-FROM node:boron
+FROM node:carbon-stretch
 
 RUN  apt-get update -qqy \
   && apt-get install -y --no-install-recommends \
@@ -21,7 +21,7 @@ RUN  apt-get update -qqy \
 
 WORKDIR /usr/src/app
 
-COPY . /usr/src/app
+COPY *.js *.json *.md /usr/src/app/
 
 RUN npm install --unsafe-perm
 

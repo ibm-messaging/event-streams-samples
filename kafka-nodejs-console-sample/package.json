@@ -33,7 +33,7 @@
     "node-rdkafka"
   ],
   "dependencies": {
-    "message-hub-rest": "^1.2.0",
+    "message-hub-rest": "^2.0.0-alpha.0",
     "node-rdkafka": "2.3.3"
   },
   "engines": {

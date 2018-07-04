@@ -1,93 +1,40 @@
 # IBM Message Hub Kafka Node.js console sample application
 This Node.js console application demonstrates how to connect to [IBM Message Hub](https://console.ng.bluemix.net/docs/services/MessageHub/index.html), send and receive messages using the [node-rdkafka](https://github.com/Blizzard/node-rdkafka) module. It also shows how to create and list topics using the Message Hub Admin REST API.
 
-It can be run locally on your machine or deployed into [IBM Bluemix](https://console.ng.bluemix.net/).
+It can be run locally on your machine or deployed into [IBM Cloud®](https://console.ng.bluemix.net/).
+
+In this tutorial, we'll focus on deploying the application into the IBM Cloud, therefore you don't have to build it locally, it will be done on your behalf on IBM Cloud.
 
 __Important Note__: This sample creates on your behalf a topic named `kafka-nodejs-console-sample-topic` with one partition - this will incur a fee if the topic does not already exist on your account.
 
 ## Global Prerequisites
-To build and run the sample, you must have the following installed:
-* [git](https://git-scm.com/)
-* [Message Hub Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) provisioned in [IBM Bluemix](https://console.ng.bluemix.net/)
+To run the sample, you must have done the following:
+* Obtain this repository's contents, either use `git` or just download the samples as a ZIP
+* [Message Hub Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) provisioned in [IBM Cloud®](https://console.ng.bluemix.net/)
 
-## Prerequisites (Local - macOS and Linux only)
-* [Node.js](https://nodejs.org/en/) 6.X LTS
-* [node-gyp] (https://www.npmjs.com/package/node-gyp)
-
-Node-rdkafka will build librdkafka automatically. You must ensure you have the dependencies listed below installed. For more details, see [librdakfka's instructions](../docs/librdkafka.md).
-
-##### Linux
-* openssl-dev
-* libsasl2-dev
-* libsasl2-modules
-* C++ toolchain
-
-##### macOS 
-* [Brew](http://brew.sh/)
-* [Apple Xcode command line tools](https://developer.apple.com/xcode/)
-* `openssl` via Brew
-* Export `CPPFLAGS=-I/usr/local/opt/openssl/include` and `LDFLAGS=-L/usr/local/opt/openssl/lib`
-* Open Keychain Access, export all certificates in System Roots to a single .pem file
-
-## Prerequisites (Bluemix)
+## Prerequisites (IBM Cloud®)
 * [Cloud Foundry Command Line Interface](https://github.com/cloudfoundry/cli/releases) installed
 
-## Installing dependencies (Local)
-Run the following commands on your local machine, after the prerequisites for your environment have been completed:
-```shell
-npm install
-```
+## Standard or Enterprise Plan?
 
-## Running the Sample (Local - macOS and Linux only)
-Once built, to run the sample, execute the following command:
-```shell
-node app.js <kafka_brokers_sasl> <kafka_admin_url> <api_key> <ca_location>
-```
+**It's important to know which Message Hub plan you're using as the sample deployment steps are subtly different on each plan respectively.**
 
-To find the values for `<kafka_brokers_sasl>`, `<kafka_admin_url>` and `<api_key>`, access your Message Hub instance in Bluemix, go to the `Service Credentials` tab and select the `Credentials` you want to use. If your user value is `token`, specify that with the password seperated by a `:`.
+By this point, you should have a Message Hub instance provisioned. If you haven't done this step yet, please refer to the main [readme](/README.md).
 
-`<ca_location>` is the path where the trusted SSL certificates are stored on your machine and is therefore system dependent. 
-For example:
-* Ubuntu: /etc/ssl/certs
-* RedHat: /etc/pki/tls/cert.pem
-* macOS: The .pem file you created in the prerequisite section
+If you are not sure what type of Message Hub instance you have then you can find this information out by visiting IBM Cloud's web console [dashboard](https://console.bluemix.net/dashboard).
 
-__Note__: `<kafka_brokers_sasl>` must be a single string enclosed in quotes. For example: `"host1:port1,host2:port2"`. We recommend using all the Kafka hosts listed in the `Credentials` you selected.
+*Please make sure you are in the appropriate Region, Account, Organization and Space where you provisioned your Message Hub instance!*
 
-Alternatively, you can run only the producer or only the consumer by respectively appending the switches `-producer` or `-consumer`  to the command above.
+* Message Hub Standard plan services are "Cloud Foundry Services" with the plan column showing "Standard".
+* Message Hub Enterprise plan services are "Services" with the plan column showing "Enterprise".
 
-The sample will run indefinitely until interrupted. To stop the process, use `Ctrl+C`, for example.
 
-## Running the Sample (Bluemix)
+## Deploy the Application
 
-Open the `manifest.yml` file and rename the `"Message Hub-CHANGEME"` entry to that of your own Message Hub Service Instance name.
+As the Standard and Enterprise Plan deployment steps are subtly different, we split the deployment steps into separate sections. Please navigate to the appropriate page(s):
 
-Connect to Bluemix with the Cloud Foundry Command Line Interface, then run the following command in the same directory as the `manifest.yml` file:
-```shell
-cf push
-```
+### [Standard Plan Deployment Guide](./standard_plan.md)
 
-## Sample Output
-Below is a snippet of the output generated by the sample:
+### [Enterprise plan Deployment Guide](./enterprise_plan.md)
 
-```
-Topic mh-nodejs-console-sample-topic created
-Existing topics:
-[ { name: 'mh-nodejs-console-sample-topic',
-    partitions: 1,
-    retentionMs: '86400000',
-    markedForDeletion: false } ]
-The consumer has started
-The producer has started
-Topic object created with opts {"request.required.acks":-1}
-Consumer obtained metadata: {"orig_broker_id":0,"orig_broker_name":"sasl_ssl://kafka01-prod01.messagehub.services.us-south.bluemix.net:9093/0","topics":[{"name":"mh-nodejs-console-sample-topic","partitions":[{"id":0,"leader":0,"replicas":[0,1,4],"isrs":[null,null,null,1]}]}],"brokers":[{"id":2,"host":"kafka03-prod01.messagehub.services.us-south.bluemix.net","port":9093},{"id":4,"host":"kafka05-prod01.messagehub.services.us-south.bluemix.net","port":9093},{"id":1,"host":"kafka02-prod01.messagehub.services.us-south.bluemix.net","port":9093},{"id":3,"host":"kafka04-prod01.messagehub.services.us-south.bluemix.net","port":9093},{"id":0,"host":"kafka01-prod01.messagehub.services.us-south.bluemix.net","port":9093}]}
-Producer obtained metadata: {"orig_broker_id":0,"orig_broker_name":"sasl_ssl://kafka01-prod01.messagehub.services.us-south.bluemix.net:9093/0","topics":[{"name":"mh-nodejs-console-sample-topic","partitions":[{"id":0,"leader":0,"replicas":[0,1,4],"isrs":[null,null,null,1]}]}],"brokers":[{"id":2,"host":"kafka03-prod01.messagehub.services.us-south.bluemix.net","port":9093},{"id":4,"host":"kafka05-prod01.messagehub.services.us-south.bluemix.net","port":9093},{"id":1,"host":"kafka02-prod01.messagehub.services.us-south.bluemix.net","port":9093},{"id":3,"host":"kafka04-prod01.messagehub.services.us-south.bluemix.net","port":9093},{"id":0,"host":"kafka01-prod01.messagehub.services.us-south.bluemix.net","port":9093}]}
-Message produced, offset: 1
-No messages consumed
-Message produced, offset: 2
-Message consumed: topic=mh-nodejs-console-sample-topic, partition=0, offset=1, key=key, value=This is a test message #1
-Message produced, offset: 3
-Message consumed: topic=mh-nodejs-console-sample-topic, partition=0, offset=2, key=key, value=This is a test message #2
-Message produced, offset: 4
-Message consumed: topic=mh-nodejs-console-sample-topic, partition=0, offset=3, key=key, value=This is a test message #3
-```
+### [Local Deployment](./local.md)

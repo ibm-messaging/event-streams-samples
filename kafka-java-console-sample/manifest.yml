@@ -7,4 +7,4 @@ applications:
   no-route: true
   health-check-type: none
   services:
-    - "Message Hub-CHANGEME"
+    - "<YOUR_MESSAGE_HUB_SERVICE_NAME>"

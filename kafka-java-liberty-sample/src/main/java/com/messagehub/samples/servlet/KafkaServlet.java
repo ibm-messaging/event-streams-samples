@@ -80,7 +80,7 @@ public class KafkaServlet extends HttpServlet {
             + File.separator + "resources";
     private KafkaProducer<byte[], byte[]> kafkaProducer;
     private ConsumerRunnable consumerRunnable;
-    private String kafkaHost, restHost, apiKey, topic = "testTopic";
+    private String kafkaHost, adminHost, apiKey, topic = "testTopic";
     private String user, password;
     private String producedMessage, currentConsumedMessage;
     private int producedMessages = 0;
@@ -148,7 +148,7 @@ public class KafkaServlet extends HttpServlet {
                 MessageHubCredentials credentials = messageHubEnvironment.getCredentials();
 
                 kafkaHost = credentials.getKafkaBrokersSasl()[0];
-                restHost = credentials.getKafkaRestUrl();
+                adminHost = credentials.getKafkaAdminUrl();
                 apiKey = credentials.getApiKey();
                 user = credentials.getUser();
                 password = credentials.getPassword();
@@ -162,7 +162,7 @@ public class KafkaServlet extends HttpServlet {
         }
 
         // Check topic
-        RESTRequest restApi = new RESTRequest(restHost, apiKey);
+        RESTRequest restApi = new RESTRequest(adminHost, apiKey);
         // Create a topic, ignore a 422 response - this means that the
         // topic name already exists.
         restApi.post("/admin/topics", "{ \"name\": \"" + topic + "\" }", new int[]{422});

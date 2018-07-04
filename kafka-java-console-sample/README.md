@@ -1,91 +1,39 @@
 # IBM Message Hub Kafka Java console sample application
 This Java console application demonstrates how to connect to [IBM Message Hub](https://console.ng.bluemix.net/docs/services/MessageHub/index.html), send and receive messages using the [Kafka](https://kafka.apache.org) Java API. It also shows how to create and list topics using the Message Hub Admin REST API.
 
-It can be run locally on your machine or deployed into [IBM Bluemix](https://console.ng.bluemix.net/).
+It can be run locally on your machine or deployed into [IBM Cloud](https://console.ng.bluemix.net/). The readme focuses on running the application on a local console.
 
-__Important Note__: This sample creates on your behalf a topic named `kafka-java-console-sample-topic` with one partition - this will incur a fee if the topic does not already exist on your account.
+For help with additional deployment modes, please refer to our [connection guide](https://console.bluemix.net/docs/services/MessageHub/messagehub127.html#connect_messagehub).
 
-## Global Prerequisites
-To build and run the sample, you must have the following installed:
-* [git](https://git-scm.com/)
-* [Gradle](https://gradle.org/)
-* Java 7+
-* [Message Hub Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) provisioned in [IBM Bluemix](https://console.ng.bluemix.net/)
+__Important Note__: This sample creates a topic named `kafka-java-console-sample-topic` on your behalf with one partition - this will incur a fee on our Standard Plan if the topic does not already exist on your account.
 
-## Prerequisites (Bluemix)
-* [Cloud Foundry Command Line Interface](https://github.com/cloudfoundry/cli/releases) installed
+## Prerequisites
+To build and run the sample, you must have the done the following:
 
-## Running the Build Script
-Run the following commands on your local machine, after the prerequisites for your environment have been completed:
-```shell
-gradle clean && gradle build
- ```
+* Obtain this repository's contents, either use `git` or just download the samples as a ZIP
+* Install [Gradle](https://gradle.org/)
+* Install Java 7+
+* Install the [IBM Cloud CLI](https://console.bluemix.net/docs/cli/reference/bluemix_cli/download_cli.html)
+* Provision a [Message Hub Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) in [IBM Cloud®](https://console.ng.bluemix.net/)
 
-## Running the Sample (Local)
-Once built, to run the sample, execute the following command:
-```shell
-java -jar build/libs/kafka-java-console-sample-2.0.jar <kafka_brokers_sasl> <kafka_admin_url> <api_key>
-```
+## Standard or Enterprise Plan?
 
-To find the values for `<kafka_brokers_sasl>`, `<kafka_admin_url>` and `<api_key>`, access your Message Hub instance in Bluemix, go to the `Service Credentials` tab and select the `Credentials` you want to use.  If your user value is `token`, specify that with the password seperated by a `:`.
+**It's important to know which Message Hub plan you're using as the sample deployment steps are subtly different on each plan respectively.**
 
-__Note__: `<kafka_brokers_sasl>` must be a single string enclosed in quotes. For example: `"host1:port1,host2:port2"`. We recommend using all the Kafka hosts listed in the `Credentials` you selected.
+By this point, you should have a Message Hub instance provisioned. If you haven't done this step yet, please refer to the main [readme](/README.md).
 
-Alternatively, you can run only the producer or only the consumer by respectively adding `-producer` or `-consumer`  to the command above.
+If you are not sure what type of Message Hub instance you have then you can find this information out by visiting IBM Cloud's web console [dashboard](https://console.bluemix.net/dashboard).
 
-You can also specify the Kafka topic to use by adding the `-topic` argument. For
-example specifying: `-topic mytopic` would use Kafka topic `mytopic`.
+*Please make sure you are in the appropriate Region, Account, Organization and Space where you provisioned your Message Hub instance!*
 
-The sample will run indefinitely until interrupted. To stop the process, use `Ctrl+C`, for example.
+* Message Hub Standard plan services are "Cloud Foundry Services" with the plan column showing "Standard".
+* Message Hub Enterprise plan services are "Services" with the plan column showing "Enterprise".
 
-## Running the Sample (Bluemix)
-Ensure that the previous `gradle build` command has produced a zip file artifact under `build/distributions`.
 
-Open the `manifest.yml` file and rename the `"Message Hub-CHANGEME"` entry to that of your own
-Message Hub Service Instance name.
+## Deploy the Application
 
-Connect to Bluemix with the Cloud Foundry Command Line Interface, then run the following command in
-the same directory as the `manifest.yml` file:
-```shell
-cf push
-```
+As the Standard and Enterprise Plan deployment steps are subtly different, we split the deployment steps into separate sections. Please navigate to the appropriate page(s):
 
-__Note:__ The Bluemix distribution will automatically update the required files for you at runtime,
-using the `VCAP_SERVICES` information provided by Bluemix.
+### [Standard Plan Deployment Guide](./standard_plan.md)
 
-## Running the Sample (Docker)
-You can also build the sample into a docker image using the following command:
-```shell
-docker build --tag kafka-java-console-sample .
-```
-
-The container can then be run as follows:
-```shell
-docker run -it kafka-java-console-sample <kafka_brokers_sasl> <kafka_admin_url> <api_key>
-```
-
-The values for `<kafka_brokers_sasl>`, `<kafka_admin_url>`, and `<api_key>` are
-as above.
-
-## Sample Output
-Below is a snippet of the output generated by the sample:
-
-```
-[2016-11-30 17:30:53,492] INFO Running in local mode. (com.messagehub.samples.MessageHubConsoleSample)
-[2016-11-30 17:30:53,492] INFO Updating JAAS configuration (com.messagehub.samples.MessageHubConsoleSample)
-[2016-11-30 17:30:53,506] INFO Kafka Endpoints: kafka01-prod01.messagehub.services.us-south.bluemix.net:9093,kafka02-prod01.messagehub.services.us-south.bluemix.net:9093,kafka03-prod01.messagehub.services.us-south.bluemix.net:9093,kafka04-prod01.messagehub.services.us-south.bluemix.net:9093,kafka05-prod01.messagehub.services.us-south.bluemix.net:9093 (com.messagehub.samples.MessageHubConsoleSample)
-[2016-11-30 17:30:53,506] INFO Admin REST Endpoint: https://kafka-admin-prod01.messagehub.services.us-south.bluemix.net:443 (com.messagehub.samples.MessageHubConsoleSample)
-[2016-11-30 17:30:53,506] INFO Creating the topic kafka-java-console-sample-topic (com.messagehub.samples.MessageHubConsoleSample)
- (com.messagehub.samples.MessageHubConsoleSample)e :{}
-[2016-11-30 17:30:54,947] INFO Admin REST Listing Topics: [{"name":"kafka-java-console-sample-topic","partitions":1,"retentionMs":"86400000","markedForDeletion":false}] (com.messagehub.samples.MessageHubConsoleSample)
-[2016-11-30 17:30:55,952] INFO [Partition(topic = kafka-java-console-sample-topic, partition = 0, leader = 0, replicas = [0,1,4,], isr = [0,4,1,]] (com.messagehub.samples.ConsumerRunnable)
-[2016-11-30 17:30:55,953] INFO class com.messagehub.samples.ConsumerRunnable is starting. (com.messagehub.samples.ConsumerRunnable)
-[2016-11-30 17:30:57,023] INFO [Partition(topic = kafka-java-console-sample-topic, partition = 0, leader = 0, replicas = [0,1,4,], isr = [0,4,1,]] (com.messagehub.samples.ProducerRunnable)
-[2016-11-30 17:30:57,024] INFO MessageHubConsoleSample will run until interrupted. (com.messagehub.samples.MessageHubConsoleSample)
-[2016-11-30 17:30:57,024] INFO class com.messagehub.samples.ProducerRunnable is starting. (com.messagehub.samples.ProducerRunnable)
-[2016-11-30 17:30:58,018] INFO Message produced, offset: 0 (com.messagehub.samples.ProducerRunnable)
-[2016-11-30 17:30:58,956] INFO No messages consumed (com.messagehub.samples.ConsumerRunnable)
-[2016-11-30 17:31:00,301] INFO Message consumed: ConsumerRecord(topic = kafka-java-console-sample-topic, partition = 0, offset = 1, CreateTime = 1480527060022, checksum = 1906962734, serialized key size = 3, serialized value size = 25, key = key, value = This is a test message #1) (com.messagehub.samples.ConsumerRunnable)
-[2016-11-30 17:31:00,397] INFO Message produced, offset: 1 (com.messagehub.samples.ProducerRunnable)
-[2016-11-30 17:31:02,550] INFO Message consumed: ConsumerRecord(topic = kafka-java-console-sample-topic, partition = 0, offset = 2, CreateTime = 1480527062401, checksum = 3801731428, serialized key size = 3, serialized value size = 25, key = key, value = This is a test message #2) (com.messagehub.samples.ConsumerRunnable)
-```
+### [Enterprise plan Deployment Guide](./enterprise_plan.md)

@@ -1,100 +1,35 @@
 # IBM Message Hub Kafka Python console sample application
 This Python console application demonstrates how to connect to [IBM Message Hub](https://console.ng.bluemix.net/docs/services/MessageHub/index.html), send and receive messages using the [confluent-kafka-python](https://github.com/confluentinc/confluent-kafka-python) library. It also shows how to create and list topics using the Message Hub Admin REST API.
 
-It can be run locally on your machine or deployed into [IBM Bluemix](https://console.ng.bluemix.net/).
+This tutorial will explain how to run the sample app in [IBM Cloud®](https://console.ng.bluemix.net/) using a Message Hub Service. It is also possible to host the application locally and still target your Message Hub Service running in IBM Cloud but that is not covered during this tutorial.
 
 __Important Note__: This sample creates on your behalf a topic named `kafka-python-console-sample-topic` with one partition - this will incur a fee if the topic does not already exist on your account.
 
-## Global Prerequisites
-To build and run the sample, you must have the following installed:
-* [git](https://git-scm.com/)
-* [Message Hub Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) provisioned in [IBM Bluemix](https://console.ng.bluemix.net/)
+## Prerequisites
+To build and run the sample, you must have the following:
 
-## Prerequisites (Local - macOS and Linux only)
-* [Python](https://www.python.org/) >= 3.4.3
-* [librdkafka](https://github.com/edenhill/librdkafka) >= 0.9.3
+* Obtain this repository's contents, either use `git` or just download the samples as a ZIP
+* Install the [IBM Cloud CLI](https://console.bluemix.net/docs/cli/reference/bluemix_cli/download_cli.html)
+* Provision a [Message Hub Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) in [IBM Cloud®](https://console.ng.bluemix.net/)
 
-For more details regarding librdkafka installation, see [librdkafka's instructions](../docs/librdkafka.md).
+## Standard or Enterprise Plan?
 
-##### Linux
-* openssl-dev
-* libsasl2-dev
-* libsasl2-modules
-* C++ toolchain
-* python3-dev
+**It's important to know which Message Hub plan you're using as the sample deployment steps are subtly different on each plan respectively.**
 
-##### macOS
-* [Brew](http://brew.sh/)
-* [Apple Xcode command line tools](https://developer.apple.com/xcode/)
-* `openssl`, `python3` and `librdkafka` via Brew
-* Export `CPPFLAGS=-I/usr/local/opt/openssl/include` and `LDFLAGS=-L/usr/local/opt/openssl/lib`
-* Open Keychain Access, export all certificates in System Roots to a single .pem file
+By this point, you should have a Message Hub instance provisioned. If you haven't done this step yet, please refer to the main [readme](/README.md).
 
-## Prerequisites (Bluemix)
-* [Cloud Foundry Command Line Interface](https://github.com/cloudfoundry/cli/releases) installed
+If you are not sure what type of Message Hub instance you have then you can find this information out by visiting IBM Cloud's web console [dashboard](https://console.bluemix.net/dashboard).
 
-## Installing dependencies (Local)
-Run the following commands on your local machine, after the prerequisites for your environment have been completed:
-```shell
-pip3 install -r requirements/dev.txt
-```
+*Please make sure you are in the appropriate Region, Account, Organization and Space where you provisioned your Message Hub instance!*
 
-## Running the Sample (Local - macOS and Linux only)
-Once built, to run the sample, execute the following command:
-```shell
-python ./app.py <kafka_brokers_sasl> <kafka_admin_url> <api_key> <ca_location>
-```
+* Message Hub Standard plan services are "Cloud Foundry Services" with the plan column showing "Standard".
+* Message Hub Enterprise plan services are "Services" with the plan column showing "Enterprise".
 
-To find the values for `<kafka_brokers_sasl>`, `<kafka_admin_url>` and `<api_key>`, access your Message Hub instance in Bluemix, go to the `Service Credentials` tab and select the `Credentials` you want to use.  If your user value is `token`, specify that with the password seperated by a `:`.
 
-`<ca_location>` is the path where the trusted SSL certificates are stored on your machine and is therefore system dependent.
-For example:
-* Ubuntu: /etc/ssl/certs
-* RedHat: /etc/pki/tls/cert.pem
-* macOS: The .pem file you created in the prerequisite section
+## Deploy the Application
 
-__Note__: `<kafka_brokers_sasl>` must be a single string enclosed in quotes. For example: `"host1:port1,host2:port2"`. We recommend using all the Kafka hosts listed in the `Credentials` you selected.
+As the Standard and Enterprise Plan deployment steps are subtly different, we split the deployment steps into separate sections. Please navigate to the appropriate page(s):
 
-Alternatively, you can run only the producer or only the consumer by respectively appending the switches `-producer` or `-consumer`  to the command above.
+### [Standard Plan Deployment Guide](./standard_plan.md#running-the-sample-ibm-cloud)
 
-The sample will run indefinitely until interrupted. To stop the process, use `Ctrl+C`, for example.
-
-## Running the Sample (Bluemix)
-
-Open the `manifest.yml` file and rename the `"Message Hub-CHANGEME"` entry to that of your own Message Hub Service Instance name.
-
-Connect to Bluemix with the Cloud Foundry Command Line Interface, then run the following command in the same directory as the `manifest.yml` file:
-```shell
-cf push
-```
-
-## Sample Output
-Below is a snippet of the output generated by the sample:
-
-```
-Running in local mode.
-Kafka Endpoints: kafka01-prod01.messagehub.services.us-south.bluemix.net:9093
-Admin REST Endpoint: https://kafka-admin-prod01.messagehub.services.us-south.bluemix.net:443
-Creating the topic kafka-python-console-sample-topic with Admin REST API
-{}
-Admin REST Listing Topics:
-[{"name":"kafka-python-console-sample-topic","partitions":1,"retentionMs":"86400000","markedForDeletion":false}]
-This sample app will run until interrupted.
-The producer has started
-The consumer has started
-Message produced, offset: 0
-Message produced, offset: 2
-No messages consumed
-Message produced, offset: 3
-No messages consumed
-Message produced, offset: 4
-Message consumed: topic=kafka-python-console-sample-topic, partition=0, offset=4, key=key, value=This is a test message #4
-Message produced, offset: 5
-No messages consumed
-Message produced, offset: 6
-Message consumed: topic=kafka-python-console-sample-topic, partition=0, offset=5, key=key, value=This is a test message #5
-Message produced, offset: 7
-No messages consumed
-Message produced, offset: 8
-Message consumed: topic=kafka-python-console-sample-topic, partition=0, offset=6, key=key, value=This is a test message #6
-```
+### [Enterprise plan Deployment Guide](./enterprise_plan.md#running-the-sample-ibm-cloud)

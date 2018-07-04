@@ -9,7 +9,7 @@ Information and instructions regarding the use of these samples can be found in 
 The aim of the samples is to help you get started with Message Hub within minutes. They are not production-ready applications but should give you useful pointers at how to build, package and deploy applications as well as how to make basic API calls against us with error handling. We did all the heavy lifting so you can focus on developing exciting code with value!
 
 ## Provisioning your Message Hub Cluster
-In order to provision a Message Hub cluster, please visit the [IBM Cloud® catalog](https://console.stage1.bluemix.net/catalog/). Please also familiarise yourself with Message Hub and Apache Kafka basics and terminology. [Our documentation](https://console.bluemix.net/docs/services/MessageHub/) is a good starting point.
+In order to provision a Message Hub cluster, please visit the [IBM Cloud® catalog](https://console.bluemix.net/catalog/). Please also familiarise yourself with Message Hub and Apache Kafka basics and terminology. [Our documentation](https://console.bluemix.net/docs/services/MessageHub/) is a good starting point.
 
 
 ### Pricing plans

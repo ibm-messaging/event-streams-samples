@@ -3,7 +3,7 @@ This Java console application demonstrates how to connect to [IBM Message Hub](h
 
 It can be run locally on your machine or deployed into [IBM Cloud](https://console.ng.bluemix.net/). The readme focuses on running the application on a local console.
 
-For help with additional deployment modes, please refer to our [connection guide](https://console.stage1.bluemix.net/docs/services/MessageHub/messagehub127.html#connect_messagehub).
+For help with additional deployment modes, please refer to our [connection guide](https://console.bluemix.net/docs/services/MessageHub/messagehub127.html#connect_messagehub).
 
 __Important Note__: This sample creates a topic named `kafka-java-console-sample-topic` on your behalf with one partition - this will incur a fee on our Standard Plan if the topic does not already exist on your account.
 

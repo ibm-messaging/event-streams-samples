@@ -45,6 +45,7 @@ exports.buildConsumer = function(Kafka, consumer_opts, topicName, shutdown) {
     // Register error listener
     consumer.on('event.error', function(err) {
         console.error('Error from consumer:' + JSON.stringify(err));
+        consumer.consume();
     });
 
     var consumedMessages = []

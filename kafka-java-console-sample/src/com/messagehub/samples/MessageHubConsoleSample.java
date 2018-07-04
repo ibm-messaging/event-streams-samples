@@ -123,7 +123,7 @@ public class MessageHubConsoleSample {
                 MessageHubCredentials credentials = BluemixEnvironment.getMessageHubCredentials();
 
                 bootstrapServers = stringArrayToCSV(credentials.getKafkaBrokersSasl());
-                adminRestURL = credentials.getKafkaRestUrl();
+                adminRestURL = credentials.getKafkaAdminUrl();
                 apiKey = credentials.getApiKey();
                 user = credentials.getUser();
                 password = credentials.getPassword();

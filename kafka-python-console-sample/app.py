@@ -62,7 +62,6 @@ class MessageHubSample(object):
 
             self.opts['brokers'] = args[1]
             self.opts['rest_endpoint'] = args[2]
-                        
             if ":" in args[3]:
                 credentials_list = args[3].split(":")
                 self.opts['api_key'] = credentials_list[1]

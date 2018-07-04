@@ -55,7 +55,7 @@ if (process.env.VCAP_SERVICES) {
     if (process.argv.length < 6) {
         console.log('ERROR: It appears the application is running outside of Bluemix but the arguments are incorrect for local mode.');
         console.log('\nUsage:\n' +
-                'node ' + process.argv[1] + ' <kafka_brokers_sasl> <kafka_admin_url> { <api_key> | <user = token>:<password> } <cert_location> [ -consumer | -producer ]\n');
+            'node ' + process.argv[1] + ' <kafka_brokers_sasl> <kafka_admin_url> <api_key> <cert_location> [ -consumer | -producer ]\n');
         process.exit(-1);
     }
 
@@ -78,7 +78,7 @@ if (process.env.VCAP_SERVICES) {
               "label": "messagehub",
               "credentials": {
                  "api_key": apiKey,
-                 "kafka_rest_url": restEndpoint,
+                 "kafka_admin_url": restEndpoint,
               }
            }
         ]
@@ -200,14 +200,14 @@ function runLoops() {
     }
 
     // Start the clients
-    if (runProducer) {
-        producer = ProducerLoop.buildProducer(Kafka, producer_opts, topicName, shutdown);
-        producer.connect();
-    }
-
     if (runConsumer) {
         consumer = ConsumerLoop.buildConsumer(Kafka, consumer_opts, topicName, shutdown);
         consumer.connect();
+    }
+
+    if (runProducer) {
+        producer = ProducerLoop.buildProducer(Kafka, producer_opts, topicName, shutdown);
+        producer.connect();
     }
 };
 

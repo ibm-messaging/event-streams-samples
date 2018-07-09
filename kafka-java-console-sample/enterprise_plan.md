@@ -16,15 +16,21 @@ To run the samples, you will:
 * You logged in to IBM Cloud via the command line tool, [IBM Cloud CLI](https://console.bluemix.net/docs/cli/reference/bluemix_cli/get_started.html#getting-started)
 
 ## Set up a cloud Foundry alias for your Service
-The Enterprise plan is IAM enabled. Therefore the following extra step is required to create a Cloud Foundry alias for your Service:
+The Enterprise plan is IAM enabled. Therefore the following extra steps are required to create a Cloud Foundry alias for your Service:
+
+Select a resource group, for example if you wish to pick the default resource group then run:
+
+```shell
+ibmcloud target -g default
+```
 
 Create a Cloud Foundry alias for your service's associated CRN (your selected organization and space will be where your Service Alias will be created. If you wish to change your organization and space, you can use `ibmcloud target -cf`):
 
 ```shell
-ibmcloud resource service-alias-create <messagehub-service-name> --instance-name <messagehub-service-name>
+ibmcloud resource service-alias-create <messagehub-alias-service-name> --instance-name <messagehub-service-name>
 ```
 
-Having created this alias associated your Service with a Cloud Foundry Organization and Space, thereby enabling your Cloud Foundry application to referrence it and connect to it.
+Having created this alias associated your Service with a Cloud Foundry Organization and Space, thereby enabling your Cloud Foundry application to reference it and connect to it.
 
 ## Setup the manifest.yml
 To deploy the sample as a Cloud Foundry application, you need to edit `manifest.yml`.

@@ -13,14 +13,20 @@ To deploy and run the sample:
 ## Set up a Cloud Foundry Service Alias
 Before continuing, connect to IBM Cloud with the [IBM Cloud command line interface](https://console.bluemix.net/docs/cli/reference/bluemix_cli/get_started.html#getting-started).
 
-The Enterprise plan is IAM enabled. Therefore the following extra step is required to create a Cloud Foundry alias for your Service:
+The Enterprise plan is IAM enabled. Therefore the following extra steps are required to create a Cloud Foundry alias for your Service:
+
+Select a resource group, for example if you wish to pick the default resource group then run:
+
+```shell
+ibmcloud target -g default
+```
 
 Create a Cloud Foundry alias for your service's associated CRN:
 ```shell
-ibmcloud resource service-alias-create <messagehub-service-name> --instance-name <messagehub-service-name>
+ibmcloud resource service-alias-create <messagehub-alias-service-name> --instance-name <messagehub-service-name>
 ```
 
-Having created this alias associated your Service with a Cloud Foundry Organization and Space, thereby enabling your Cloud Foundry application to referrence it and connect to it.
+Having created this alias associated your Service with a Cloud Foundry Organization and Space, thereby enabling your Cloud Foundry application to reference it and connect to it.
 
 ## Setup the manifest.yml
 To deploy applications using the IBM WebSphere Application Server Liberty Buildpack, you are required to accept the IBM Liberty license and IBM JRE license by following the instructions below:

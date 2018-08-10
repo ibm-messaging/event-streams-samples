@@ -1,4 +1,4 @@
-# IBM Message Hub Kafka Java console sample application deployment to a Standard Plan Message Hub
+# IBM Event Streams Kafka Java console sample application deployment to a Standard Plan Event Streams
 
 
 ## Overview
@@ -11,11 +11,11 @@ To run the samples, you will:
 ## Setup the manifest.yml
 To deploy the sample as a Cloud Foundry application, you need to edit `manifest.yml`.
 
-You need to point the application at your Message Hub service by editing:
+You need to point the application at your Event Streams service by editing:
 
 ```
  services:
-    - "<YOUR_MESSAGE_HUB_SERVICE_NAME>"
+    - "<YOUR_EVENT_STREAMS_SERVICE_NAME>"
 ```
 
 You can optionally rename your application, eg.:
@@ -35,7 +35,7 @@ gradle clean && gradle build
 
 2) Before continuing, connect to IBM Cloud with the [IBM Cloud command line interface](https://console.bluemix.net/docs/cli/reference/bluemix_cli/get_started.html#getting-started).
 
-3) Navigate to the appropriate Cloud Foundry Account, Organization and Space of your choice. If you're new to IBM Cloud then just navigate to the place where your Message Hub instance has been provisioned.
+3) Navigate to the appropriate Cloud Foundry Account, Organization and Space of your choice. If you're new to IBM Cloud then just navigate to the place where your Event Streams instance has been provisioned.
 
 4) Push and start the application in IBM Cloud:
 

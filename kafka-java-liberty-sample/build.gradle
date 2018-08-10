@@ -25,8 +25,8 @@ apply plugin: 'war'
 group = 'net.wasdev.wlp.sample'
 version = '1.0-SNAPSHOT'
 
-description = """Message Hub Liberty Sample"""
-war.archiveName "MessageHubLibertyApp.war"
+description = """Event Streams Liberty Sample"""
+war.archiveName "EventStreamsLibertyApp.war"
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 

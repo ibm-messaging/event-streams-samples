@@ -1,7 +1,7 @@
 {
-  "name": "message-hub-nodejs-console-sample",
+  "name": "event-streams-nodejs-console-sample",
   "version": "3.0.0",
-  "description": "Nodejs sample that uses node-rdkafka to interact with MessageHub",
+  "description": "Nodejs sample that uses node-rdkafka to interact with Event Streams",
   "repository": {
     "type": "git",
     "url": "https://github.com/ibm-messaging/message-hub-samples"
@@ -25,7 +25,7 @@
     "ibm",
     "message",
     "hub",
-    "messagehub",
+    "eventstreams",
     "kafka",
     "apache",
     "bluemix",

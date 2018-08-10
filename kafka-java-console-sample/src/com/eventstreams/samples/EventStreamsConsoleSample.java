@@ -17,7 +17,7 @@
  * Licensed Materials - Property of IBM
  * (c) Copyright IBM Corp. 2015-2016
  */
-package com.messagehub.samples;
+package com.eventstreams.samples;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,23 +31,23 @@ import java.util.Properties;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import com.messagehub.samples.bluemix.BluemixEnvironment;
-import com.messagehub.samples.bluemix.MessageHubCredentials;
-import com.messagehub.samples.rest.RESTAdmin;
+import com.eventstreams.samples.bluemix.BluemixEnvironment;
+import com.eventstreams.samples.bluemix.EventStreamsCredentials;
+import com.eventstreams.samples.rest.RESTAdmin;
 
 /**
- * Console-based sample interacting with Message Hub, authenticating with SASL/PLAIN over an SSL connection.
+ * Console-based sample interacting with Event Streams, authenticating with SASL/PLAIN over an SSL connection.
  *
  * @author IBM
  */
-public class MessageHubConsoleSample {
+public class EventStreamsConsoleSample {
 
     private static final String APP_NAME = "kafka-java-console-sample-2.0";
     private static final String DEFAULT_TOPIC_NAME = "kafka-java-console-sample-topic";
     private static final String ARG_CONSUMER = "-consumer";
     private static final String ARG_PRODUCER_ = "-producer";
     private static final String ARG_TOPIC = "-topic";
-    private static final Logger logger = Logger.getLogger(MessageHubConsoleSample.class);
+    private static final Logger logger = Logger.getLogger(EventStreamsConsoleSample.class);
 
     private static Thread consumerThread = null;
     private static ConsumerRunnable consumerRunnable = null;
@@ -84,9 +84,9 @@ public class MessageHubConsoleSample {
                 + "        Required. Comma separated list of broker endpoints to connect to, for\n"
                 + "        example \"host1:port1,host2:port2\".\n"
                 + "    kafka_admin_url\n"
-                + "        Required. The URL of the Message Hub Kafka administration REST endpoint.\n"
+                + "        Required. The URL of the Event Streams Kafka administration REST endpoint.\n"
                 + "    api_key or user/password\n"
-                + "        Required. A Message Hub API key or user/password used to authenticate access to Kafka.\n"
+                + "        Required. An Event Streams API key or user/password used to authenticate access to Kafka.\n"
                 + "        Use user/password if the user is defined as \"token\"\n"
                 + "    " + ARG_CONSUMER + "\n"
                 + "        Optional. Only consume message (do not produce messages to the topic).\n"
@@ -120,7 +120,7 @@ public class MessageHubConsoleSample {
                 logger.log(Level.INFO, "Running in Bluemix mode.");
                 resourceDir = userDir + File.separator + APP_NAME + File.separator + "bin" + File.separator + "resources";
 
-                MessageHubCredentials credentials = BluemixEnvironment.getMessageHubCredentials();
+                EventStreamsCredentials credentials = BluemixEnvironment.getEventStreamsCredentials();
 
                 bootstrapServers = stringArrayToCSV(credentials.getKafkaBrokersSasl());
                 adminRestURL = credentials.getKafkaAdminUrl();
@@ -183,7 +183,7 @@ public class MessageHubConsoleSample {
             logger.log(Level.INFO, "Kafka Endpoints: " + bootstrapServers);
             logger.log(Level.INFO, "Admin REST Endpoint: " + adminRestURL);
 
-            //Using Message Hub Admin REST API to create and list topics
+            //Using Event Streams Admin REST API to create and list topics
             //If the topic already exists, creation will be a no-op
             try {
                 logger.log(Level.INFO, "Creating the topic " + topicName);
@@ -212,7 +212,7 @@ public class MessageHubConsoleSample {
                 producerThread.start();
             }
 
-            logger.log(Level.INFO, "MessageHubConsoleSample will run until interrupted.");
+            logger.log(Level.INFO, "EventStreamsConsoleSample will run until interrupted.");
         } catch (Exception e) {
             logger.log(Level.ERROR, "Exception occurred, application will terminate", e);
             System.exit(-1);
@@ -248,7 +248,7 @@ public class MessageHubConsoleSample {
 
     /*
      * Retrieve client configuration information, using a properties file, for
-     * connecting to Message Hub Kafka.
+     * connecting to Event Streams Kafka.
      */
     static final Properties getClientConfiguration(Properties commonProps, String fileName, String user, String password) {
         Properties result = new Properties();
@@ -264,7 +264,7 @@ public class MessageHubConsoleSample {
         }
 
         result.putAll(commonProps);
-        //Adding in credentials for MessageHub auth
+        //Adding in credentials for EventStreams auth
         String saslJaasConfig = result.getProperty("sasl.jaas.config");
         saslJaasConfig = saslJaasConfig.replace("USERNAME", user).replace("PASSWORD", password);
         result.setProperty("sasl.jaas.config", saslJaasConfig);

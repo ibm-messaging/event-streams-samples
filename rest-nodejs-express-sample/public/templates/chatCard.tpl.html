@@ -19,7 +19,7 @@
 -->
 <md-card>
   <!--
-  Top toolbar, contains a button to the Message Hub Bluemix
+  Top toolbar, contains a button to the Event Streams Bluemix
   instructions and either the name of the sample or the ID
   or the user (depending on the state of the sample).
   -->
@@ -32,7 +32,7 @@
         target="_blank">
         <img src="images/messagehub-icon.png" class="message-hub-icon" />
       </md-button>
-      <h2 ng-if="!data.connectionDate" class="md-flex">&nbsp;IBM Message Hub :: Chat Sample</h2>
+      <h2 ng-if="!data.connectionDate" class="md-flex">&nbsp;IBM Event Streams :: Chat Sample</h2>
       <h2 ng-if="data.connectionDate" class="md-flex">&nbsp;User: {{ data.username }}</h2>
     </div>
   </md-toolbar>
@@ -90,8 +90,8 @@
     <section layout="column" layout-align="center center">
 
       <div class="md-padding intro-content">
-        Welcome to the Message Hub chat sample! This is a small sample to get you started, and to give
-        you a taste of what Message Hub can do. Click 'Connect' to try out the sample. Open
+        Welcome to the Event Streams chat sample! This is a small sample to get you started, and to give
+        you a taste of what Event Streams can do. Click 'Connect' to try out the sample. Open
         up a new <a href="/" target="_blank">tab</a> and see the messages being passed!
       </div>
 

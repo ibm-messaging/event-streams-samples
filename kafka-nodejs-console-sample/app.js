@@ -18,7 +18,7 @@
  * © Copyright IBM Corp. 2015-2017
  */
 var Kafka = require('node-rdkafka');
-var MessageHubAdminRest = require('message-hub-rest');
+var EventStreamsAdminRest = require('message-hub-rest');
 var ProducerLoop = require('./producerLoop.js');
 var ConsumerLoop = require('./consumerLoop.js');
 var fs = require('fs');
@@ -38,13 +38,13 @@ if (process.env.VCAP_SERVICES) {
     services = JSON.parse(process.env.VCAP_SERVICES);
     for (var key in services) {
         if (key.lastIndexOf('messagehub', 0) === 0) {
-            messageHubService = services[key][0];
-            opts.brokers = messageHubService.credentials.kafka_brokers_sasl;
-            opts.username = messageHubService.credentials.user;
-            opts.password = messageHubService.credentials.password;
+            eventStreamsService = services[key][0];
+            opts.brokers = eventStreamsService.credentials.kafka_brokers_sasl;
+            opts.username = eventStreamsService.credentials.user;
+            opts.password = eventStreamsService.credentials.password;
         }
     }
-    adminRestInstance = new MessageHubAdminRest(services);
+    adminRestInstance = new EventStreamsAdminRest(services);
 
     opts.calocation = '/etc/ssl/certs';
     
@@ -83,7 +83,7 @@ if (process.env.VCAP_SERVICES) {
            }
         ]
     };
-    adminRestInstance = new MessageHubAdminRest(services);
+    adminRestInstance = new EventStreamsAdminRest(services);
     
     // Bluemix/Ubuntu: '/etc/ssl/certs'
     // Red Hat: '/etc/pki/tls/cert.pem',
@@ -107,7 +107,7 @@ console.log("Kafka Endpoints: " + opts.brokers);
 console.log("Admin REST Endpoint: " + adminRestInstance.url.format());
 
 if (!opts.hasOwnProperty('brokers') || !opts.hasOwnProperty('username') || !opts.hasOwnProperty('password') || !opts.hasOwnProperty('calocation')) {
-    console.error('Error - Failed to retrieve options. Check that app is bound to a Message Hub service or that command line options are correct.');
+    console.error('Error - Failed to retrieve options. Check that app is bound to an Event Streams service or that command line options are correct.');
     process.exit(-1);
 }
 
@@ -139,7 +139,7 @@ process.on('SIGINT', function() {
 });
 
 
-// Use Message Hub's REST admin API to create the topic 
+// Use Event Streams' REST admin API to create the topic 
 // with 1 partition and a retention period of 24 hours.
 console.log('Creating the topic ' + topicName + ' with Admin REST API');
 adminRestInstance.topics.create(topicName, 1, 24)
@@ -152,7 +152,7 @@ adminRestInstance.topics.create(topicName, 1, 24)
     console.log(error);
 })
 .done(function() {
-    // Use Message Hub's REST admin API to list the existing topics
+    // Use Event Streams' REST admin API to list the existing topics
     adminRestInstance.topics.get()
     .then(function(response) {
         console.log('Admin REST Listing Topics:');

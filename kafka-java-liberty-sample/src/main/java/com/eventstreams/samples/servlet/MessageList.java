@@ -17,7 +17,7 @@
  * Licensed Materials - Property of IBM
  * (c) Copyright IBM Corp. 2016
  */
-package com.messagehub.samples.servlet;
+package com.eventstreams.samples.servlet;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -58,7 +58,7 @@ public class MessageList {
     }
 
     /**
-     * Build message list dependent on the format Message Hub requires. The
+     * Build message list dependent on the format Event Streams requires. The
      * message list is in the form: [{ "value": base_64_string }, ...]
      *
      * @return {String} String representation of a JSON object.

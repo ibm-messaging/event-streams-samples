@@ -17,7 +17,7 @@
  * Licensed Materials - Property of IBM
  * (c) Copyright IBM Corp. 2015-2017
  */
-package com.messagehub.samples;
+package com.eventstreams.samples;
 
 import java.util.Arrays;
 import java.util.HashMap;

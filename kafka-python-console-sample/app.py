@@ -26,7 +26,7 @@ import consumertask
 import producertask
 import rest
 
-class MessageHubSample(object):
+class EventStreamsSample(object):
 
     def __init__(self, args):
         self.topic_name = 'kafka-python-console-sample-topic'
@@ -43,12 +43,12 @@ class MessageHubSample(object):
             vcap_services = json.loads(os.environ.get('VCAP_SERVICES'))
             for vcap_service in vcap_services:
                 if vcap_service.startswith('messagehub'):
-                    messagehub_service = vcap_services[vcap_service][0]
-                    self.opts['brokers'] = ','.join(messagehub_service['credentials']['kafka_brokers_sasl'])
-                    self.opts['api_key'] = messagehub_service['credentials']['api_key']
-                    self.opts['username'] = messagehub_service['credentials']['user']
-                    self.opts['password'] = messagehub_service['credentials']['password']
-                    self.opts['rest_endpoint'] = messagehub_service['credentials']['kafka_admin_url']
+                    eventstreams_service = vcap_services[vcap_service][0]
+                    self.opts['brokers'] = ','.join(eventstreams_service['credentials']['kafka_brokers_sasl'])
+                    self.opts['api_key'] = eventstreams_service['credentials']['api_key']
+                    self.opts['username'] = eventstreams_service['credentials']['user']
+                    self.opts['password'] = eventstreams_service['credentials']['password']
+                    self.opts['rest_endpoint'] = eventstreams_service['credentials']['kafka_admin_url']
             self.opts['ca_location'] = '/etc/ssl/certs'
         else:
             # Running locally on development machine
@@ -91,17 +91,17 @@ class MessageHubSample(object):
         print('Admin REST Endpoint: {0}'.format(self.opts['rest_endpoint']))
 
         if any(k not in self.opts for k in ('brokers', 'username', 'password', 'ca_location', 'rest_endpoint', 'api_key')):
-            print('Error - Failed to retrieve options. Check that app is bound to a Message Hub service or that command line options are correct.')
+            print('Error - Failed to retrieve options. Check that app is bound to an Event Streams service or that command line options are correct.')
             sys.exit(-1)
 
-        # Use Message Hub's REST admin API to create the topic
+        # Use Event Streams' REST admin API to create the topic
         # with 1 partition and a retention period of 24 hours.
-        rest_client = rest.MessageHubRest(self.opts['rest_endpoint'], self.opts['api_key'])
+        rest_client = rest.EventStreamsRest(self.opts['rest_endpoint'], self.opts['api_key'])
         print('Creating the topic {0} with Admin REST API'.format(self.topic_name))
         response = rest_client.create_topic(self.topic_name, 1, 24)
         print(response.text)
 
-        # Use Message Hub's REST admin API to list the existing topics
+        # Use Event Streams' REST admin API to list the existing topics
         print('Admin REST Listing Topics:')
         response = rest_client.list_topics()
         print(response.text)
@@ -155,7 +155,7 @@ class MessageHubSample(object):
         sys.exit(0)
 
 if __name__ == "__main__":
-    app = MessageHubSample(sys.argv)
+    app = EventStreamSample(sys.argv)
     signal.signal(signal.SIGINT, app.shutdown)
     signal.signal(signal.SIGTERM, app.shutdown)
     print('This sample app will run until interrupted.')

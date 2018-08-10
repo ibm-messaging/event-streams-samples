@@ -17,7 +17,7 @@
  * Licensed Materials - Property of IBM
  * (c) Copyright IBM Corp. 2015-2016
  */
-package com.messagehub.samples;
+package com.eventstreams.samples;
 
 import java.util.List;
 import java.util.Properties;
@@ -79,7 +79,7 @@ public class ProducerRunnable implements Runnable {
                     // Send record asynchronously
                     Future<RecordMetadata> future = kafkaProducer.send(record);
                     
-                    // Synchronously wait for a response from Message Hub / Kafka on every message produced.
+                    // Synchronously wait for a response from Event Streams / Kafka on every message produced.
                     // For high throughput the future should be handled asynchronously.
                     RecordMetadata recordMetadata = future.get(5000, TimeUnit.MILLISECONDS);
                     producedMessages++;

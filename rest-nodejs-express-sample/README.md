@@ -1,4 +1,4 @@
-# IBM Message Hub REST Node.js Express sample application
+# IBM Event Streams REST Node.js Express sample application
 This Node.js sample can be used on multiple platforms - [IBM Bluemix](https://console.ng.bluemix.net/) or your own machine!
 
 __Important Note__: This sample creates a topic on your behalf with one partition - this will incur a fee if the topic does not already exist on your account.
@@ -6,20 +6,20 @@ __Important Note__: This sample creates a topic on your behalf with one partitio
 ## Prerequisites (Bluemix)
 To run the sample on Bluemix, you will need the following:
 
-* [Message Hub Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) provisioned in [IBM Bluemix](https://console.ng.bluemix.net/)
+* [Event Streams Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) provisioned in [IBM Bluemix](https://console.ng.bluemix.net/)
 * [Cloud Foundry Command Line Interface](https://github.com/cloudfoundry/cli/releases) installed
 
 ## Prerequisites (Local)
 The run the sample on your local machine, you will need the following:
 
-* [Message Hub Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) provisioned in [IBM Bluemix](https://console.ng.bluemix.net/)
+* [Event Streams Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) provisioned in [IBM Bluemix](https://console.ng.bluemix.net/)
 * Node.js 0.12.x or above
 
 ## Building and Running the Sample (Bluemix)
 The build and run the sample on Bluemix, all that needs to be done is the following:
 
-* Open the `manifest.yml` file and rename the `"message-hub-service"` entry to that of your own
-Message Hub Service Instance name.
+* Open the `manifest.yml` file and rename the `"event-streams-service"` entry to that of your own
+Event Streams Service Instance name.
 * Run `cf push` where 'project_name' is the name of your project in Bluemix.
 
 Once the files have been pushed to Bluemix, open a web browser and navigate to the endpoint provided by Bluemix.
@@ -40,8 +40,8 @@ node app.js <rest_endpoint> <api_key>
 
 The application will then produce the following output on start-up:
 ```
-Consumer Group Name: messagehub-rest-nodejs-chat-87da0e40
-Consumer Group Instance: messagehub-rest-nodejs-consumer-instance-u659ayw5
+Consumer Group Name: eventstreams-rest-nodejs-chat-87da0e40
+Consumer Group Instance: eventstreams-rest-nodejs-consumer-instance-u659ayw5
 HTTP server started on port 6003
 "livechat" topic created.
 Consumer Instance created.

@@ -17,16 +17,16 @@
  * Licensed Materials - Property of IBM
  * (c) Copyright IBM Corp. 2016
  */
-package com.messagehub.samples.env;
+package com.eventstreams.samples.env;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class MessageHubEnvironment {
+public class EventStreamsEnvironment {
 
     private String name, label, plan;
-    private MessageHubCredentials credentials;
+    private EventStreamsCredentials credentials;
     
     @JsonProperty
     public String getName() {
@@ -59,12 +59,12 @@ public class MessageHubEnvironment {
     }
     
     @JsonProperty
-    public MessageHubCredentials getCredentials() {
+    public EventStreamsCredentials getCredentials() {
         return credentials;
     }
 
     @JsonProperty
-    public void setCredentials(MessageHubCredentials credentials) {
+    public void setCredentials(EventStreamsCredentials credentials) {
         this.credentials = credentials;
     }
 }

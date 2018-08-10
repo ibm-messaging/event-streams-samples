@@ -1,8 +1,8 @@
-# How to build librdkafka for use with IBM Message Hub
+# How to build librdkafka for use with IBM Event Streams
 
 [Librdkafka](https://github.com/edenhill/librdkafka) is a very good Kafka client written in C/C++. In fact, the clients we used in our Node.js and Python samples, node-rdkafka and confluent-kafka-python respectively, are actually languages bindings on top of librdkafka.
 
-Librdkafka is very flexible but in order to be able to work with Message Hub it needs to be built with the correct dependencies.
+Librdkafka is very flexible but in order to be able to work with Event Streams it needs to be built with the correct dependencies.
 
 ## Linux dependencies
 * openssl-dev

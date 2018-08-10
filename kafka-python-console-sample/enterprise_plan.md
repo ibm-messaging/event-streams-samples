@@ -1,15 +1,15 @@
-# IBM Message Hub Kafka Python console sample application: Enterprise Plan
-This Python console application demonstrates how to connect to [IBM Message Hub](https://console.ng.bluemix.net/docs/services/MessageHub/index.html), send and receive messages using the [confluent-kafka-python](https://github.com/confluentinc/confluent-kafka-python) library. It also shows how to create and list topics using the Message Hub Admin REST API.
+# IBM Event Streams Kafka Python console sample application: Enterprise Plan
+This Python console application demonstrates how to connect to [IBM Event Streams](https://console.ng.bluemix.net/docs/services/MessageHub/index.html), send and receive messages using the [confluent-kafka-python](https://github.com/confluentinc/confluent-kafka-python) library. It also shows how to create and list topics using the Event Streams Admin REST API.
 
-This tutorial will explain how to run the sample app in [Docker](https://docs.docker.com/) using a Message Hub Service in [IBM Cloud®](https://console.ng.bluemix.net/). We package the sample in docker this way to control the environment and allow SNI headers to be supported. It is also possible to host the application locally and still target your Message Hub Service running in IBM Cloud but that is not covered during this tutorial.
+This tutorial will explain how to run the sample app in [Docker](https://docs.docker.com/) using an Event Streams Service in [IBM Cloud®](https://console.ng.bluemix.net/). We package the sample in docker this way to control the environment and allow SNI headers to be supported. It is also possible to host the application locally and still target your Event Streams Service running in IBM Cloud but that is not covered during this tutorial.
 
 ## Prerequisites
 To build and run the sample, you must have the following:
 * [Docker](https://docs.docker.com/) installed
-* Provision a [Message Hub Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) in [IBM Cloud®](https://console.ng.bluemix.net/ss)
+* Provision a [Event Streams Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) in [IBM Cloud®](https://console.ng.bluemix.net/ss)
 
 ## Get Service Credentials from your Service
-You will need to obtain  the values for `<kafka_brokers_sasl>`, `<kafka_admin_url>`, `<user>` and `<password>`, so that they can be passed into the application later. To do this, access your Message Hub instance in the [Bluemix UI](console.bluemix.net/dashboard/apps), go to the Service Credentials tab and select the Credentials you want to use.
+You will need to obtain  the values for `<kafka_brokers_sasl>`, `<kafka_admin_url>`, `<user>` and `<password>`, so that they can be passed into the application later. To do this, access your Event Streams instance in the [Bluemix UI](console.bluemix.net/dashboard/apps), go to the Service Credentials tab and select the Credentials you want to use.
 
 **Note:** <kafka_brokers_sasl> must be a single string enclosed in quotes. For example: "host1:port1,host2:port2". We recommend using all the Kafka hosts listed in the Credentials you selected.
 

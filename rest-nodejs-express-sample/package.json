@@ -1,5 +1,5 @@
 {
-  "name": "MessageHubSample",
+  "name": "EventStreamsSample",
   "version": "0.0.1",
   "description": "A sample Node.js app for Message Hub on Bluemix",
   "scripts": {
@@ -23,7 +23,7 @@
     "ibm",
     "message",
     "hub",
-    "messagehub",
+    "eventstreams",
     "kafka",
     "apache",
     "bluemix",

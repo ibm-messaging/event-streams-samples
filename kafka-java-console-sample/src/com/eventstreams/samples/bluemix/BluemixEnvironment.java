@@ -17,7 +17,7 @@
  * Licensed Materials - Property of IBM
  * (c) Copyright IBM Corp. 2015-2016
  */
-package com.messagehub.samples.bluemix;
+package com.eventstreams.samples.bluemix;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,25 +55,27 @@ public class BluemixEnvironment {
     }
 
     /**
-     * Parses VCAP_SERVICES to extract Message Hub connection configuration
-     * @return an instance of MessageHubCredentials
-     * @throws IOException on parsing error
-     * @throws IllegalStateException if there is no Message Hub service bound to the application
+     * Parses VCAP_SERVICES to extract Event Streams connection configuration
+     * 
+     * @return an instance of EventStreamsCredentials
+     * @throws IOException           on parsing error
+     * @throws IllegalStateException if there is no Event Streams service bound to
+     *                               the application
      */
-    public static MessageHubCredentials getMessageHubCredentials() throws IOException  {
+    public static EventStreamsCredentials getEventStreamsCredentials() throws IOException  {
         // Arguments parsed via VCAP_SERVICES environment variable.
         String vcapServices = System.getenv("VCAP_SERVICES");
         ObjectMapper mapper = new ObjectMapper();
 
             try {
-                // Parse VCAP_SERVICES into Jackson JsonNode, then map the 'messagehub' entry
-                // to an instance of MessageHubEnvironment.
+                // Parse VCAP_SERVICES into Jackson JsonNode, then map the 'eventstreams' entry
+                // to an instance of EventStreamsEnvironment.
                 JsonNode vcapServicesJson = mapper.readValue(vcapServices, JsonNode.class);
                 ObjectMapper envMapper = new ObjectMapper();
                 String vcapKey = null;
                 Iterator<String> it = vcapServicesJson.fieldNames();
 
-                // Find the Message Hub service bound to this application.
+                // Find the Event Streams service bound to this application.
                 while (it.hasNext() && vcapKey == null) {
                     String potentialKey = it.next();
 
@@ -86,12 +88,12 @@ public class BluemixEnvironment {
                 // Sanity assertion check
                 if (vcapKey == null) {
                     logger.log(Level.ERROR,
-                            "Error while parsing VCAP_SERVICES: A Message Hub service instance is not bound to this application.");
-                    throw new IllegalStateException("Error while parsing VCAP_SERVICES: A Message Hub service instance is not bound to this application.");
+                            "Error while parsing VCAP_SERVICES: An Event Streams service instance is not bound to this application.");
+                    throw new IllegalStateException("Error while parsing VCAP_SERVICES: An Event Streams Hub service instance is not bound to this application.");
                 }
 
-                MessageHubEnvironment messageHubEnvironment = envMapper.readValue(vcapServicesJson.get(vcapKey).get(0).toString(), MessageHubEnvironment.class);
-                MessageHubCredentials credentials = messageHubEnvironment.getCredentials();
+                EventStreamsEnvironment eventStreamsEnvironment = envMapper.readValue(vcapServicesJson.get(vcapKey).get(0).toString(), EventStreamsEnvironment.class);
+                EventStreamsCredentials credentials = eventStreamsEnvironment.getCredentials();
                 return credentials;
             } catch (IOException e) {
                 logger.log(Level.ERROR, "Failed parsing or processing VCAP_SERVICES", e);

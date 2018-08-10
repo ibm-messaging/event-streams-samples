@@ -20,7 +20,7 @@
 */
 var Express = require('express');
 var Cfenv = require('cfenv');
-var MessageHub = require('message-hub-rest');
+var EventStreams = require('message-hub-rest');
 
 /**
  * registerExitHandlers
@@ -87,8 +87,8 @@ var cleanedUp = false;
 var consumerInstance;
 var connectedIds = [];
 var instance;
-var consumerGroupName = 'messagehub-rest-nodejs-chat-' + generateID();
-var consumerInstanceName = 'messagehub-rest-nodejs-consumer-instance-' + generateID();
+var consumerGroupName = 'eventstreams-rest-nodejs-chat-' + generateID();
+var consumerInstanceName = 'eventstreams-rest-nodejs-consumer-instance-' + generateID();
 var produceInterval;
 
 console.log('Consumer Group Name: ' + consumerGroupName);
@@ -105,7 +105,7 @@ registerExitHandler(function() {
 io.on('connection', function(socket) {
 
   var pushMessage = function(id, message) {
-    var list = new MessageHub.MessageList();
+    var list = new EventStreams.MessageList();
     var message = {
       user: id,
       message: message,
@@ -175,7 +175,7 @@ io.on('connection', function(socket) {
   /**
    * on('new_message')
    * Message received when the user sends a message
-   * via the WebUI. The message is pushed into Message Hub.
+   * via the WebUI. The message is pushed into Event Streams.
   */
   socket.on('new_message', function(data) {
     console.log(socket.id + ' pushing message: ' + data);
@@ -206,9 +206,9 @@ var start = function(restEndpoint, apiKey, callback) {
     console.log('Endpoint and API Key provided have been ignored, as there is a valid VCAP_SERVICES.');
   }
 
-  instance = new MessageHub(appEnv.services);
+  instance = new EventStreams(appEnv.services);
 
-  // Set up an interval which will poll Message Hub for
+  // Set up an interval which will poll Event Streams for
   // new messages on the 'livechat' topic.
   produceInterval = setInterval(function() {
 

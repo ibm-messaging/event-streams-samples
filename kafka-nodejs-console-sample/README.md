@@ -1,5 +1,5 @@
-# IBM Message Hub Kafka Node.js console sample application
-This Node.js console application demonstrates how to connect to [IBM Message Hub](https://console.ng.bluemix.net/docs/services/MessageHub/index.html), send and receive messages using the [node-rdkafka](https://github.com/Blizzard/node-rdkafka) module. It also shows how to create and list topics using the Message Hub Admin REST API.
+# IBM Event Streams Kafka Node.js console sample application
+This Node.js console application demonstrates how to connect to [IBM Event Streams](https://console.ng.bluemix.net/docs/services/MessageHub/index.html), send and receive messages using the [node-rdkafka](https://github.com/Blizzard/node-rdkafka) module. It also shows how to create and list topics using the Event Streams Admin REST API.
 
 It can be run locally on your machine or deployed into [IBM Cloud®](https://console.ng.bluemix.net/).
 
@@ -10,23 +10,23 @@ __Important Note__: This sample creates on your behalf a topic named `kafka-node
 ## Global Prerequisites
 To run the sample, you must have done the following:
 * Obtain this repository's contents, either use `git` or just download the samples as a ZIP
-* [Message Hub Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) provisioned in [IBM Cloud®](https://console.ng.bluemix.net/)
+* [Event Streams Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) provisioned in [IBM Cloud®](https://console.ng.bluemix.net/)
 
 ## Prerequisites (IBM Cloud®)
 * [Cloud Foundry Command Line Interface](https://github.com/cloudfoundry/cli/releases) installed
 
 ## Standard or Enterprise Plan?
 
-**It's important to know which Message Hub plan you're using as the sample deployment steps are subtly different on each plan respectively.**
+**It's important to know which Event Streams plan you're using as the sample deployment steps are subtly different on each plan respectively.**
 
-By this point, you should have a Message Hub instance provisioned. If you haven't done this step yet, please refer to the main [readme](/README.md).
+By this point, you should have an Event Streams instance provisioned. If you haven't done this step yet, please refer to the main [readme](/README.md).
 
-If you are not sure what type of Message Hub instance you have then you can find this information out by visiting IBM Cloud's web console [dashboard](https://console.bluemix.net/dashboard).
+If you are not sure what type of Event Streams instance you have then you can find this information out by visiting IBM Cloud's web console [dashboard](https://console.bluemix.net/dashboard).
 
-*Please make sure you are in the appropriate Region, Account, Organization and Space where you provisioned your Message Hub instance!*
+*Please make sure you are in the appropriate Region, Account, Organization and Space where you provisioned your Event Streams instance!*
 
-* Message Hub Standard plan services are "Cloud Foundry Services" with the plan column showing "Standard".
-* Message Hub Enterprise plan services are "Services" with the plan column showing "Enterprise".
+* Event Streams Standard plan services are "Cloud Foundry Services" with the plan column showing "Standard".
+* Event Streams Enterprise plan services are "Services" with the plan column showing "Enterprise".
 
 
 ## Deploy the Application

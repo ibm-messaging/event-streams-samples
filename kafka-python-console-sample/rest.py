@@ -18,7 +18,7 @@
 """
 import requests
 
-class MessageHubRest(object):
+class EventStreamsRest(object):
 
     def __init__(self, rest_endpoint, api_key):
         self.path = '{0}/admin/topics'.format(rest_endpoint)

@@ -1,14 +1,14 @@
-# IBM Message Hub Kafka Python console sample application: Standard Plan
-This Python console application demonstrates how to connect to [IBM Message Hub](https://console.ng.bluemix.net/docs/services/MessageHub/index.html), send and receive messages using the [confluent-kafka-python](https://github.com/confluentinc/confluent-kafka-python) library. It also shows how to create and list topics using the Message Hub Admin REST API.
+# IBM Event Streams Kafka Python console sample application: Standard Plan
+This Python console application demonstrates how to connect to [IBM Event Streams](https://console.ng.bluemix.net/docs/services/MessageHub/index.html), send and receive messages using the [confluent-kafka-python](https://github.com/confluentinc/confluent-kafka-python) library. It also shows how to create and list topics using the Event Streams Admin REST API.
 
-This tutorial will explain how to run the sample app in [IBM Cloud®](https://console.ng.bluemix.net/) using a Message Hub Service. It is also possible to host the application locally and still target your Message Hub Service running in IBM Cloud but that is not covered during this tutorial.
+This tutorial will explain how to run the sample app in [IBM Cloud®](https://console.ng.bluemix.net/) using a Event Streams Service. It is also possible to host the application locally and still target your Event Streams Service running in IBM Cloud but that is not covered during this tutorial.
 
 __Important Note__: This sample creates on your behalf a topic named `kafka-python-console-sample-topic` with one partition - this will incur a fee if the topic does not already exist on your account.
 
 ## Prerequisites
 To build and run the sample, you must have the following:
 * Install the [IBM Cloud CLI](https://console.bluemix.net/docs/cli/reference/bluemix_cli/download_cli.html)
-* Provision a [Message Hub Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) in [IBM Cloud®](https://console.ng.bluemix.net/)
+* Provision a [Event Streams Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) in [IBM Cloud®](https://console.ng.bluemix.net/)
 
 ## Overview
 To deploy and run the sample:
@@ -17,7 +17,7 @@ To deploy and run the sample:
 * Check the app logs to see messages being produced and consumed
 
 ## Running the Sample (IBM Cloud®)
-Open the `manifest.yml` file and rename the `"Message Hub-CHANGEME"` entry to that of your own Message Hub Service Instance name.
+Open the `manifest.yml` file and rename the `"Event Streams-CHANGEME"` entry to that of your own Event Streams Service Instance name.
 
 Connect to IBM Cloud® with the Cloud Foundry Command Line Interface, making sure you are in the same org and space as your service, and run the following command in the same directory as the `manifest.yml` file:
 ```shell

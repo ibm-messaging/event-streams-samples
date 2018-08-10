@@ -7,4 +7,4 @@ applications:
   no-route: true
   health-check-type: none
   services:
-    - "<YOUR_MESSAGE_HUB_SERVICE_NAME>"
+    - "<YOUR_EVENT_STREAMS_SERVICE_NAME>"

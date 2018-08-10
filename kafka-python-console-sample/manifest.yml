@@ -8,6 +8,6 @@ applications:
   no-route: true
   health-check-type: none
   services:
-    - "Message Hub-CHANGEME"
+    - "Event Streams-CHANGEME"
   env:
     LD_LIBRARY_PATH: /home/vcap/app/confluent_kafka_prebuilt/

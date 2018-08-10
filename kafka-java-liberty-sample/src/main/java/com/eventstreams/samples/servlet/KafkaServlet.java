@@ -17,7 +17,7 @@
  * Licensed Materials - Property of IBM
  * (c) Copyright IBM Corp. 2016
  */
-package com.messagehub.samples.servlet;
+package com.eventstreams.samples.servlet;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -64,8 +64,8 @@ import org.xml.sax.InputSource;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.messagehub.samples.env.MessageHubCredentials;
-import com.messagehub.samples.env.MessageHubEnvironment;
+import com.eventstreams.samples.env.EventStreamsCredentials;
+import com.eventstreams.samples.env.EventStreamsEnvironment;
 
 /**
  * Servlet implementation class KafkaServlet
@@ -76,7 +76,7 @@ public class KafkaServlet extends HttpServlet {
 
     private final Logger logger = Logger.getLogger(KafkaServlet.class);
     private final String userDir = System.getProperty("user.dir");
-    private final String resourceDir = userDir + File.separator + "apps" + File.separator + "MessageHubLibertyApp.war"
+    private final String resourceDir = userDir + File.separator + "apps" + File.separator + "EventStreamsLibertyApp.war"
             + File.separator + "resources";
     private KafkaProducer<byte[], byte[]> kafkaProducer;
     private ConsumerRunnable consumerRunnable;
@@ -100,7 +100,7 @@ public class KafkaServlet extends HttpServlet {
         logger.log(Level.WARN, "User directory: " + userDir);
         logger.log(Level.WARN, "Resource directory: " + resourceDir);
 
-        // Retrieve kafka-Host, rest-Host and API key from Message Hub
+        // Retrieve kafka-Host, rest-Host and API key from Event Streams
         // VCAP_SERVICES.
         // Set JAAS configuration property.
         if (System.getProperty("java.security.auth.login.config") == null) {
@@ -119,13 +119,13 @@ public class KafkaServlet extends HttpServlet {
             try {
                 // Parse VCAP_SERVICES into Jackson JsonNode, then map the
                 // 'messagehub' entry
-                // to an instance of MessageHubEnvironment.
+                // to an instance of EventStreamsEnvironment.
                 JsonNode vcapServicesJson = mapper.readValue(vcapServices, JsonNode.class);
                 ObjectMapper envMapper = new ObjectMapper();
                 String vcapKey = null;
                 Iterator<String> it = vcapServicesJson.fieldNames();
 
-                // Find the Message Hub service bound to this application.
+                // Find the Event Streams service bound to this application.
                 while (it.hasNext() && vcapKey == null) {
                     String potentialKey = it.next();
 
@@ -137,15 +137,15 @@ public class KafkaServlet extends HttpServlet {
 
                 if (vcapKey == null) {
                     logger.log(Level.ERROR,
-                               "Error while parsing VCAP_SERVICES: A Message Hub service instance is not bound to this application.");
+                               "Error while parsing VCAP_SERVICES: An Event Streams service instance is not bound to this application.");
                     return;
                 }
 
-                MessageHubEnvironment messageHubEnvironment = envMapper.readValue(
+                EventStreamsEnvironment eventStreamsEnvironment = envMapper.readValue(
                                                                                   vcapServicesJson.get(vcapKey).get(0)
                                                                                                   .toString(),
-                                                                                  MessageHubEnvironment.class);
-                MessageHubCredentials credentials = messageHubEnvironment.getCredentials();
+                                                                                  EventStreamsEnvironment.class);
+                EventStreamsCredentials credentials = eventStreamsEnvironment.getCredentials();
 
                 kafkaHost = credentials.getKafkaBrokersSasl()[0];
                 adminHost = credentials.getKafkaAdminUrl();
@@ -200,7 +200,7 @@ public class KafkaServlet extends HttpServlet {
     }
 
     /**
-     * Produces a message to a Message Hub endpoint.
+     * Produces a message to a Event Streams endpoint.
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -233,7 +233,7 @@ public class KafkaServlet extends HttpServlet {
      * @param broker
      *            {String} A string representing a list of brokers the producer can contact.
      * @param apiKey
-     *            {String} The API key of the Bluemix Message Hub service.
+     *            {String} The API key of the Bluemix Event Streams service.
      * @param isProducer
      *            {Boolean} Flag used to determine whether or not the configuration is for a producer.
      * @return {Properties} A properties object which stores the client configuration info.
@@ -266,7 +266,7 @@ public class KafkaServlet extends HttpServlet {
             props.put("ssl.truststore.location", "/home/vcap/app/.java/jre/lib/security/cacerts");
         }
         
-        //Adding in credentials for MessageHub auth
+        //Adding in credentials for EventStreams auth
         String saslJaasConfig = props.getProperty("sasl.jaas.config");
         saslJaasConfig = saslJaasConfig.replace("USERNAME", user).replace("PASSWORD", password);
         props.setProperty("sasl.jaas.config", saslJaasConfig);
@@ -292,13 +292,13 @@ public class KafkaServlet extends HttpServlet {
 
         try {
             // Create a producer record which will be sent
-            // to the Message Hub service, providing the topic
+            // to the Event Streams service, providing the topic
             // name, field name and message. The field name and
             // message are converted to UTF-8.
             ProducerRecord<byte[], byte[]> record = new ProducerRecord<byte[], byte[]>(topic,
                     fieldName.getBytes("UTF-8"), list.build().getBytes("UTF-8"));
 
-            // Synchronously wait for a response from Message Hub / Kafka.
+            // Synchronously wait for a response from Event Streams/ Kafka.
             RecordMetadata m = kafkaProducer.send(record).get();
             producedMessages++;
 

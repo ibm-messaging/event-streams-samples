@@ -1,4 +1,4 @@
-# IBM Message Hub Kafka Node.js console sample application: Enterprise Plan deployment into IBM Cloud
+# IBM Event Streams Kafka Node.js console sample application: Enterprise Plan deployment into IBM Cloud
 
 ## Prerequisites (IBM Cloud®)
 * [Cloud Foundry Command Line Interface](https://github.com/cloudfoundry/cli/releases) installed
@@ -19,14 +19,14 @@ The Enterprise plan is IAM enabled. Therefore the following extra step is requir
 
 Create a Cloud Foundry alias for your service's associated CRN:
 ```shell
-ibmcloud resource service-alias-create <messagehub-service-name> --instance-name <messagehub-service-name>
+ibmcloud resource service-alias-create <eventstreams-service-name> --instance-name <eventstreams-service-name>
 ```
 
 Having created this alias associated your Service with a Cloud Foundry Organization and Space, thereby enabling your Cloud Foundry application to referrence it and connect to it.
 
 
 ## Setup the manifest.yml
-Open the `manifest.yml` file and rename the `"Message Hub-CHANGEME"` entry to that of your own Message Hub Service Instance *Alias* name:
+Open the `manifest.yml` file and rename the `"Event Streams-CHANGEME"` entry to that of your own Event Streams Service Instance *Alias* name:
 
 ```
   services:
@@ -48,7 +48,7 @@ ibmcloud cf push --no-start
 This will push your application but will not start it just yet. We'll need to re-configure the security settings such that the application is allowed to create topics:
 
 ## Re-configure the binding
-The NodeJS build pack tries to be helpful by auto-creating a binding in between the Cloud Foundry Service Alias and the application pushed. This is however with a role that doesn't allow topic creation within Message Hub. As such, we need to re-bind the app:
+The NodeJS build pack tries to be helpful by auto-creating a binding in between the Cloud Foundry Service Alias and the application pushed. This is however with a role that doesn't allow topic creation within Event Streams. As such, we need to re-bind the app:
 
 ```
 ibmcloud resource service-binding-delete <YOUR_SERVICE_INSTANCE_ALIAS_NAME> <YOUR APPLICATION'S NAME>

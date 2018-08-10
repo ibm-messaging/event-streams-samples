@@ -4,7 +4,7 @@ applications:
   instances: 1
   buildpack: liberty-for-java
   domain: mybluemix.net
-  name: MessageHubLibertyApp
+  name: EventStreamsLibertyApp
   disk_quota: 1024M
   random-route: true
   services:

@@ -1,4 +1,4 @@
-# IBM Message Hub Kafka Java console sample application deployment to an Enterprise Plan Message Hub
+# IBM Event Streams Kafka Java console sample application deployment to an Enterprise Plan Event Streams
 
 ## Overview
 
@@ -21,7 +21,7 @@ The Enterprise plan is IAM enabled. Therefore the following extra step is requir
 Create a Cloud Foundry alias for your service's associated CRN (your selected organization and space will be where your Service Alias will be created. If you wish to change your organization and space, you can use `ibmcloud target -cf`):
 
 ```shell
-ibmcloud resource service-alias-create <messagehub-service-name> --instance-name <messagehub-service-name>
+ibmcloud resource service-alias-create <eventstreams-service-name> --instance-name <eventstreams-service-name>
 ```
 
 Having created this alias associated your Service with a Cloud Foundry Organization and Space, thereby enabling your Cloud Foundry application to referrence it and connect to it.
@@ -29,11 +29,11 @@ Having created this alias associated your Service with a Cloud Foundry Organizat
 ## Setup the manifest.yml
 To deploy the sample as a Cloud Foundry application, you need to edit `manifest.yml`.
 
-You need to point the application at your Message Hub Cloud Foundry Service **Alias** service by editing:
+You need to point the application at your Event Streams Cloud Foundry Service **Alias** service by editing:
 
 ```
  services:
-    - "<YOUR_MESSAGE_HUB_SERVICE_*ALIAS*_NAME>"
+    - "<YOUR_EVENT_STREAMS_SERVICE_*ALIAS*_NAME>"
 ```
 
 You can optionally rename your application, eg.:
@@ -51,7 +51,7 @@ gradle clean && gradle build
 
 Ensure that the `gradle build` command has produced a zip file artifact under `build/distributions`.
 
-Navigate to the appropriate Cloud Foundry Account, Organization and Space of your choice. If you're new to IBM Cloud then just navigate to the place where your Message Hub instance has been provisioned. *(If you're following this guide from the start then you can skip this step safely as you're already at the location where your Service Alias has been created.)*
+Navigate to the appropriate Cloud Foundry Account, Organization and Space of your choice. If you're new to IBM Cloud then just navigate to the place where your Event Streams instance has been provisioned. *(If you're following this guide from the start then you can skip this step safely as you're already at the location where your Service Alias has been created.)*
 
 ## Push the application into IBM Cloud®
 Push the app without starting it immediately by running the following command in the same directory as the `manifest.yml` file:

@@ -1,4 +1,4 @@
-# IBM Message Hub Kafka Node.js console sample application: Standard Plan deployment into IBM Cloud
+# IBM Event Streams Kafka Node.js console sample application: Standard Plan deployment into IBM Cloud
 
 ## Prerequisites (IBM Cloud®)
 * [Cloud Foundry Command Line Interface](https://github.com/cloudfoundry/cli/releases) installed
@@ -12,7 +12,7 @@ To run the samples, you will:
 
 ## Prepare the `manifest.yml` file
 
-Open the `manifest.yml` file and rename the `"Message Hub-CHANGEME"` entry to that of your own Message Hub Service Instance name.
+Open the `manifest.yml` file and rename the `"Event Streams-CHANGEME"` entry to that of your own Event Streams Service Instance name.
 
 ```
   services:
@@ -27,7 +27,7 @@ You can optionally change the application's name:
 
 ## Deploying and running the sample on the IBM Cloud
 
-Connect to IBM Cloud® with the Cloud Foundry Command Line Interface. You might need to navigate to the Cloud Foundry Organization and Space your Message Hub instance has been provisoned in. Use `ibmcloud target -cf` to do this interactively.
+Connect to IBM Cloud® with the Cloud Foundry Command Line Interface. You might need to navigate to the Cloud Foundry Organization and Space your Event Streams instance has been provisoned in. Use `ibmcloud target -cf` to do this interactively.
 
 When in the right Organisation and Space, run the following command in the same directory as the `manifest.yml` file, run the following to push out the application into the IBM Cloud:
 

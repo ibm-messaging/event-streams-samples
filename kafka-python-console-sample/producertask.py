@@ -17,14 +17,11 @@
  © Copyright IBM Corp. 2015-2017
 """
 import asyncio
+from confluent_kafka import Producer
 
 class ProducerTask(object):
 
-    def __init__(self, is_bluemix, conf, topic_name):
-        try:
-            from confluent_kafka import Producer
-        except:
-            from confluent_kafka_prebuilt import Producer
+    def __init__(self, conf, topic_name):
         self.topic_name = topic_name
         self.producer = Producer(conf)
         self.counter = 0

@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kafka-java-liberty-sample
+  namespace: default
+spec:
+  containers:
+  - image: ibmcom/kafka-java-liberty-sample:latest
+    imagePullPolicy: IfNotPresent
+    name: liberty-sample
+    env:
+    - name: VCAP_SERVICES
+      valueFrom:
+          secretKeyRef:
+            name: messagehub-binding
+            key: binding
+    ports:
+    - containerPort: 9080
+      name: sample
+      protocol: TCP

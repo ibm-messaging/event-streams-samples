@@ -19,20 +19,21 @@
  */
 package com.messagehub.samples;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.kafka.clients.CommonClientConfigs;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.config.SaslConfigs;
+import org.apache.kafka.common.config.SslConfigs;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import com.messagehub.samples.bluemix.BluemixEnvironment;
-import com.messagehub.samples.bluemix.MessageHubCredentials;
+import com.messagehub.samples.env.Environment;
+import com.messagehub.samples.env.MessageHubCredentials;
 import com.messagehub.samples.rest.RESTAdmin;
 
 /**
@@ -53,7 +54,6 @@ public class MessageHubConsoleSample {
     private static ConsumerRunnable consumerRunnable = null;
     private static Thread producerThread = null;
     private static ProducerRunnable producerRunnable = null;
-    private static String resourceDir;
 
     //add shutdown hooks (intercept CTRL-C etc.)
     static {
@@ -101,43 +101,36 @@ public class MessageHubConsoleSample {
 
     public static void main(String args[])  {
         try {
-            final String userDir = System.getProperty("user.dir");
-            final boolean isRunningInBluemix = BluemixEnvironment.isRunningInBluemix();
-            final Properties clientProperties = new Properties();
-
             String bootstrapServers = null;
             String adminRestURL = null;
             String apiKey = null;
             boolean runConsumer = true;
             boolean runProducer = true;
             String topicName = DEFAULT_TOPIC_NAME;
-            String user;
-            String password;
+            if (args.length == 0 && System.getenv("VCAP_SERVICES") == null) {
+                printUsage();
+                System.exit(-1);
+            }
+            // Check environment: VCAP_SERVICES vs command line arguments, to obtain configuration parameters
+            if (args.length == 0) {
 
-            // Check environment: Bluemix vs Local, to obtain configuration parameters
-            if (isRunningInBluemix) {
+                logger.log(Level.INFO, "Using VCAP_SERVICES to find credentials.");
 
-                logger.log(Level.INFO, "Running in Bluemix mode.");
-                resourceDir = userDir + File.separator + APP_NAME + File.separator + "bin" + File.separator + "resources";
-
-                MessageHubCredentials credentials = BluemixEnvironment.getMessageHubCredentials();
+                MessageHubCredentials credentials = Environment.getMessageHubCredentials();
 
                 bootstrapServers = stringArrayToCSV(credentials.getKafkaBrokersSasl());
                 adminRestURL = credentials.getKafkaAdminUrl();
                 apiKey = credentials.getApiKey();
-                user = credentials.getUser();
-                password = credentials.getPassword();
 
             } else {
                 // If running locally, parse the command line
                 if (args.length < 3) {
-                    logger.log(Level.ERROR, "It appears the application is running outside of Bluemix but the arguments are incorrect for local mode.");
+                    logger.log(Level.ERROR, "It appears the application is running without VCAP_SERVICES but the arguments are incorrect for local mode.");
                     printUsage();
                     System.exit(-1);
                 }
 
-                logger.log(Level.INFO, "Running in local mode.");
-                resourceDir = userDir + File.separator + "resources";
+                logger.log(Level.INFO, "Using command line arguments to find credentials.");
 
                 bootstrapServers = args[0];
                 adminRestURL = args[1];
@@ -145,12 +138,8 @@ public class MessageHubConsoleSample {
                 if (apiKey.contains(":")) {
                     String[] credentials = apiKey.split(":");
                     apiKey = credentials[1];
-                    user = credentials[0];
-                    password = credentials[1];
                 } else {
                     apiKey = args[2];
-                    user = apiKey.substring(0, 16);
-                    password = apiKey.substring(16);
                 }
                 if (args.length > 3) {
                     try {
@@ -177,9 +166,6 @@ public class MessageHubConsoleSample {
                 }
             }
 
-            //inject bootstrapServers in configuration, for both consumer and producer
-            clientProperties.put("bootstrap.servers", bootstrapServers);
-
             logger.log(Level.INFO, "Kafka Endpoints: " + bootstrapServers);
             logger.log(Level.INFO, "Admin REST Endpoint: " + adminRestURL);
 
@@ -199,14 +185,14 @@ public class MessageHubConsoleSample {
 
             //create the Kafka clients
             if (runConsumer) {
-                Properties consumerProperties = getClientConfiguration(clientProperties, "consumer.properties", user, password);
+                Properties consumerProperties = getConsumerConfigs(bootstrapServers, apiKey);
                 consumerRunnable = new ConsumerRunnable(consumerProperties, topicName);
                 consumerThread = new Thread(consumerRunnable, "Consumer Thread");
                 consumerThread.start();
             }
 
             if (runProducer) {
-                Properties producerProperties = getClientConfiguration(clientProperties, "producer.properties", user, password);
+                Properties producerProperties = getProducerConfigs(bootstrapServers, apiKey);
                 producerRunnable = new ProducerRunnable(producerProperties, topicName);
                 producerThread = new Thread(producerRunnable, "Producer Thread");
                 producerThread.start();
@@ -233,7 +219,6 @@ public class MessageHubConsoleSample {
             consumerThread.interrupt();
     }
 
-
     /*
      * Return a CSV-String from a String array
      */
@@ -246,29 +231,37 @@ public class MessageHubConsoleSample {
         return sb.toString();
     }
 
-    /*
-     * Retrieve client configuration information, using a properties file, for
-     * connecting to Message Hub Kafka.
-     */
-    static final Properties getClientConfiguration(Properties commonProps, String fileName, String user, String password) {
-        Properties result = new Properties();
-        InputStream propsStream;
+    static final Properties getProducerConfigs(String boostrapServers, String apikey) {
+        Properties configs = new Properties();
+        configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+        configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+        configs.put(ProducerConfig.CLIENT_ID_CONFIG, "kafka-java-console-sample-producer");
+        configs.put(ProducerConfig.ACKS_CONFIG, "-1");
+        configs.putAll(getCommonConfigs(boostrapServers, apikey));
+        return configs;
+    }
 
-        try {
-            propsStream = new FileInputStream(resourceDir + File.separator + fileName);
-            result.load(propsStream);
-            propsStream.close();
-        } catch (IOException e) {
-            logger.log(Level.ERROR, "Could not load properties from file");
-            return result;
-        }
+    static final Properties getConsumerConfigs(String boostrapServers, String apikey) {
+        Properties configs = new Properties();
+        configs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+        configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+        configs.put(ConsumerConfig.CLIENT_ID_CONFIG, "kafka-java-console-sample-consumer");
+        configs.put(ConsumerConfig.GROUP_ID_CONFIG, "kafka-java-console-sample-group");
+        configs.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+        configs.putAll(getCommonConfigs(boostrapServers, apikey));
+        return configs;
+    }
 
-        result.putAll(commonProps);
-        //Adding in credentials for MessageHub auth
-        String saslJaasConfig = result.getProperty("sasl.jaas.config");
-        saslJaasConfig = saslJaasConfig.replace("USERNAME", user).replace("PASSWORD", password);
-        result.setProperty("sasl.jaas.config", saslJaasConfig);
-        return result;
+    static final Properties getCommonConfigs(String boostrapServers, String apikey) {
+        Properties configs = new Properties();
+        configs.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, boostrapServers);
+        configs.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
+        configs.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
+        configs.put(SaslConfigs.SASL_JAAS_CONFIG, "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"token\" password=\"" + apikey + "\";");
+        configs.put(SslConfigs.SSL_PROTOCOL_CONFIG, "TLSv1.2");
+        configs.put(SslConfigs.SSL_ENABLED_PROTOCOLS_CONFIG, "TLSv1.2");
+        configs.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "HTTPS");
+        return configs;
     }
 
 }

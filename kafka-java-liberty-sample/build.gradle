@@ -15,23 +15,20 @@
 */
 //
 // Licensed Materials - Property of IBM
-// © Copyright IBM Corp. 2016
+// © Copyright IBM Corp. 2018
 //
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'eclipse'
 apply plugin: 'war'
 
-group = 'net.wasdev.wlp.sample'
-version = '1.0-SNAPSHOT'
+group = 'com.ibm.messagehub.samples'
+version = '1.0'
 
 description = """Message Hub Liberty Sample"""
 war.archiveName "MessageHubLibertyApp.war"
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
-
-configurations.all {
-}
 
 repositories {
      mavenCentral()
@@ -71,7 +68,6 @@ war {
             include '*'
             into "WEB-INF/classes"
         }
-
 }
 
 task copyServerXml {

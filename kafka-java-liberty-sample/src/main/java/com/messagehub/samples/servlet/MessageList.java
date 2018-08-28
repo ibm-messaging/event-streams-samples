@@ -29,26 +29,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 public class MessageList {
     private ArrayList<String> messages;
 
-    MessageList(String messages[]) {
-        this.messages = new ArrayList<String>();
-
-        if (messages != null && messages.length > 0) {
-            for (int i = 0; i < messages.length; i++) {
-                push(messages[i]);
-            }
-        }
-    }
-
-    MessageList(ArrayList<String> messages) {
-        this.messages = new ArrayList<String>();
-
-        if (messages != null && messages.size() > 0) {
-            for (int i = 0; i < messages.size(); i++) {
-                push(messages.get(i));
-            }
-        }
-    }
-
     MessageList() {
         this.messages = new ArrayList<String>();
     }

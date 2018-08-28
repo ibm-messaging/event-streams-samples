@@ -35,28 +35,29 @@ class MessageHubSample(object):
         self.run_producer = True
         self.consumer = None
         self.producer = None
-        self.bluemix = True
 
         if os.environ.get('VCAP_SERVICES'):
-            # Running in Bluemix
-            print('Running in Bluemix mode.')
+            print('Using VCAP_SERVICES to find credentials.')
             vcap_services = json.loads(os.environ.get('VCAP_SERVICES'))
-            for vcap_service in vcap_services:
-                if vcap_service.startswith('messagehub'):
-                    messagehub_service = vcap_services[vcap_service][0]
-                    self.opts['brokers'] = ','.join(messagehub_service['credentials']['kafka_brokers_sasl'])
-                    self.opts['api_key'] = messagehub_service['credentials']['api_key']
-                    self.opts['username'] = messagehub_service['credentials']['user']
-                    self.opts['password'] = messagehub_service['credentials']['password']
-                    self.opts['rest_endpoint'] = messagehub_service['credentials']['kafka_admin_url']
+
+            if 'instance_id' in vcap_services:
+                self.opts['brokers'] = ','.join(vcap_services['kafka_brokers_sasl'])
+                self.opts['api_key'] = vcap_services['api_key']
+                self.opts['rest_endpoint'] = vcap_services['kafka_admin_url']
+            else:
+                for vcap_service in vcap_services:
+                    if vcap_service.startswith('messagehub'):
+                        messagehub_service = vcap_services[vcap_service][0]
+                        self.opts['brokers'] = ','.join(messagehub_service['credentials']['kafka_brokers_sasl'])
+                        self.opts['api_key'] = messagehub_service['credentials']['api_key']
+                        self.opts['rest_endpoint'] = messagehub_service['credentials']['kafka_admin_url']
             self.opts['ca_location'] = '/etc/ssl/certs'
         else:
             # Running locally on development machine
-            self.bluemix = False
-            print('Running in local mode.')
+            print('Using command line arguments to find credentials.')
 
             if len(args) < 5:
-                print('ERROR: It appears the application is running outside of Bluemix but the arguments are incorrect for local mode.')
+                print('ERROR: It appears the application is running without VCAP_SERVICES but the arguments are incorrect for local mode.')
                 print('\nUsage:\npython {0} <kafka_brokers_sasl> <kafka_admin_url> {{ <api_key> | <user = token>:<password> }} <cert_location> [ -consumer | -producer ]\n'.format(args[0]))
                 sys.exit(-1)
 
@@ -65,14 +66,10 @@ class MessageHubSample(object):
             if ":" in args[3]:
                 credentials_list = args[3].split(":")
                 self.opts['api_key'] = credentials_list[1]
-                self.opts['username'] = credentials_list[0]
-                self.opts['password'] = credentials_list[1]
             else:
                 self.opts['api_key'] = args[3]
-                self.opts['username'] = self.opts['api_key'][0:16]
-                self.opts['password'] = self.opts['api_key'][16:48]
 
-            # Bluemix/Ubuntu: '/etc/ssl/certs'
+            # IBM Cloud/Ubuntu: '/etc/ssl/certs'
             # Red Hat: '/etc/pki/tls/cert.pem',
             # Mac OS X: select System root certificates from Keychain Access and export as .pem on the filesystem
             self.opts['ca_location'] = args[4]
@@ -90,7 +87,7 @@ class MessageHubSample(object):
         print('Kafka Endpoints: {0}'.format(self.opts['brokers']))
         print('Admin REST Endpoint: {0}'.format(self.opts['rest_endpoint']))
 
-        if any(k not in self.opts for k in ('brokers', 'username', 'password', 'ca_location', 'rest_endpoint', 'api_key')):
+        if any(k not in self.opts for k in ('brokers', 'ca_location', 'rest_endpoint', 'api_key')):
             print('Error - Failed to retrieve options. Check that app is bound to a Message Hub service or that command line options are correct.')
             sys.exit(-1)
 
@@ -120,8 +117,8 @@ class MessageHubSample(object):
             'security.protocol': 'SASL_SSL',
             'ssl.ca.location': self.opts['ca_location'],
             'sasl.mechanisms': 'PLAIN',
-            'sasl.username': self.opts['username'],
-            'sasl.password': self.opts['password'],
+            'sasl.username': 'token',
+            'sasl.password': self.opts['api_key'],
             'api.version.request': True,
             'broker.version.fallback': '0.10.2.1',
             'log.connection.close' : False
@@ -142,11 +139,11 @@ class MessageHubSample(object):
         tasks = []
         # Start the clients
         if self.run_producer:
-            self.producer = producertask.ProducerTask(self.bluemix, producer_opts, self.topic_name)
+            self.producer = producertask.ProducerTask(producer_opts, self.topic_name)
             tasks.append(asyncio.async(self.producer.run()))
 
         if self.run_consumer:
-            self.consumer = consumertask.ConsumerTask(self.bluemix, consumer_opts, self.topic_name)
+            self.consumer = consumertask.ConsumerTask(consumer_opts, self.topic_name)
             tasks.append(asyncio.async(self.consumer.run()))
 
         done, pending = yield from asyncio.wait(tasks)

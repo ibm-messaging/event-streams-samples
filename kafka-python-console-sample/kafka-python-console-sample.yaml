@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kafka-python-console-sample
+  namespace: default
+spec:
+  containers:
+  - image: ibmcom/kafka-python-console-sample:latest
+    imagePullPolicy: IfNotPresent
+    name: python-sample
+    env:
+    - name: VCAP_SERVICES
+      valueFrom:
+          secretKeyRef:
+            name: messagehub-binding
+            key: binding

@@ -98,7 +98,7 @@ uploadArchives {
         def basePath = baseName + '-' + version
 
         from('resources') {
-            into { basePath + '/bin/resources' }
+            into { basePath + '/resources' }
             exclude 'log4j.properties'
         }
 

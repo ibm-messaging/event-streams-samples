@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 IBM
+ * Copyright 2015-2016 IBM
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 /**
  * Licensed Materials - Property of IBM
- * (c) Copyright IBM Corp. 2016
+ * (c) Copyright IBM Corp. 2015-2016
  */
 package com.messagehub.samples.env;
 
@@ -37,7 +37,7 @@ public class MessageHubCredentials {
     public void setLabel(String apiKey) {
         this.apiKey = apiKey;
     }
-
+    
     @JsonProperty("kafka_admin_url")
     public String getKafkaAdminUrl() {
         return kafkaAdminUrl;
@@ -47,7 +47,7 @@ public class MessageHubCredentials {
     public void setKafkaAdminUrl(String kafkaAdminUrl) {
         this.kafkaAdminUrl = kafkaAdminUrl;
     }
-
+    
     @JsonProperty
     public String getUser() {
         return user;
@@ -57,7 +57,7 @@ public class MessageHubCredentials {
     public void setUser(String user) {
         this.user = user;
     }
-
+    
     @JsonProperty
     public String getPassword() {
         return password;
@@ -67,7 +67,7 @@ public class MessageHubCredentials {
     public void setPassword(String password) {
         this.password = password;
     }
-
+    
     @JsonProperty("kafka_brokers_sasl")
     public String[] getKafkaBrokersSasl() {
         return kafkaBrokersSasl;

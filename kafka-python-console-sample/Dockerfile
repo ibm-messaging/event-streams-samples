@@ -7,26 +7,11 @@
 #
 FROM python:3.6-stretch
 
-RUN  apt-get update -qqy \
-  && apt-get install -y --no-install-recommends \
-     build-essential \
-     liblz4-dev \
-     libpthread-stubs0-dev \
-     libsasl2-dev \
-     libsasl2-modules \
-     libssl-dev \
-     make \
-     python3 \
-  && curl -sL https://github.com/edenhill/librdkafka/archive/v0.11.4.tar.gz \
-    | tar zx -C /usr/src --strip-components=1 \
-  && cd /usr/src && ./configure --prefix=/usr && make && make install \
-  && rm -rf /var/cache/apt/* /var/lib/apt/lists/*
-
 WORKDIR /usr/src/app
 
 COPY . /usr/src/app
 
-RUN pip install -r requirements/dev.txt
+RUN pip install -r requirements.txt
 
-ENTRYPOINT [ "python3", "app.py" ]
+ENTRYPOINT [ "python3", "-u", "app.py" ]
 CMD [ "" ]

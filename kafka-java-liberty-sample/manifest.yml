@@ -3,12 +3,11 @@ applications:
   memory: 512M
   instances: 1
   buildpack: liberty-for-java
-  domain: mybluemix.net
   name: MessageHubLibertyApp
   disk_quota: 1024M
   random-route: true
   services:
-    - "<YOUR_SERVICE_INSTANCE_NAME>"
-env:
-    IBM_JVM_LICENSE: <jvm license code>
-    IBM_LIBERTY_LICENSE: <liberty license code>
+    - "<YOUR_MESSAGE_HUB_SERVICE_NAME>"
+  env:
+      IBM_JVM_LICENSE: <jvm license code>
+      IBM_LIBERTY_LICENSE: <liberty license code>

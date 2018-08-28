@@ -1,16 +1,9 @@
-FROM ibmjava:8-sdk
+FROM gradle:jdk8
 
-ENV target /usr/src/kafka-java-console-sample
-WORKDIR $target
+USER root
+COPY . /app
+WORKDIR /app
 
-COPY ./gradle $target/gradle
-COPY ./gradlew $target
-COPY ./build.gradle $target
+RUN gradle -s --no-daemon downloadDependencies assemble
 
-RUN ./gradlew downloadDependencies
-
-COPY . $target/
-RUN ./gradlew build
-
-ENTRYPOINT ["java", "-jar", "build/libs/kafka-java-console-sample-2.0.jar"]
-
+ENTRYPOINT ["java", "-jar", "/app/build/libs/kafka-java-console-sample-2.0.jar"]

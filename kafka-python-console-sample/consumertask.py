@@ -17,14 +17,11 @@
  © Copyright IBM Corp. 2015-2017
 """
 import asyncio
+from confluent_kafka import Consumer
 
 class ConsumerTask(object):
 
-    def __init__(self, is_bluemix, conf, topic_name):
-        try:
-            from confluent_kafka import Consumer
-        except:
-            from confluent_kafka_prebuilt import Consumer
+    def __init__(self, conf, topic_name):
         self.consumer = Consumer(conf)
         self.topic_name = topic_name
         self.running = True

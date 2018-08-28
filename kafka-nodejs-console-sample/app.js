@@ -32,28 +32,31 @@ var producer, consumer;
 var services;
 
 if (process.env.VCAP_SERVICES) {
-    // Running in Bluemix
-    console.log("Running in Bluemix mode.");
+    console.log("Using VCAP_SERVICES to find credentials.");
 
     services = JSON.parse(process.env.VCAP_SERVICES);
-    for (var key in services) {
-        if (key.lastIndexOf('messagehub', 0) === 0) {
-            messageHubService = services[key][0];
-            opts.brokers = messageHubService.credentials.kafka_brokers_sasl;
-            opts.username = messageHubService.credentials.user;
-            opts.password = messageHubService.credentials.password;
+    if (services.hasOwnProperty('instance_id')) {
+        opts.brokers = services.kafka_brokers_sasl;
+        opts.api_key = services.api_key;
+        adminRestInstance = new MessageHubAdminRest(wrap_vcap_service(services.api_key, services.kafka_admin_url));
+    } else {
+        for (var key in services) {
+            if (key.lastIndexOf('messagehub', 0) === 0) {
+                messageHubService = services[key][0];
+                opts.brokers = messageHubService.credentials.kafka_brokers_sasl;
+                opts.api_key = messageHubService.credentials.api_key;
+            }
         }
+        adminRestInstance = new MessageHubAdminRest(services);
     }
-    adminRestInstance = new MessageHubAdminRest(services);
-
     opts.calocation = '/etc/ssl/certs';
     
 } else {
     // Running locally on development machine
-    console.log("Running in local mode.");
+    console.log("Using command line arguments to find credentials.");
 
     if (process.argv.length < 6) {
-        console.log('ERROR: It appears the application is running outside of Bluemix but the arguments are incorrect for local mode.');
+        console.log('ERROR: It appears the application is running is running without VCAP_SERVICES but the arguments are incorrect for local mode.');
         console.log('\nUsage:\n' +
             'node ' + process.argv[1] + ' <kafka_brokers_sasl> <kafka_admin_url> <api_key> <cert_location> [ -consumer | -producer ]\n');
         process.exit(-1);
@@ -64,28 +67,13 @@ if (process.env.VCAP_SERVICES) {
     var apiKey = process.argv[4];
     if (apiKey.indexOf(":") != -1) {
         var credentialArray = apiKey.split(":");
-        opts.username = credentialArray[0];
-        opts.password = credentialArray[1];
-        apiKey = credentialArray[1];
+        opts.api_key = credentialArray[1];
     } else {
-        opts.username = apiKey.substring(0,16);
-        opts.password = apiKey.substring(16);
+        opts.api_key = apiKey;
     }
-
-    services = {
-        "messagehub": [
-           {
-              "label": "messagehub",
-              "credentials": {
-                 "api_key": apiKey,
-                 "kafka_admin_url": restEndpoint,
-              }
-           }
-        ]
-    };
-    adminRestInstance = new MessageHubAdminRest(services);
+    adminRestInstance = new MessageHubAdminRest(wrap_vcap_service(opts.api_key, restEndpoint));
     
-    // Bluemix/Ubuntu: '/etc/ssl/certs'
+    // IBM Cloud/Ubuntu: '/etc/ssl/certs'
     // Red Hat: '/etc/pki/tls/cert.pem',
     // Mac OS X: select System root certificates from Keychain Access and export as .pem on the filesystem
     opts.calocation = process.argv[5];
@@ -106,7 +94,7 @@ if (process.env.VCAP_SERVICES) {
 console.log("Kafka Endpoints: " + opts.brokers);
 console.log("Admin REST Endpoint: " + adminRestInstance.url.format());
 
-if (!opts.hasOwnProperty('brokers') || !opts.hasOwnProperty('username') || !opts.hasOwnProperty('password') || !opts.hasOwnProperty('calocation')) {
+if (!opts.hasOwnProperty('brokers') || !opts.hasOwnProperty('api_key') || !opts.hasOwnProperty('calocation')) {
     console.error('Error - Failed to retrieve options. Check that app is bound to a Message Hub service or that command line options are correct.');
     process.exit(-1);
 }
@@ -176,8 +164,8 @@ function runLoops() {
         'security.protocol': 'sasl_ssl',
         'ssl.ca.location': opts.calocation,
         'sasl.mechanisms': 'PLAIN',
-        'sasl.username': opts.username,
-        'sasl.password': opts.password,
+        'sasl.username': 'token',
+        'sasl.password': opts.api_key,
         'api.version.request': true,
         'broker.version.fallback': '0.10.2.1',
         'log.connection.close' : false
@@ -210,4 +198,19 @@ function runLoops() {
         producer.connect();
     }
 };
+
+function wrap_vcap_service(apiKey, restEndpoint) {
+    services = {
+        "messagehub": [
+           {
+              "label": "messagehub",
+              "credentials": {
+                 "api_key": apiKey,
+                 "kafka_admin_url": restEndpoint,
+              }
+           }
+        ]
+    };
+    return services
+}
 

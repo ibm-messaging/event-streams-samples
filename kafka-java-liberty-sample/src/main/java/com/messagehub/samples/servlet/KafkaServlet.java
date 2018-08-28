@@ -25,7 +25,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -54,7 +53,6 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.TopicPartition;
-import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -62,10 +60,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.messagehub.samples.env.Environment;
 import com.messagehub.samples.env.MessageHubCredentials;
-import com.messagehub.samples.env.MessageHubEnvironment;
 
 /**
  * Servlet implementation class KafkaServlet
@@ -75,94 +71,37 @@ public class KafkaServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     private final Logger logger = Logger.getLogger(KafkaServlet.class);
-    private final String userDir = System.getProperty("user.dir");
-    private final String resourceDir = userDir + File.separator + "apps" + File.separator + "MessageHubLibertyApp.war"
+    private final String serverConfigDir = System.getProperty("server.config.dir");
+    private final String resourceDir = serverConfigDir + File.separator + "apps" + File.separator + "MessageHubLibertyApp.war"
             + File.separator + "resources";
-    private KafkaProducer<byte[], byte[]> kafkaProducer;
+    private KafkaProducer<String, String> kafkaProducer;
     private ConsumerRunnable consumerRunnable;
-    private String kafkaHost, adminHost, apiKey, topic = "testTopic";
-    private String user, password;
-    private String producedMessage, currentConsumedMessage;
+    private final String topic = "testTopic";
+    private String producedMessage;
+    private String currentConsumedMessage;
     private int producedMessages = 0;
     private Thread consumerThread = null;
-
-    private boolean messageProduced;
+    private boolean messageProduced = false;
 
     /**
      * Intialising the KafkaServlet
      */
     public void init() throws ServletException {
         logger.log(Level.WARN, "Initialising Kafka Servlet");
-
-        messageProduced = false;
-        producedMessages = 0;
-
-        logger.log(Level.WARN, "User directory: " + userDir);
+        logger.log(Level.WARN, "Server Config directory: " + serverConfigDir);
         logger.log(Level.WARN, "Resource directory: " + resourceDir);
 
-        // Retrieve kafka-Host, rest-Host and API key from Message Hub
-        // VCAP_SERVICES.
-        // Set JAAS configuration property.
-        if (System.getProperty("java.security.auth.login.config") == null) {
-            System.setProperty("java.security.auth.login.config", "");
+        // Retrieve credentials from environment
+        MessageHubCredentials credentials = Environment.getMessageHubCredentials();
+        StringBuilder boostrapServersBuilder = new StringBuilder();
+        for (String broker : credentials.getKafkaBrokersSasl()) {
+            boostrapServersBuilder.append(",");
+            boostrapServersBuilder.append(broker);
         }
-
-        // Arguments parsed via VCAP_SERVICES environment variable.
-        // Retrieve VCAP json through Bluemix system environment variable
-        // "VCAP_SERVICES"
-        String vcapServices = System.getenv("VCAP_SERVICES");
-        ObjectMapper mapper = new ObjectMapper();
-
-        logger.log(Level.WARN, "VCAP_SERVICES: \n" + vcapServices);
-
-        if (vcapServices != null) {
-            try {
-                // Parse VCAP_SERVICES into Jackson JsonNode, then map the
-                // 'messagehub' entry
-                // to an instance of MessageHubEnvironment.
-                JsonNode vcapServicesJson = mapper.readValue(vcapServices, JsonNode.class);
-                ObjectMapper envMapper = new ObjectMapper();
-                String vcapKey = null;
-                Iterator<String> it = vcapServicesJson.fieldNames();
-
-                // Find the Message Hub service bound to this application.
-                while (it.hasNext() && vcapKey == null) {
-                    String potentialKey = it.next();
-
-                    if (potentialKey.startsWith("messagehub")) {
-                        logger.log(Level.INFO, "Using the '" + potentialKey + "' key from VCAP_SERVICES.");
-                        vcapKey = potentialKey;
-                    }
-                }
-
-                if (vcapKey == null) {
-                    logger.log(Level.ERROR,
-                               "Error while parsing VCAP_SERVICES: A Message Hub service instance is not bound to this application.");
-                    return;
-                }
-
-                MessageHubEnvironment messageHubEnvironment = envMapper.readValue(
-                                                                                  vcapServicesJson.get(vcapKey).get(0)
-                                                                                                  .toString(),
-                                                                                  MessageHubEnvironment.class);
-                MessageHubCredentials credentials = messageHubEnvironment.getCredentials();
-
-                kafkaHost = credentials.getKafkaBrokersSasl()[0];
-                adminHost = credentials.getKafkaAdminUrl();
-                apiKey = credentials.getApiKey();
-                user = credentials.getUser();
-                password = credentials.getPassword();
-            } catch (final Exception e) {
-                e.printStackTrace();
-                return;
-            }
-        } else {
-            logger.log(Level.ERROR, "VCAP_SERVICES environment variable is null.");
-            return;
-        }
+        String bootstrapServers = boostrapServersBuilder.toString();
 
         // Check topic
-        RESTRequest restApi = new RESTRequest(adminHost, apiKey);
+        RESTRequest restApi = new RESTRequest(credentials.getKafkaAdminUrl(), credentials.getApiKey());
         // Create a topic, ignore a 422 response - this means that the
         // topic name already exists.
         restApi.post("/admin/topics", "{ \"name\": \"" + topic + "\" }", new int[]{422});
@@ -171,10 +110,10 @@ public class KafkaServlet extends HttpServlet {
         logger.log(Level.WARN, "Topics: " + topics);
 
         // Initialise Kafka Producer
-        kafkaProducer = new KafkaProducer<byte[], byte[]>(getClientConfiguration(kafkaHost, apiKey, true));
+        kafkaProducer = new KafkaProducer<>(getClientConfiguration(bootstrapServers, credentials.getApiKey(), true));
 
         // Initialise Kafka Consumer
-        consumerRunnable = new ConsumerRunnable(kafkaHost, apiKey, topic);
+        consumerRunnable = new ConsumerRunnable(bootstrapServers, credentials.getApiKey(), topic);
         consumerThread = new Thread(consumerRunnable);
         consumerThread.start();
 
@@ -183,7 +122,6 @@ public class KafkaServlet extends HttpServlet {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
     }
 
     /**
@@ -191,7 +129,7 @@ public class KafkaServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, final HttpServletResponse response)
-            throws ServletException, IOException {
+    throws ServletException, IOException {
         response.setContentType("text/html");
         response.getWriter().print("<h3>Already consumed messages: </h3>");
         for (String s : consumerRunnable.consumedMessages) {
@@ -204,7 +142,7 @@ public class KafkaServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    throws ServletException, IOException {
         response.setContentType("text/html");
 
         // Producing messages to a topic
@@ -218,18 +156,18 @@ public class KafkaServlet extends HttpServlet {
 
         if (messageProduced) {
             response.getWriter()
-                    .print("<div class='message'><a>Message produced: </a><small class='code'>" + producedMessage
-                            + "</small> </div>,,");
+            .print("<div class='message'><a>Message produced: </a><small class='code'>" + producedMessage
+                    + "</small> </div>,,");
             // Print out consumed messages
             response.getWriter()
-                    .print("<div class ='message'><a>Message consumed : </a><small class='code'>" + currentConsumedMessage
-                            + "</small></div>");
+            .print("<div class ='message'><a>Message consumed : </a><small class='code'>" + currentConsumedMessage
+                    + "</small></div>");
         }
     }
 
     /**
      * Retrieve client configuration information, using a properties file, for connecting to secure Kafka.
-     * 
+     *
      * @param broker
      *            {String} A string representing a list of brokers the producer can contact.
      * @param apiKey
@@ -238,7 +176,7 @@ public class KafkaServlet extends HttpServlet {
      *            {Boolean} Flag used to determine whether or not the configuration is for a producer.
      * @return {Properties} A properties object which stores the client configuration info.
      */
-    public final Properties getClientConfiguration(String broker, String apiKey, boolean isProducer) {
+    public final Properties getClientConfiguration(String broker, String apikey, boolean isProducer) {
         Properties props = new Properties();
         InputStream propsStream;
         String fileName = resourceDir + File.separator;
@@ -251,7 +189,6 @@ public class KafkaServlet extends HttpServlet {
 
         try {
             logger.log(Level.WARN, "Reading properties file from: " + fileName);
-
             propsStream = new FileInputStream(fileName);
             props.load(propsStream);
             propsStream.close();
@@ -262,15 +199,11 @@ public class KafkaServlet extends HttpServlet {
 
         props.put("bootstrap.servers", broker);
 
-        if (!props.containsKey("ssl.truststore.location") || props.getProperty("ssl.truststore.location").length() == 0) {
-            props.put("ssl.truststore.location", "/home/vcap/app/.java/jre/lib/security/cacerts");
-        }
-        
         //Adding in credentials for MessageHub auth
         String saslJaasConfig = props.getProperty("sasl.jaas.config");
-        saslJaasConfig = saslJaasConfig.replace("USERNAME", user).replace("PASSWORD", password);
+        saslJaasConfig = saslJaasConfig.replace("APIKEY", apikey);
         props.setProperty("sasl.jaas.config", saslJaasConfig);
-        
+
         logger.log(Level.WARN, "Using properties: " + props);
 
         return props;
@@ -278,13 +211,13 @@ public class KafkaServlet extends HttpServlet {
 
     /**
      * Produce a message to a <code>topic</code>
-     * 
+     *
      * @param topic
      */
     public void produce(String topic) {
         logger.log(Level.WARN, "Producer is starting.");
 
-        String fieldName = "records";
+        String key = "key";
         // Push a message into the list to be sent.
         MessageList list = new MessageList();
         producedMessage = "This is a test message, msgId=" + producedMessages;
@@ -293,10 +226,8 @@ public class KafkaServlet extends HttpServlet {
         try {
             // Create a producer record which will be sent
             // to the Message Hub service, providing the topic
-            // name, field name and message. The field name and
-            // message are converted to UTF-8.
-            ProducerRecord<byte[], byte[]> record = new ProducerRecord<byte[], byte[]>(topic,
-                    fieldName.getBytes("UTF-8"), list.build().getBytes("UTF-8"));
+            // name, key and message.
+            ProducerRecord<String, String> record = new ProducerRecord<>(topic, key, list.build());
 
             // Synchronously wait for a response from Message Hub / Kafka.
             RecordMetadata m = kafkaProducer.send(record).get();
@@ -318,12 +249,12 @@ public class KafkaServlet extends HttpServlet {
         try {
             // Turn xml string into a document
             Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-                                                      .parse(new InputSource(new ByteArrayInputStream(xml.getBytes("utf-8"))));
+                    .parse(new InputSource(new ByteArrayInputStream(xml.getBytes("utf-8"))));
 
             // Remove whitespaces outside tags
             XPath xPath = XPathFactory.newInstance().newXPath();
             NodeList nodeList = (NodeList) xPath.evaluate("//text()[normalize-space()='']", document,
-                                                          XPathConstants.NODESET);
+                    XPathConstants.NODESET);
 
             for (int i = 0; i < nodeList.getLength(); ++i) {
                 Node node = nodeList.item(i);
@@ -349,25 +280,20 @@ public class KafkaServlet extends HttpServlet {
 
     /**
      * Kafka consumer runnable which can be used to create and run consumer as a separate thread.
-     * 
-     * @author Admin
-     * 
+     *
      */
     class ConsumerRunnable implements Runnable {
-        private KafkaConsumer<byte[], byte[]> kafkaConsumer;
+        private KafkaConsumer<String, String> kafkaConsumer;
         private ArrayList<String> topicList;
         private boolean closing;
         private ArrayList<String> consumedMessages;
 
-        ConsumerRunnable(String broker, String apiKey, String topic) {
+        ConsumerRunnable(String broker, String apikey, String topic) {
             consumedMessages = new ArrayList<String>();
             closing = false;
             topicList = new ArrayList<String>();
 
-            // Provide configuration and deserialisers
-            // for the key and value fields received.
-            kafkaConsumer = new KafkaConsumer<byte[], byte[]>(getClientConfiguration(broker, apiKey, false),
-                    new ByteArrayDeserializer(), new ByteArrayDeserializer());
+            kafkaConsumer = new KafkaConsumer<>(getClientConfiguration(broker, apikey, false));
 
             topicList.add(topic);
             kafkaConsumer.subscribe(topicList, new ConsumerRebalanceListener() {
@@ -378,7 +304,7 @@ public class KafkaServlet extends HttpServlet {
                 @Override
                 public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
                     try {
-                        logger.log(Level.WARN, "Partitions assigned, consumer seeking to end.");
+                        logger.log(Level.WARN, "Partitions " + partitions + " assigned, consumer seeking to end.");
 
                         for (TopicPartition partition : partitions) {
                             long position = kafkaConsumer.position(partition);
@@ -387,7 +313,7 @@ public class KafkaServlet extends HttpServlet {
                             logger.log(Level.WARN, "Seeking to end...");
                             kafkaConsumer.seekToEnd(Arrays.asList(partition));
                             logger.log(Level.WARN,
-                                       "Seek from the current position: " + kafkaConsumer.position(partition));
+                                    "Seek from the current position: " + kafkaConsumer.position(partition));
                             kafkaConsumer.seek(partition, position);
                         }
                         logger.log(Level.WARN, "Producer can now begin producing messages.");
@@ -407,21 +333,14 @@ public class KafkaServlet extends HttpServlet {
                 try {
                     currentConsumedMessage = "consumer is waiting for messages to be consumed ...";
                     // Poll on the Kafka consumer every second.
-                    Iterator<ConsumerRecord<byte[], byte[]>> it = kafkaConsumer.poll(1000).iterator();
+                    Iterator<ConsumerRecord<String, String>> it = kafkaConsumer.poll(1000).iterator();
 
-                    // Iterate through all the messages received and print their
-                    // content.
-                    // After a predefined number of messages has been received,
-                    // the
-                    // client will exit.
+                    // Iterate through all the messages received and print their content.
                     while (it.hasNext()) {
-                        ConsumerRecord<byte[], byte[]> record = it.next();
-                        currentConsumedMessage = new String(record.value(), Charset.forName("UTF-8"));
-
-                        currentConsumedMessage = currentConsumedMessage + ". Offset: " + record.offset();
+                        ConsumerRecord<String , String> record = it.next();
+                        currentConsumedMessage = record.value() + ". Offset: " + record.offset();
                         consumedMessages.add(currentConsumedMessage);
                     }
-
                     kafkaConsumer.commitSync();
 
                     Thread.sleep(1000);

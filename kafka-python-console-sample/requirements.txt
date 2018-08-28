@@ -1,1 +1,2 @@
--r requirements/prod.txt
+requests
+confluent_kafka

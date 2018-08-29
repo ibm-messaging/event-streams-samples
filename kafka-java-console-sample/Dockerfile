@@ -1,4 +1,4 @@
-FROM gradle:jdk8
+FROM gradle:jdk9
 
 USER root
 COPY . /app

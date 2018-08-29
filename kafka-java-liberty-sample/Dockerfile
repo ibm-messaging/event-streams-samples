@@ -1,4 +1,4 @@
-FROM gradle:jdk8 as javabuild
+FROM gradle:jdk9 as javabuild
 
 USER root
 COPY . /app

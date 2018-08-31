@@ -3,7 +3,6 @@ FROM gradle:jdk9 as javabuild
 USER root
 COPY . /app
 WORKDIR /app
-COPY . .
 
 RUN gradle --no-daemon assemble
 

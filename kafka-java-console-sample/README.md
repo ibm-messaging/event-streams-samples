@@ -14,5 +14,5 @@ The application can be run in the following environments:
 * [IBM Cloud Kubernetes Service](./docs/Kubernetes_Service.md) 
 * [IBM Cloud Foundry](./docs/Cloud_Foundry.md)
 * [Docker Local](./docs/Docker_Local.md)
-* [Local Developement](./docs/Local.md)
+* [Local Development](./docs/Local.md)
 

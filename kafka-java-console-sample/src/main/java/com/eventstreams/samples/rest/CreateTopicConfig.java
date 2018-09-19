@@ -1,4 +1,4 @@
-package com.messagehub.samples.rest;
+package com.eventstreams.samples.rest;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

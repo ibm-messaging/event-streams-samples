@@ -1,9 +1,14 @@
-FROM gradle:jdk9
+FROM gradle:jdk8-alpine as jdk
 
-USER root
-COPY . /app
-WORKDIR /app
+COPY --chown=1000 . /usr/src/app
+WORKDIR /usr/src/app
 
-RUN gradle -s --no-daemon downloadDependencies assemble
+RUN gradle -s --no-daemon assemble
 
-ENTRYPOINT ["java", "-jar", "/app/build/libs/kafka-java-console-sample-2.0.jar"]
+FROM ibmjava:8-sfj-alpine
+
+COPY --from=jdk /usr/src/app/build/libs/kafka-java-console-sample-2.0-all.jar /usr/src/app/
+
+USER 1000
+
+ENTRYPOINT ["java", "-jar", "/usr/src/app/kafka-java-console-sample-2.0-all.jar"]

@@ -12,5 +12,5 @@ spec:
     - name: VCAP_SERVICES
       valueFrom:
           secretKeyRef:
-            name: messagehub-binding
+            name: eventstreams-binding
             key: binding

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015-2017 IBM
+ * Copyright 2015-2018 IBM
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,10 @@
  */
 /**
  * Licensed Materials - Property of IBM
- * © Copyright IBM Corp. 2015-2017
+ * © Copyright IBM Corp. 2015-2018
  */
 var Kafka = require('node-rdkafka');
-var MessageHubAdminRest = require('message-hub-rest');
+var EventStreamsAdminRest = require('message-hub-rest');
 var ProducerLoop = require('./producerLoop.js');
 var ConsumerLoop = require('./consumerLoop.js');
 var fs = require('fs');
@@ -38,16 +38,16 @@ if (process.env.VCAP_SERVICES) {
     if (services.hasOwnProperty('instance_id')) {
         opts.brokers = services.kafka_brokers_sasl;
         opts.api_key = services.api_key;
-        adminRestInstance = new MessageHubAdminRest(wrap_vcap_service(services.api_key, services.kafka_admin_url));
+        adminRestInstance = new EventStreamsAdminRest(wrap_vcap_service(services.api_key, services.kafka_admin_url));
     } else {
         for (var key in services) {
             if (key.lastIndexOf('messagehub', 0) === 0) {
-                messageHubService = services[key][0];
-                opts.brokers = messageHubService.credentials.kafka_brokers_sasl;
-                opts.api_key = messageHubService.credentials.api_key;
+                eventStreamsService = services[key][0];
+                opts.brokers = eventStreamsService.credentials.kafka_brokers_sasl;
+                opts.api_key = eventStreamsService.credentials.api_key;
             }
         }
-        adminRestInstance = new MessageHubAdminRest(services);
+        adminRestInstance = new EventStreamsAdminRest(services);
     }
     opts.calocation = '/etc/ssl/certs';
     
@@ -71,7 +71,7 @@ if (process.env.VCAP_SERVICES) {
     } else {
         opts.api_key = apiKey;
     }
-    adminRestInstance = new MessageHubAdminRest(wrap_vcap_service(opts.api_key, restEndpoint));
+    adminRestInstance = new EventStreamsAdminRest(wrap_vcap_service(opts.api_key, restEndpoint));
     
     // IBM Cloud/Ubuntu: '/etc/ssl/certs'
     // Red Hat: '/etc/pki/tls/cert.pem',
@@ -95,7 +95,7 @@ console.log("Kafka Endpoints: " + opts.brokers);
 console.log("Admin REST Endpoint: " + adminRestInstance.url.format());
 
 if (!opts.hasOwnProperty('brokers') || !opts.hasOwnProperty('api_key') || !opts.hasOwnProperty('calocation')) {
-    console.error('Error - Failed to retrieve options. Check that app is bound to a Message Hub service or that command line options are correct.');
+    console.error('Error - Failed to retrieve options. Check that app is bound to an Event Streams service or that command line options are correct.');
     process.exit(-1);
 }
 
@@ -127,7 +127,7 @@ process.on('SIGINT', function() {
 });
 
 
-// Use Message Hub's REST admin API to create the topic 
+// Use Event Streams' REST admin API to create the topic
 // with 1 partition and a retention period of 24 hours.
 console.log('Creating the topic ' + topicName + ' with Admin REST API');
 adminRestInstance.topics.create(topicName, 1, 24)
@@ -140,7 +140,7 @@ adminRestInstance.topics.create(topicName, 1, 24)
     console.log(error);
 })
 .done(function() {
-    // Use Message Hub's REST admin API to list the existing topics
+    // Use Event Streams' REST admin API to list the existing topics
     adminRestInstance.topics.get()
     .then(function(response) {
         console.log('Admin REST Listing Topics:');

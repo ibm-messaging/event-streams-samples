@@ -17,7 +17,7 @@
  * Licensed Materials - Property of IBM
  * (c) Copyright IBM Corp. 2016
  */
-package com.messagehub.samples.servlet;
+package com.eventstreams.samples.servlet;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;

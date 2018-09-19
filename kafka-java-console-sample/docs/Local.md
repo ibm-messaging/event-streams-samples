@@ -1,10 +1,10 @@
-# IBM Message Hub Kafka Java console sample application: Local Development guide
+# IBM Event Streams Kafka Java console sample application: Local Development guide
 As pushing the application into IBM Cloud® does not require you to build the application locally, this guide is here to guide you through the process, should you wish to build the application locally.
 
-We will not discuss establishing a connection from your laptop to Message Hub. This is described in the [connection guide](https://console.bluemix.net/docs/services/MessageHub/messagehub127.html#connect_messagehub).
+We will not discuss establishing a connection from your laptop to Event Streams. This is described in the [connection guide](https://console.bluemix.net/docs/services/EventStreams/eventstreams127.html#connecting).
 
 ## Prerequisites
-* Provision a [Message Hub Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) in [IBM Cloud®](https://console.ng.bluemix.net/)
+* Provision an [Event Streams Service Instance](https://console.ng.bluemix.net/catalog/services/event-streams/) in [IBM Cloud®](https://console.ng.bluemix.net/)
 * Install [Gradle](https://gradle.org/)
 * Install Java 7+
 
@@ -22,7 +22,7 @@ Once built, to run the sample, execute the following command:
 java -jar ./build/libs/kafka-java-console-sample-2.0.jar <kafka_brokers_sasl> <kafka_admin_url> <api_key>
 ```
 
-To find the values for `<kafka_brokers_sasl>`, `<kafka_admin_url>` and `<api_key>`, access your Message Hub instance in IBM Cloud®, go to the `Service Credentials` tab and select the `Credentials` you want to use.  If your user value is `token`, specify that with the password seperated by a `:`.
+To find the values for `<kafka_brokers_sasl>`, `<kafka_admin_url>` and `<api_key>`, access your Event Streams instance in IBM Cloud®, go to the `Service Credentials` tab and select the `Credentials` you want to use.  If your user value is `token`, specify that with the password seperated by a `:`.
 
 __Note__: `<kafka_brokers_sasl>` must be a single string enclosed in quotes. For example: `"host1:port1,host2:port2"`. We recommend using all the Kafka hosts listed in the `Credentials` you selected.
 

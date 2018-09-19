@@ -1,4 +1,4 @@
-# IBM Cloud Foundry deployment to an Enterprise Plan Message Hub
+# IBM Cloud Foundry deployment to an Enterprise Plan Event Streams
 
 ## Overview
 
@@ -17,7 +17,7 @@ The Enterprise plan is IAM enabled. Therefore the following extra step is requir
 
 Create a Cloud Foundry alias for your service's associated CRN:
 ```shell
-ibmcloud resource service-alias-create <messagehub-service-name> --instance-name <messagehub-service-name>
+ibmcloud resource service-alias-create <eventstreams-service-alias-name> --instance-name <eventstreams-service-instance-name>
 ```
 
 Having created this alias associated your Service with a Cloud Foundry Organization and Space, thereby enabling your Cloud Foundry application to referrence it and connect to it.
@@ -26,7 +26,7 @@ Having created this alias associated your Service with a Cloud Foundry Organizat
 To deploy applications using the IBM WebSphere Application Server Liberty Buildpack, you are required to accept the IBM Liberty license and IBM JRE license by following the instructions below:
 
 1. Read the current IBM [Liberty-License](http://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/wasdev/downloads/wlp/8.5.5.7/lafiles/runtime/en.html) and the current IBM [JVM-License](http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?la_formnum=&li_formnum=L-JWOD-9SYNCP&title=IBM%C2%AE+SDK%2C+Java+Technology+Edition%2C+Version+8.0&l=en).
-2. Select the Message Hub service you would like to bind your application to. Do this by replacing `<YOUR_SERVICE_INSTANCE_NAME>` with your service instance alias name in `manifest.yml`:
+2. Select the Event Streams service you would like to bind your application to. Do this by replacing `<YOUR_SERVICE_INSTANCE_NAME>` with your service instance alias name in `manifest.yml`:
 ```yaml
   services:
     - "<YOUR_SERVICE_INSTANCE_NAME>"

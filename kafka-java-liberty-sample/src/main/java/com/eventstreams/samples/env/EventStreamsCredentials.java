@@ -17,13 +17,13 @@
  * Licensed Materials - Property of IBM
  * (c) Copyright IBM Corp. 2016
  */
-package com.messagehub.samples.env;
+package com.eventstreams.samples.env;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class MessageHubCredentials {
+public class EventStreamsCredentials {
 
     private String apiKey, kafkaAdminUrl, user, password;
     private String[] kafkaBrokersSasl;

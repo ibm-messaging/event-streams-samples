@@ -8,4 +8,4 @@ applications:
   no-route: true
   health-check-type: none
   services:
-    - "<YOUR_MESSAGE_HUB_SERVICE_NAME>"
+    - "<YOUR_SERVICE_INSTANCE_NAME>"

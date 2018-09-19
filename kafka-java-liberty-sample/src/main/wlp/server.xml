@@ -35,6 +35,6 @@
         <tcpOptions soReuseAddr="true"/>
     </httpEndpoint>
 
-    <application name="MessageHubLibertyApp" context-root="/" location="MessageHubLibertyApp.war" type="war"/>
+    <application name="EventStreamsLibertyApp" context-root="/" location="EventStreamsLibertyApp.war" type="war"/>
 
 </server>

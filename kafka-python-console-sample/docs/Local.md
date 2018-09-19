@@ -1,7 +1,7 @@
-# IBM Message Hub Kafka Python console sample application: Local Development guide
+# IBM Event Streams Kafka Python console sample application: Local Development guide
 As pushing the application into IBM Cloud® does not require you to build the application locally, this guide is here to guide you through the process, should you wish to build the application locally.
 
-We will not discuss establishing a connection from your laptop to Message Hub. This is described in the [ connection guide](https://console.bluemix.net/docs/services/MessageHub/messagehub127.html#connect_messagehub).
+We will not discuss establishing a connection from your laptop to Event Streams. This is described in the [ connection guide](https://console.bluemix.net/docs/services/EventStreams/eventstreams127.html#connecting).
 
 ## Prerequisites
 * [Python](https://www.python.org/downloads/) 3.6 or later
@@ -21,7 +21,7 @@ Once built, to run the sample, execute the following command:
 python3 app.py <kafka_brokers_sasl> <kafka_admin_url> <api_key> <ca_location>
 ```
 
-To find the values for `<kafka_brokers_sasl>`, `<kafka_admin_url>` and `<api_key>`, access your Message Hub instance in IBM Cloud®, go to the `Service Credentials` tab and select the `Credentials` you want to use.  If your user value is `token`, specify that with the password seperated by a `:`.
+To find the values for `<kafka_brokers_sasl>`, `<kafka_admin_url>` and `<api_key>`, access your Event Streams instance in IBM Cloud®, go to the `Service Credentials` tab and select the `Credentials` you want to use.  If your user value is `token`, specify that with the password seperated by a `:`.
 
 `<ca_location>` is the path where the trusted SSL certificates are stored on your machine and is therefore system dependent. 
 For example:

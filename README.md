@@ -37,4 +37,4 @@ In each sample, we demonstrate a single connection path for both our Standard an
 If you have any issues, just ask us a question (tagged with event-streams) on [StackOverflow.com](http://stackoverflow.com/questions/tagged/event-streams).
 
 
-For more information regarding IBM Event Streams, [view the documentation on IBM Cloud](https://www.console.ng.bluemix.net/docs/services/EventStreams/index.html).
+For more information regarding IBM Event Streams, [view the documentation on IBM Cloud](https://console.bluemix.net/docs/services/EventStreams/index.html).

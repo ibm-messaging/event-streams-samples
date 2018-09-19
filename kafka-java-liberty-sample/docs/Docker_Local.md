@@ -5,7 +5,7 @@
 To build and run the sample, you must have the done the following:
 
 * Obtain this repository's contents, either use `git` or just download the samples as a ZIP
-* Provision a [Message Hub Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) in [IBM Cloud®](https://console.ng.bluemix.net/)
+* Provision an [Event Streams Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) in [IBM Cloud®](https://console.ng.bluemix.net/)
 * Install [Docker](https://docs.docker.com/install/)
 
 ## Run the Application
@@ -15,9 +15,9 @@ To build and run the sample, you must have the done the following:
     docker build -t liberty-sample .
     ```
 
-2. Export the Message Hub instance credentials:
+2. Export the Event Streams instance credentials:
 
-    From the Message Hub instance dashboard, click `Service Credentials` and select or create a new one. Copy its content and export it as below:
+    From the Event Streams instance dashboard, click `Service Credentials` and select or create a new one. Copy its content and export it as below:
     ```shell
     export VCAP_SERVICES='{
         "instance_id": "...",

@@ -6,20 +6,20 @@ To build and run the sample, you must have the done the following:
 
 * Obtain this repository's contents, either use `git` or just download the samples as a ZIP
 * Install the [IBM Cloud CLI](https://console.bluemix.net/docs/cli/reference/bluemix_cli/download_cli.html)
-* Provision a [Message Hub Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) in [IBM Cloud®](https://console.ng.bluemix.net/)
+* Provision a [Event Streams Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) in [IBM Cloud®](https://console.ng.bluemix.net/)
 
 ## Standard or Enterprise Plan?
 
-**It's important to know which Message Hub plan you're using as the sample deployment steps are subtly different on each plan respectively.**
+**It's important to know which Event Streams plan you're using as the sample deployment steps are subtly different on each plan respectively.**
 
-By this point, you should have a Message Hub instance provisioned. If you haven't done this step yet, please refer to the main [readme](../README.md).
+By this point, you should have an Event Streams instance provisioned. If you haven't done this step yet, please refer to the main [readme](../README.md).
 
-If you are not sure what type of Message Hub instance you have then you can find this information out by visiting IBM Cloud's web console [dashboard](https://console.bluemix.net/dashboard).
+If you are not sure what type of Event Streams instance you have then you can find this information out by visiting IBM Cloud's web console [dashboard](https://console.bluemix.net/dashboard).
 
-*Please make sure you are in the appropriate Region, Account, Organization and Space where you provisioned your Message Hub instance!*
+*Please make sure you are in the appropriate Region, Account, Organization and Space where you provisioned your Event Streams instance!*
 
-* Message Hub Standard plan services are "Cloud Foundry Services" with the plan column showing "Standard".
-* Message Hub Enterprise plan services are "Services" with the plan column showing "Enterprise".
+* Event Streams Standard plan services are "Cloud Foundry Services" with the plan column showing "Standard".
+* Event Streams Enterprise plan services are "Services" with the plan column showing "Enterprise".
 
 
 ## Deploy the Application

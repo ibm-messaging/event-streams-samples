@@ -17,7 +17,7 @@
  * Licensed Materials - Property of IBM
  * (c) Copyright IBM Corp. 2016
  */
-package com.messagehub.samples.servlet;
+package com.eventstreams.samples.servlet;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -60,8 +60,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import com.messagehub.samples.env.Environment;
-import com.messagehub.samples.env.MessageHubCredentials;
+import com.eventstreams.samples.env.Environment;
+import com.eventstreams.samples.env.EventStreamsCredentials;
 
 /**
  * Servlet implementation class KafkaServlet
@@ -72,7 +72,7 @@ public class KafkaServlet extends HttpServlet {
 
     private final Logger logger = Logger.getLogger(KafkaServlet.class);
     private final String serverConfigDir = System.getProperty("server.config.dir");
-    private final String resourceDir = serverConfigDir + File.separator + "apps" + File.separator + "MessageHubLibertyApp.war"
+    private final String resourceDir = serverConfigDir + File.separator + "apps" + File.separator + "EventStreamsLibertyApp.war"
             + File.separator + "resources";
     private KafkaProducer<String, String> kafkaProducer;
     private ConsumerRunnable consumerRunnable;
@@ -92,7 +92,7 @@ public class KafkaServlet extends HttpServlet {
         logger.log(Level.WARN, "Resource directory: " + resourceDir);
 
         // Retrieve credentials from environment
-        MessageHubCredentials credentials = Environment.getMessageHubCredentials();
+        EventStreamsCredentials credentials = Environment.getEventStreamsCredentials();
         StringBuilder boostrapServersBuilder = new StringBuilder();
         for (String broker : credentials.getKafkaBrokersSasl()) {
             boostrapServersBuilder.append(",");
@@ -138,7 +138,7 @@ public class KafkaServlet extends HttpServlet {
     }
 
     /**
-     * Produces a message to a Message Hub endpoint.
+     * Produces a message to an Event Streams endpoint.
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -171,7 +171,7 @@ public class KafkaServlet extends HttpServlet {
      * @param broker
      *            {String} A string representing a list of brokers the producer can contact.
      * @param apiKey
-     *            {String} The API key of the Bluemix Message Hub service.
+     *            {String} The API key of the IBM Event Streams service.
      * @param isProducer
      *            {Boolean} Flag used to determine whether or not the configuration is for a producer.
      * @return {Properties} A properties object which stores the client configuration info.
@@ -199,7 +199,7 @@ public class KafkaServlet extends HttpServlet {
 
         props.put("bootstrap.servers", broker);
 
-        //Adding in credentials for MessageHub auth
+        //Adding in credentials for EventStreams auth
         String saslJaasConfig = props.getProperty("sasl.jaas.config");
         saslJaasConfig = saslJaasConfig.replace("APIKEY", apikey);
         props.setProperty("sasl.jaas.config", saslJaasConfig);
@@ -225,11 +225,11 @@ public class KafkaServlet extends HttpServlet {
 
         try {
             // Create a producer record which will be sent
-            // to the Message Hub service, providing the topic
+            // to the Event Streams service, providing the topic
             // name, key and message.
             ProducerRecord<String, String> record = new ProducerRecord<>(topic, key, list.build());
 
-            // Synchronously wait for a response from Message Hub / Kafka.
+            // Synchronously wait for a response from Event Streams / Kafka.
             RecordMetadata m = kafkaProducer.send(record).get();
             producedMessages++;
 

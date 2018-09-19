@@ -1,4 +1,4 @@
-# IBM Cloud Foundry deployment to an Enterprise Plan Message Hub
+# IBM Cloud Foundry deployment to an Enterprise Plan Event Streams
 
 ## Overview
 
@@ -17,14 +17,14 @@ The Enterprise plan is IAM enabled. Therefore the following extra step is requir
 
 Create a Cloud Foundry alias for your service's associated CRN:
 ```shell
-ibmcloud resource service-alias-create <alias-name> --instance-name <messagehub-service-name>
+ibmcloud resource service-alias-create <alias-name> --instance-name <eventstreams-service-name>
 ```
 
 Having created this alias associated your Service with a Cloud Foundry Organization and Space, thereby enabling your Cloud Foundry application to referrence it and connect to it.
 
 ## Setup the manifest.yml
 
-1. Select the Message Hub service you would like to bind your application to. Do this by replacing `<YOUR_SERVICE_INSTANCE_NAME>` with your service instance alias name in `manifest.yml`:
+1. Select the Event Streams service you would like to bind your application to. Do this by replacing `<YOUR_SERVICE_INSTANCE_NAME>` with your service instance alias name in `manifest.yml`:
 ```yaml
   services:
     - "<YOUR_SERVICE_INSTANCE_NAME>"

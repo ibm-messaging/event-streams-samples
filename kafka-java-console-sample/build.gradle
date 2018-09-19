@@ -1,5 +1,5 @@
 /**
- * Copyright 2015-2016 IBM
+ * Copyright 2015-2018 IBM
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,111 +15,28 @@
 */
 //
 // Licensed Materials - Property of IBM
-// © Copyright IBM Corp. 2015-2016
+// © Copyright IBM Corp. 2015-2018
 //
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'application'
+plugins {
+  id 'application'
+  id 'java'
+  id 'com.github.johnrengelman.shadow' version '2.0.4'
+}
 
-mainClassName = 'com.messagehub.samples.MessageHubConsoleSample'
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+group = 'com.ibm.eventstreams.samples'
 version = '2.0'
+mainClassName = 'com.eventstreams.samples.EventStreamsConsoleSample'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 repositories {
-    mavenCentral()
-
-    // Read from lib/ directory
-    flatDir {
-        dirs 'lib'
-    }
+  mavenCentral()
 }
 
-// Compile tools.jar and all jars in lib folder as dependencies
 dependencies {
-    compile 'org.apache.kafka:kafka-clients:1.1.+'
-    compile 'log4j:log4j:1.2.17'
-    compile 'org.slf4j:slf4j-log4j12:1.7.25'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.5'
+  compile 'org.apache.kafka:kafka-clients:1.1.+'
+  compile 'log4j:log4j:1.2.17'
+  compile 'org.slf4j:slf4j-log4j12:1.7.25'
+  compile 'com.fasterxml.jackson.core:jackson-databind:2.9.5'
 }
-
-task downloadDependencies(type: Exec) {
-  configurations.testRuntime.files
-  commandLine 'echo', 'Downloaded all dependencies'
-}
-
-// Compile source code
-compileJava {
-    doFirst {
-        copy {
-            from configurations.runtime
-            into 'lib'
-        }
-    }
-
-    source = 'src'
-    options.encoding = 'ISO-8859-1'
-}
-
-// Create the output JAR file.
-jar {
-    from "resources/log4j.properties"
-    
-    doLast {
-        copy {
-            from 'resources'
-            into 'build/libs/resources'
-        }
-    
-        copy {
-            from 'lib'
-            into 'build/libs/lib'
-        }
-    }
-    
-    // Provide Main-Class so the JAR executes properly, along with the required classpath data.
-    manifest {
-        attributes('Main-Class': mainClassName,
-        'Class-Path': configurations.runtime.files.collect { './lib/' + it.name }.join(' '))
-    }
-}
-
-// Save JAR in build directory.
-uploadArchives {
-    repositories {
-        flatDir {
-            dirs 'build'
-        }
-    }
-}
-
-['Zip', 'Tar'].each { suffix ->
-    "dist$suffix" {
-        def basePath = baseName + '-' + version
-
-        from('resources') {
-            into { basePath + '/resources' }
-            exclude 'log4j.properties'
-        }
-
-        from('resources') {
-            into { basePath + '/lib' }
-            include 'log4j.properties'
-        }
-    }
-}
-
-sourceSets {
-    main {
-        java {
-            srcDirs = ["src", "resources"]
-        }
-    }
-}
-
-eclipse {
-
-}
-
-// force eclipse files to regenerate each time
-tasks.eclipse.dependsOn cleanEclipse

@@ -17,10 +17,10 @@
  * Licensed Materials - Property of IBM
  * (c) Copyright IBM Corp. 2015-2016
  */
-package com.messagehub.samples.rest;
+package com.eventstreams.samples.rest;
 
 /**
- * Facade to access IBM Message Hub REST Admin API
+ * Facade to access IBM Event Streams REST Admin API
  * 
  * @author IBM
  */
@@ -33,7 +33,7 @@ public class RESTAdmin {
      * Creates a topic or ignores an 'Already Exists' response
      * <p/>
      * @param restURL HTTPS endpoint URL
-     * @param apiKey Message Hub API Key 
+     * @param apiKey Event Streams API Key 
      * @param topicName Name of the topic
      * @return the body of the HTTP response
      * @throws Exception if an unexpected error occurs
@@ -54,7 +54,7 @@ public class RESTAdmin {
      * Returns all the topics available to the user in a single string
      * <p/>
      * @param restURL HTTPS endpoint URL
-     * @param apiKey Message Hub API Key 
+     * @param apiKey Event Streams API Key 
      * @return all the topics available to the user in a single string
      * @throws Exception if an unexpected error occurs
      */

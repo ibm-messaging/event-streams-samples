@@ -17,7 +17,7 @@
  * Licensed Materials - Property of IBM
  * (c) Copyright IBM Corp. 2018
  */
-package com.messagehub.samples.env;
+package com.eventstreams.samples.env;
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -33,21 +33,21 @@ public class Environment {
     private static final Logger logger = Logger.getLogger(Environment.class);
     private static final String SERVICE_NAME = "messagehub";
 
-    public static MessageHubCredentials getMessageHubCredentials() {
+    public static EventStreamsCredentials getEventStreamsCredentials() {
         String vcapServices = System.getenv("VCAP_SERVICES");
-        logger.log(Level.WARN, "VCAP_SERVICES: \n" + vcapServices);
+        logger.log(Level.INFO, "VCAP_SERVICES: \n" + vcapServices);
         try {
             if (vcapServices != null) {
                 JsonNode mhub = parseVcapServices(vcapServices);
                 ObjectMapper mapper = new ObjectMapper();
-                return mapper.readValue(mhub.toString(), MessageHubCredentials.class);
+                return mapper.readValue(mhub.toString(), EventStreamsCredentials.class);
             } else {
                 logger.log(Level.ERROR, "VCAP_SERVICES environment variable is null.");
                 throw new IllegalStateException("VCAP_SERVICES environment variable is null.");
             }
         } catch (IOException ioe) {
-            logger.log(Level.ERROR, "VCAP_SERVICES environment variable is null.");
-            throw new IllegalStateException("VCAP_SERVICES environment variable is null.", ioe);
+            logger.log(Level.ERROR, "VCAP_SERVICES environment variable parses failed.");
+            throw new IllegalStateException("VCAP_SERVICES environment variable parses failed.", ioe);
         }
     }
 
@@ -63,7 +63,7 @@ public class Environment {
         } else {
             String vcapKey = null;
             Iterator<String> it = vcapServicesJson.fieldNames();
-            // Find the Message Hub service bound to this application.
+            // Find the Event Streams service bound to this application.
             while (it.hasNext() && vcapKey == null) {
                 String potentialKey = it.next();
                 if (potentialKey.startsWith(SERVICE_NAME)) {
@@ -73,7 +73,7 @@ public class Environment {
             }
 
             if (vcapKey == null) {
-                throw new IllegalSaslStateException("No MessageHub service bound");
+                throw new IllegalSaslStateException("No Event Streams service bound");
             } else {
                 return vcapServicesJson.get(vcapKey).get(0).get("credentials");
             }

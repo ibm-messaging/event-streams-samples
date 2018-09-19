@@ -1,5 +1,5 @@
 """
- Copyright 2015-2017 IBM
+ Copyright 2015-2018 IBM
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,11 +14,11 @@
  limitations under the License.
 
  Licensed Materials - Property of IBM
- © Copyright IBM Corp. 2015-2017
+ © Copyright IBM Corp. 2015-2018
 """
 import requests
 
-class MessageHubRest(object):
+class EventStreamsRest(object):
 
     def __init__(self, rest_endpoint, api_key):
         self.path = '{0}/admin/topics'.format(rest_endpoint)

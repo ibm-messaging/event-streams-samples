@@ -6,19 +6,19 @@ To build and run the sample, you must have the done the following:
 * Obtain this repository's contents, either use `git` or just download the samples as a ZIP
 * Install the [IBM Cloud CLI](https://console.bluemix.net/docs/cli/reference/bluemix_cli/download_cli.html)
 * Install the [Kubernetes CLI](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
-* Provision a [Message Hub Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) in [IBM Cloud®](https://console.ng.bluemix.net/)
+* Provision an [Event Streams Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) in [IBM Cloud®](https://console.ng.bluemix.net/)
 * Provision a [Kubernetes Service instance](https://console.bluemix.net/containers-kubernetes/catalog/cluster) in [IBM Cloud®](https://console.ng.bluemix.net/)
 
 
 ## Deploy the Application
 
-1. From the Message Hub instance dashboard, click `Service Credentials` and select or create a new one. Copy its            content. 
+1. From the Event Streams instance dashboard, click `Service Credentials` and select or create a new one. Copy its            content. 
 
-2. To deploy the application you first need to bind the Message Hub service instance to the cluster. Replace                 `<Service Credentials>` with the content copied in step 1.
+2. To deploy the application you first need to bind the Event Streams service instance to the cluster. Replace                 `<Service Credentials>` with the content copied in step 1.
     ```shell
-    kubectl create secret generic messagehub-binding --from-literal=binding='<Service Credentials>'
+    kubectl create secret generic eventstreams-binding --from-literal=binding='<Service Credentials>'
     ```
-    The command above creates a secret in your cluster named  `messagehub-binding`. 
+    The command above creates a secret in your cluster named  `eventstreams-binding`. 
 
 3. [Configure the CLI to run kubectl](https://console.bluemix.net/docs/containers/cs_cli_install.html#cs_cli_configure)
 

@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 IBM
+ * Copyright 2018 IBM
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,9 @@
  */
 /**
  * Licensed Materials - Property of IBM
- * (c) Copyright IBM Corp. 2015-2017
+ * (c) Copyright IBM Corp. 2015-2018
  */
-package com.messagehub.samples;
+package com.eventstreams.samples;
 
 import java.util.Arrays;
 import java.util.HashMap;

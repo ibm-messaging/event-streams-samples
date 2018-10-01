@@ -1,4 +1,4 @@
-# IBM Cloud Foundry deployment to an Enterprise Plan Event Streams
+# IBM Cloud Foundry deployment to an Enterprise Plan Event Streams for IBM Cloud
 
 ## Overview
 
@@ -24,7 +24,7 @@ Having created this alias associated your Service with a Cloud Foundry Organizat
 
 ## Setup the manifest.yml
 
-1. Select the Event Streams service you would like to bind your application to. Do this by replacing `<YOUR_SERVICE_INSTANCE_NAME>` with your service instance alias name in `manifest.yml`:
+1. Select the Event Streams for IBM Cloud service you would like to bind your application to. Do this by replacing `<YOUR_SERVICE_INSTANCE_NAME>` with your service instance alias name in `manifest.yml`:
 ```yaml
   services:
     - "<YOUR_SERVICE_INSTANCE_NAME>"

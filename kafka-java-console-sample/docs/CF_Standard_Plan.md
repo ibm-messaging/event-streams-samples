@@ -1,4 +1,4 @@
-# IBM Cloud Foundry deployment to a Standard Plan Event Streams
+# IBM Cloud Foundry deployment to a Standard Plan Event Streams for IBM Cloud
 
 ## Overview
 
@@ -10,7 +10,7 @@ To deploy and run the sample:
 
 ## Setup the manifest.yml
 
-1. Select the Event Streams service you would like to bind your application to. Do this by replacing `<YOUR_SERVICE_INSTANCE_NAME>` with your actual service's name in `manifest.yml`:
+1. Select the Event Streams for IBM Cloud service you would like to bind your application to. Do this by replacing `<YOUR_SERVICE_INSTANCE_NAME>` with your actual service's name in `manifest.yml`:
 ```yaml
   services:
     - "<YOUR_SERVICE_INSTANCE_NAME>"

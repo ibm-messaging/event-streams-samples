@@ -15,9 +15,9 @@ To build and run the sample, you must have the done the following:
     docker build -t python-console-sample .
     ```
 
-2. Export the Event Streams instance credentials:
+2. Export the Event Streams for IBM Cloud instance credentials:
 
-    From the Event Streams instance dashboard, click `Service Credentials` and select or create a new one. Copy its content and export it as below:
+    From the Event Streams for IBM Cloud instance dashboard, click `Service Credentials` and select or create a new one. Copy its content and export it as below:
     ```shell
     export VCAP_SERVICES='{
         "instance_id": "...",

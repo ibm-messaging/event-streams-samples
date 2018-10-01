@@ -12,9 +12,9 @@ To build and run the sample, you must have the done the following:
 
 ## Deploy the Application
 
-1. From the Event Streams instance dashboard, click `Service Credentials` and select or create a new one. Copy its            content. 
+1. From the Event Streams for IBM Cloud instance dashboard, click `Service Credentials` and select or create a new one. Copy its            content. 
 
-2. To deploy the application you first need to bind the Event Streams service instance to the cluster. Replace `<Service Credentials>` with the content copied in step 1.
+2. To deploy the application you first need to bind the Event Streams for IBM Cloud service instance to the cluster. Replace `<Service Credentials>` with the content copied in step 1.
     ```shell
     kubectl create secret generic eventstreams-binding --from-literal=binding='<Service Credentials>'
     ```

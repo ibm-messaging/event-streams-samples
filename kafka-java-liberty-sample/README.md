@@ -1,10 +1,10 @@
-# IBM Event Streams Liberty sample application
+# IBM Event Streams for IBM Cloud Liberty sample application
 
-This repository holds a sample application that was built using Liberty for Java™. The application will interact with an Event Streams service to produce and consume messages.
+This repository holds a sample application that was built using Liberty for Java™. The application will interact with an Event Streams for IBM Cloud service to produce and consume messages.
 
 **Liberty for Java™ applications on IBM Cloud®** are powered by the IBM WebSphere® Liberty Buildpack. The Liberty profile is a highly composable, fast-to-start, dynamic application server runtime environment. It is part of IBM WebSphere Application Server v8.5.5.
 
-For more information regarding IBM Event Streams, [see the documentation on IBM Cloud®](https://www.ng.bluemix.net/docs/services/EventStreams/index.html).
+For more information regarding IBM Event Streams for IBM Cloud, [see the documentation on IBM Cloud®](https://www.ng.bluemix.net/docs/services/EventStreams/index.html).
 
 __Important Note__: This sample creates a topic with one partition on your behalf. On the Standard plan, this will incur a fee if the topic does not already exist.
 

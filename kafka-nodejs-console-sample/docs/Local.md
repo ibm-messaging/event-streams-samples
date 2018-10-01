@@ -1,7 +1,7 @@
-# IBM Event Streams Kafka Node.js console sample application: Local Development guide
+# IBM Event Streams for IBM Cloud Kafka Node.js console sample application: Local Development guide
 As pushing the application into IBM Cloud® does not require you to build the application locally, this guide is here to guide you through the process, should you wish to build the application locally.
 
-We will not discuss establishing a connection from your laptop to Event Streams. This is described in the [ connection guide](https://console.bluemix.net/docs/services/EventStreams/eventstreams127.html#connecting).
+We will not discuss establishing a connection from your laptop to Event Streams for IBM Cloud. This is described in the [ connection guide](https://console.bluemix.net/docs/services/EventStreams/eventstreams127.html#connecting).
 
 ## Prerequisites
 * [Node.js](https://nodejs.org/en/) 6.X LTS

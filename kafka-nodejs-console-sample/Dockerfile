@@ -17,7 +17,8 @@ RUN  apt-get update -qqy \
      libssl-dev \
      make \
      python \
-     nodejs npm ca-certificates \
+     nodejs ca-certificates \
+  && apt-get install -y npm \ 
   && rm -rf /var/cache/apt/* /var/lib/apt/lists/*
 
 WORKDIR /usr/src/app

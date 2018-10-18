@@ -40,3 +40,76 @@ dependencies {
   compile 'org.slf4j:slf4j-log4j12:1.7.25'
   compile 'com.fasterxml.jackson.core:jackson-databind:2.9.5'
 }
+
+task downloadDependencies(type: Exec) {
+  configurations.testRuntime.files
+  commandLine 'echo', 'Downloaded all dependencies'
+}
+
+// Compile source code
+compileJava {
+    doFirst {
+        copy {
+            from configurations.runtime
+            into 'lib'
+        }
+    }
+
+    source = 'src'
+    options.encoding = 'ISO-8859-1'
+}
+
+jar {
+    from "resources/log4j.properties"
+    
+    doLast {
+        copy {
+            from 'resources'
+            into 'build/libs/resources'
+        }
+    
+        copy {
+            from 'lib'
+            into 'build/libs/lib'
+        }
+    }
+    
+    // Provide Main-Class so the JAR executes properly, along with the required classpath data.
+    manifest {
+        attributes('Main-Class': mainClassName,
+        'Class-Path': configurations.runtime.files.collect { './lib/' + it.name }.join(' '))
+    }
+}
+
+// Save JAR in build directory.
+uploadArchives {
+    repositories {
+        flatDir {
+            dirs 'build'
+        }
+    }
+}
+
+['Zip', 'Tar'].each { suffix ->
+    "dist$suffix" {
+        def basePath = baseName + '-' + version
+
+        from('resources') {
+            into { basePath + '/resources' }
+            exclude 'log4j.properties'
+        }
+
+        from('resources') {
+            into { basePath + '/lib' }
+            include 'log4j.properties'
+        }
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ["src", "resources"]
+        }
+    }
+}

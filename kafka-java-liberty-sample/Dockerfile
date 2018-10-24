@@ -7,15 +7,9 @@ RUN gradle -s --no-daemon assemble
 
 FROM websphere-liberty:javaee8
 
-COPY --from=jdk /usr/src/app/target/defaultServer/apps/EventStreamsLibertyApp.war /tmp
-COPY --from=jdk /usr/src//app/target/defaultServer/server.xml /config/server.xml
-
-USER root
+COPY --from=jdk --chown=1001:0 /usr/src/app/target/defaultServer/apps/EventStreamsLibertyApp.war /tmp
+COPY --from=jdk --chown=1001:0 /usr/src//app/target/defaultServer/server.xml /config/server.xml
 
 RUN unzip -q /tmp/EventStreamsLibertyApp.war \
       -d /opt/ibm/wlp/usr/servers/defaultServer/apps/EventStreamsLibertyApp.war \
-  && mkdir -p /logs /opt/ibm/wlp/usr/servers/defaultServer/configDropins /opt/ibm/wlp/output/defaultServer/.classCache \
-  && adduser --home /opt/ibm/wlp/usr/servers wlp --quiet --disabled-login --gecos "" --uid 1000 \
-  && chown -R 1000:1000 /logs /opt/ibm/wlp/usr/servers /opt/ibm/wlp/output
-
-USER wlp
+  && chmod -R a+rwX /opt/ibm/wlp/usr/servers/defaultServer/apps/EventStreamsLibertyApp.war

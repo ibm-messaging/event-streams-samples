@@ -3,7 +3,7 @@ applications:
   buildpack: "https://github.com/cloudfoundry/java-buildpack#v3.17"
   memory: 1G
   disk_quota: 512M
-  path: build/distributions/kafka-java-console-sample-shadow-2.0.zip
+  path: build/distributions/kafka-java-console-sample-2.0.zip
   no-route: true
   health-check-type: none
   services:

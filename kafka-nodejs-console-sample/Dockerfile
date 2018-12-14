@@ -3,7 +3,7 @@
 # docker build . -t node-rdkafka
 # docker run --rm -it -e VCAP_SERVICES=${VCAP_SERVICES} node-rdkafka
 # OR
-# docker run --rm -it node-rdkafka <kafka_brokers_sasl> <kafka_admin_url> <api_key> /etc/ssl/certs
+# docker run --rm -it node-rdkafka <kafka_brokers_sasl> <api_key> /etc/ssl/certs
 #
 FROM ubuntu
 

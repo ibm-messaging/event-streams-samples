@@ -18,17 +18,15 @@
  * © Copyright IBM Corp. 2015-2018
  */
 var Kafka = require('node-rdkafka');
-var EventStreamsAdminRest = require('message-hub-rest');
 var ProducerLoop = require('./producerLoop.js');
 var ConsumerLoop = require('./consumerLoop.js');
 var fs = require('fs');
 
-var adminRestInstance;
 var opts = {};
 var topicName = 'kafka-nodejs-console-sample-topic';
 var runProducer = true;
 var runConsumer = true;
-var producer, consumer;
+var producer, consumer, admin;
 var services;
 
 if (process.env.VCAP_SERVICES) {
@@ -38,7 +36,6 @@ if (process.env.VCAP_SERVICES) {
     if (services.hasOwnProperty('instance_id')) {
         opts.brokers = services.kafka_brokers_sasl;
         opts.api_key = services.api_key;
-        adminRestInstance = new EventStreamsAdminRest(wrap_vcap_service(services.api_key, services.kafka_admin_url));
     } else {
         for (var key in services) {
             if (key.lastIndexOf('messagehub', 0) === 0) {
@@ -47,7 +44,6 @@ if (process.env.VCAP_SERVICES) {
                 opts.api_key = eventStreamsService.credentials.api_key;
             }
         }
-        adminRestInstance = new EventStreamsAdminRest(services);
     }
     opts.calocation = '/etc/ssl/certs';
     
@@ -55,44 +51,41 @@ if (process.env.VCAP_SERVICES) {
     // Running locally on development machine
     console.log("Using command line arguments to find credentials.");
 
-    if (process.argv.length < 6) {
+    if (process.argv.length < 5) {
         console.log('ERROR: It appears the application is running is running without VCAP_SERVICES but the arguments are incorrect for local mode.');
         console.log('\nUsage:\n' +
-            'node ' + process.argv[1] + ' <kafka_brokers_sasl> <kafka_admin_url> <api_key> <cert_location> [ -consumer | -producer ]\n');
+            'node ' + process.argv[1] + ' <kafka_brokers_sasl> <api_key> <cert_location> [ -consumer | -producer ]\n');
         process.exit(-1);
     }
 
     opts.brokers = process.argv[2];
-    var restEndpoint = process.argv[3];
-    var apiKey = process.argv[4];
+    var apiKey = process.argv[3];
     if (apiKey.indexOf(":") != -1) {
         var credentialArray = apiKey.split(":");
         opts.api_key = credentialArray[1];
     } else {
         opts.api_key = apiKey;
     }
-    adminRestInstance = new EventStreamsAdminRest(wrap_vcap_service(opts.api_key, restEndpoint));
     
     // IBM Cloud/Ubuntu: '/etc/ssl/certs'
     // Red Hat: '/etc/pki/tls/cert.pem',
-    // Mac OS X: select System root certificates from Keychain Access and export as .pem on the filesystem
-    opts.calocation = process.argv[5];
+    // macOS: '/usr/local/etc/openssl/cert.pem' from openssl installed by brew
+    opts.calocation = process.argv[4];
     if (! fs.existsSync(opts.calocation)) {
         console.error('Error - Failed to access <cert_location> : ' + opts.calocation);
         process.exit(-1);
     }
 
     // In local mode the app can run only the producer or only the consumer
-    if (process.argv.length === 7) {
-        if ('-consumer' === process.argv[6])
+    if (process.argv.length === 6) {
+        if ('-consumer' === process.argv[5])
             runProducer = false;
-        if ('-producer' === process.argv[6])
+        if ('-producer' === process.argv[5])
             runConsumer = false;
     }
 }
 
 console.log("Kafka Endpoints: " + opts.brokers);
-console.log("Admin REST Endpoint: " + adminRestInstance.url.format());
 
 if (!opts.hasOwnProperty('brokers') || !opts.hasOwnProperty('api_key') || !opts.hasOwnProperty('calocation')) {
     console.error('Error - Failed to retrieve options. Check that app is bound to an Event Streams service or that command line options are correct.');
@@ -101,19 +94,18 @@ if (!opts.hasOwnProperty('brokers') || !opts.hasOwnProperty('api_key') || !opts.
 
 // Shutdown hook
 function shutdown(retcode) {
-    if (producer && producer.isConnected()) {
-        try {
-            // Not supported yet !
-            //producer.flush(1000);
-        } catch (err) {
-            console.log(err);
-        }
-        producer.disconnect();
+    if (admin) { // admin.isConnected() not present
+        admin.disconnect();
     }
+    if (producer && producer.isConnected()) {
+        producer.disconnect();
+    }    
     if (consumer && consumer.isConnected()) {
         consumer.disconnect();
     }
     clearInterval(ConsumerLoop.consumerLoop);
+    
+    // ideally we should wait on completion of the async calls
     process.exit(retcode);
 }
 
@@ -126,51 +118,61 @@ process.on('SIGINT', function() {
     shutdown(0);
 });
 
+// Config options common to all clients
+var driver_options = {
+    //'debug': 'all',
+    'metadata.broker.list': opts.brokers,
+    'security.protocol': 'sasl_ssl',
+    'ssl.ca.location': opts.calocation,
+    'sasl.mechanisms': 'PLAIN',
+    'sasl.username': 'token',
+    'sasl.password': opts.api_key,
+    'broker.version.fallback': '0.10.2.1',  // still needed with librdkafka 0.11.5
+    'log.connection.close' : false
+};
 
-// Use Event Streams' REST admin API to create the topic
+var admin_opts = {
+    'client.id': 'kafka-nodejs-console-sample-admin',
+};
+
+// Add the common options to client and producer
+for (var key in driver_options) { 
+    admin_opts[key] = driver_options[key];
+}
+
+// Use the AdminClient API to create the topic
 // with 1 partition and a retention period of 24 hours.
-console.log('Creating the topic ' + topicName + ' with Admin REST API');
-adminRestInstance.topics.create(topicName, 1, 24)
-.then(function(response) {
-    // If response is an empty object, then the topic was created
-    if (Object.keys(response).length === 0 && response.constructor === Object) console.log('Topic ' + topicName + ' created');
-    else console.log(response);
-})
-.fail(function(error) {
-    console.log(error);
-})
-.done(function() {
-    // Use Event Streams' REST admin API to list the existing topics
-    adminRestInstance.topics.get()
-    .then(function(response) {
-        console.log('Admin REST Listing Topics:');
-        console.log(response);
-    })
-    .fail(function(error) {
-        console.log(error);
-    })
-    .done(function() {
-        runLoops();
-        console.log("This sample app will run until interrupted.");
-    });
-});
+console.log('Creating the topic ' + topicName + ' with AdminClient');
+admin = Kafka.AdminClient.create(admin_opts);
+admin.connect();
+console.log("AdminClient connected");
+
+admin.createTopic({
+    topic: topicName,
+    num_partitions: 1,
+    replication_factor: 3,
+    config: { 'retention.ms': (24*60*60*1000).toString() }
+    }, 
+    function(err) {
+        if(err) {
+            console.log(err);
+        } else {
+            console.log('Topic ' + topicName + ' created');
+        }
+
+        // carry on if topic created or topic already exists (code 36)
+        if (!err || err.code == 36) { 
+            runLoops();
+            console.log("This sample app will run until interrupted.");
+            admin.disconnect();
+        } else {
+            shutdown(-1);
+        }
+    }
+);
 
 // Build and start the producer/consumer
 function runLoops() {
-    // Config options common to both consumer and producer
-    var driver_options = {
-        //'debug': 'all',
-        'metadata.broker.list': opts.brokers,
-        'security.protocol': 'sasl_ssl',
-        'ssl.ca.location': opts.calocation,
-        'sasl.mechanisms': 'PLAIN',
-        'sasl.username': 'token',
-        'sasl.password': opts.api_key,
-        'api.version.request': true,
-        'broker.version.fallback': '0.10.2.1',
-        'log.connection.close' : false
-    };
-
     var consumer_opts = {
         'client.id': 'kafka-nodejs-console-sample-consumer',
         'group.id': 'kafka-nodejs-console-sample-group'
@@ -198,19 +200,3 @@ function runLoops() {
         producer.connect();
     }
 };
-
-function wrap_vcap_service(apiKey, restEndpoint) {
-    services = {
-        "messagehub": [
-           {
-              "label": "messagehub",
-              "credentials": {
-                 "api_key": apiKey,
-                 "kafka_admin_url": restEndpoint,
-              }
-           }
-        ]
-    };
-    return services
-}
-

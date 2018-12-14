@@ -4,7 +4,7 @@ As pushing the application into IBM Cloud® does not require you to build the ap
 We will not discuss establishing a connection from your laptop to Event Streams for IBM Cloud. This is described in the [ connection guide](https://console.bluemix.net/docs/services/EventStreams/eventstreams127.html#connecting).
 
 ## Prerequisites
-* [Node.js](https://nodejs.org/en/) 6.X LTS
+* [Node.js](https://nodejs.org/en/) 8.X LTS
 * [node-gyp] (https://www.npmjs.com/package/node-gyp)
 
 Node-rdkafka will build librdkafka automatically. You must ensure you have the dependencies listed below installed. For more details, see [librdakfka's instructions](../../docs/librdkafka.md).
@@ -20,7 +20,6 @@ Node-rdkafka will build librdkafka automatically. You must ensure you have the d
 * [Apple Xcode command line tools](https://developer.apple.com/xcode/)
 * `openssl` via Brew
 * Export `CPPFLAGS=-I/usr/local/opt/openssl/include` and `LDFLAGS=-L/usr/local/opt/openssl/lib`
-* Open Keychain Access, export all certificates in System Roots to a single .pem file
 
 ## Installing dependencies
 Run the following commands on your local machine, after the prerequisites for your environment have been completed:
@@ -31,16 +30,16 @@ npm install
 ## Running the Sample
 Once built, to run the sample, execute the following command:
 ```shell
-node app.js <kafka_brokers_sasl> <kafka_admin_url> <api_key> <ca_location>
+node app.js <kafka_brokers_sasl> <api_key> <ca_location>
 ```
 
-To find the values for `<kafka_brokers_sasl>`, `<kafka_admin_url>` and `<api_key>`, access your Event Streams instance in IBM Cloud®, go to the `Service Credentials` tab and select the `Credentials` you want to use.  If your user value is `token`, specify that with the password seperated by a `:`.
+To find the values for `<kafka_brokers_sasl>` and `<api_key>`, access your Event Streams instance in IBM Cloud®, go to the `Service Credentials` tab and select the `Credentials` you want to use.  If your user value is `token`, specify that with the password seperated by a `:`.
 
 `<ca_location>` is the path where the trusted SSL certificates are stored on your machine and is therefore system dependent. 
 For example:
 * Ubuntu: /etc/ssl/certs
 * RedHat: /etc/pki/tls/cert.pem
-* macOS: The .pem file you created in the prerequisite section
+* macOS: /usr/local/etc/openssl/cert.pem from openssl installed by brew
 
 __Note__: `<kafka_brokers_sasl>` must be a single string enclosed in quotes. For example: `"host1:port1,host2:port2"`. We recommend using all the Kafka hosts listed in the `Credentials` you selected.
 

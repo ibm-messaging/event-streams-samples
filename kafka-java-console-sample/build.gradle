@@ -21,6 +21,7 @@ plugins {
   id 'application'
   id 'java'
   id 'com.github.johnrengelman.shadow' version '2.0.4'
+  id 'eclipse'
 }
 
 group = 'com.ibm.eventstreams.samples'
@@ -35,10 +36,10 @@ repositories {
 }
 
 dependencies {
-  compile 'org.apache.kafka:kafka-clients:1.1.+'
+  compile 'org.apache.kafka:kafka-clients:2.1.+'
   compile 'log4j:log4j:1.2.17'
   compile 'org.slf4j:slf4j-log4j12:1.7.25'
-  compile 'com.fasterxml.jackson.core:jackson-databind:2.9.5'
+  compile 'com.fasterxml.jackson.core:jackson-databind:2.9.7'
 }
 
 task downloadDependencies(type: Exec) {
@@ -109,7 +110,7 @@ uploadArchives {
 sourceSets {
     main {
         java {
-            srcDirs = ["src", "resources"]
+            srcDirs = ["src/main/java", "src/main/resources"]
         }
     }
 }

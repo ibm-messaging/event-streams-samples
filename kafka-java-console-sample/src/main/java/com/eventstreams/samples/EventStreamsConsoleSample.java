@@ -21,20 +21,26 @@ package com.eventstreams.samples;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.kafka.clients.CommonClientConfigs;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.CreateTopicsResult;
+import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.config.SslConfigs;
+import org.apache.kafka.common.errors.TopicExistsException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.eventstreams.samples.env.Environment;
 import com.eventstreams.samples.env.EventStreamsCredentials;
-import com.eventstreams.samples.rest.RESTAdmin;
 
 /**
  * Console-based sample interacting with Event Streams, authenticating with SASL/PLAIN over an SSL connection.
@@ -77,14 +83,12 @@ public class EventStreamsConsoleSample {
         System.out.println("\n"
                 + "Usage:\n"
                 + "    java -jar build/libs/" + APP_NAME + ".jar \\\n"
-                + "              <kafka_brokers_sasl> <kafka_admin_url> { <api_key> | <user = token>:<password> } [" + ARG_CONSUMER + "] \\\n"
+                + "              <kafka_brokers_sasl> { <api_key> | <user = token>:<password> } [" + ARG_CONSUMER + "] \\\n"
                 + "              [" + ARG_PRODUCER_ + "] [" + ARG_TOPIC + "]\n"
                 + "Where:\n"
                 + "    kafka_broker_sasl\n"
                 + "        Required. Comma separated list of broker endpoints to connect to, for\n"
                 + "        example \"host1:port1,host2:port2\".\n"
-                + "    kafka_admin_url\n"
-                + "        Required. The URL of the Event Streams Kafka administration REST endpoint.\n"
                 + "    api_key or user/password\n"
                 + "        Required. An Event Streams API key or user/password used to authenticate access to Kafka.\n"
                 + "        Use user/password if the user is defined as \"token\"\n"
@@ -102,7 +106,6 @@ public class EventStreamsConsoleSample {
     public static void main(String args[])  {
         try {
             String bootstrapServers = null;
-            String adminRestURL = null;
             String apiKey = null;
             boolean runConsumer = true;
             boolean runProducer = true;
@@ -119,12 +122,11 @@ public class EventStreamsConsoleSample {
                 EventStreamsCredentials credentials = Environment.getEventStreamsCredentials();
 
                 bootstrapServers = stringArrayToCSV(credentials.getKafkaBrokersSasl());
-                adminRestURL = credentials.getKafkaAdminUrl();
                 apiKey = credentials.getApiKey();
 
             } else {
                 // If running locally, parse the command line
-                if (args.length < 3) {
+                if (args.length < 2) {
                     logger.log(Level.ERROR, "It appears the application is running without VCAP_SERVICES but the arguments are incorrect for local mode.");
                     printUsage();
                     System.exit(-1);
@@ -133,15 +135,14 @@ public class EventStreamsConsoleSample {
                 logger.log(Level.INFO, "Using command line arguments to find credentials.");
 
                 bootstrapServers = args[0];
-                adminRestURL = args[1];
-                apiKey = args[2];
+                apiKey = args[1];
                 if (apiKey.contains(":")) {
                     String[] credentials = apiKey.split(":");
                     apiKey = credentials[1];
                 } else {
-                    apiKey = args[2];
+                    apiKey = args[1];
                 }
-                if (args.length > 3) {
+                if (args.length > 2) {
                     try {
                         final ArgumentParser argParser = ArgumentParser.builder()
                                 .flag(ARG_CONSUMER)
@@ -149,7 +150,7 @@ public class EventStreamsConsoleSample {
                                 .option(ARG_TOPIC)
                                 .build();
                         final Map<String, String> parsedArgs =
-                                argParser.parseArguments(Arrays.copyOfRange(args, 3, args.length));
+                                argParser.parseArguments(Arrays.copyOfRange(args, 2, args.length));
                         if (parsedArgs.containsKey(ARG_CONSUMER) && !parsedArgs.containsKey(ARG_PRODUCER_)) {
                             runProducer = false;
                         }
@@ -167,20 +168,23 @@ public class EventStreamsConsoleSample {
             }
 
             logger.log(Level.INFO, "Kafka Endpoints: " + bootstrapServers);
-            logger.log(Level.INFO, "Admin REST Endpoint: " + adminRestURL);
 
-            //Using Event Streams Admin REST API to create and list topics
-            //If the topic already exists, creation will be a no-op
-            try {
+            //Using Kafka Admin API to create topic
+            try (AdminClient admin = AdminClient.create(getAdminConfigs(bootstrapServers, apiKey))) {
                 logger.log(Level.INFO, "Creating the topic " + topicName);
-                String restResponse = RESTAdmin.createTopic(adminRestURL, apiKey, topicName);
-                logger.log(Level.INFO, "Admin REST response :" +restResponse);
-
-                String topics = RESTAdmin.listTopics(adminRestURL, apiKey);
-                logger.log(Level.INFO, "Admin REST Listing Topics: " + topics);
+                NewTopic newTopic = new NewTopic(topicName, 1, (short) 3);
+                CreateTopicsResult ctr = admin.createTopics(Collections.singleton(newTopic));
+                ctr.all().get(10, TimeUnit.SECONDS);
+            } catch (ExecutionException ee) {
+                if (ee.getCause() instanceof TopicExistsException) {
+                    logger.log(Level.INFO, "Topic " + topicName + " already exists");
+                } else {
+                    logger.log(Level.ERROR, "Error occurred creating the topic " + topicName, ee);
+                    System.exit(-1);
+                }
             } catch (Exception e) {
-                logger.log(Level.ERROR, "Error occurred accessing the Admin REST API " + e, e);
-                //The application will carry on regardless of Admin REST errors, as the topic may already exist
+                logger.log(Level.ERROR, "Error occurred creating the topic " + topicName, e);
+                System.exit(-1);
             }
 
             //create the Kafka clients
@@ -231,24 +235,24 @@ public class EventStreamsConsoleSample {
         return sb.toString();
     }
 
-    static final Properties getProducerConfigs(String boostrapServers, String apikey) {
+    static final Properties getProducerConfigs(String bootstrapServers, String apikey) {
         Properties configs = new Properties();
         configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
         configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
         configs.put(ProducerConfig.CLIENT_ID_CONFIG, "kafka-java-console-sample-producer");
         configs.put(ProducerConfig.ACKS_CONFIG, "-1");
-        configs.putAll(getCommonConfigs(boostrapServers, apikey));
+        configs.putAll(getCommonConfigs(bootstrapServers, apikey));
         return configs;
     }
 
-    static final Properties getConsumerConfigs(String boostrapServers, String apikey) {
+    static final Properties getConsumerConfigs(String bootstrapServers, String apikey) {
         Properties configs = new Properties();
         configs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
         configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
         configs.put(ConsumerConfig.CLIENT_ID_CONFIG, "kafka-java-console-sample-consumer");
         configs.put(ConsumerConfig.GROUP_ID_CONFIG, "kafka-java-console-sample-group");
         configs.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
-        configs.putAll(getCommonConfigs(boostrapServers, apikey));
+        configs.putAll(getCommonConfigs(bootstrapServers, apikey));
         return configs;
     }
 
@@ -261,6 +265,13 @@ public class EventStreamsConsoleSample {
         configs.put(SslConfigs.SSL_PROTOCOL_CONFIG, "TLSv1.2");
         configs.put(SslConfigs.SSL_ENABLED_PROTOCOLS_CONFIG, "TLSv1.2");
         configs.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "HTTPS");
+        return configs;
+    }
+
+    static final Properties getAdminConfigs(String bootstrapServers, String apikey) {
+        Properties configs = new Properties();
+        configs.put(ConsumerConfig.CLIENT_ID_CONFIG, "kafka-java-console-sample-admin");
+        configs.putAll(getCommonConfigs(bootstrapServers, apikey));
         return configs;
     }
 

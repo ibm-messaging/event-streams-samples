@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class EventStreamsCredentials {
 
-    private String apiKey, kafkaAdminUrl, user, password;
+    private String apiKey, user, password;
     private String[] kafkaBrokersSasl;
 
     @JsonProperty("api_key")
@@ -37,17 +37,7 @@ public class EventStreamsCredentials {
     public void setLabel(String apiKey) {
         this.apiKey = apiKey;
     }
-    
-    @JsonProperty("kafka_admin_url")
-    public String getKafkaAdminUrl() {
-        return kafkaAdminUrl;
-    }
 
-    @JsonProperty("kafka_admin_url")
-    public void setKafkaAdminUrl(String kafkaAdminUrl) {
-        this.kafkaAdminUrl = kafkaAdminUrl;
-    }
-    
     @JsonProperty
     public String getUser() {
         return user;
@@ -57,7 +47,7 @@ public class EventStreamsCredentials {
     public void setUser(String user) {
         this.user = user;
     }
-    
+
     @JsonProperty
     public String getPassword() {
         return password;

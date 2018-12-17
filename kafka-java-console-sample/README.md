@@ -1,5 +1,5 @@
 # IBM Event Streams for IBM Cloud Kafka Java console sample application
-This Java console application demonstrates how to connect to [IBM Event Streams for IBM Cloud](https://console.ng.bluemix.net/docs/services/EventStreams/index.html), send and receive messages using the [Kafka](https://kafka.apache.org) Java API. It also shows how to create and list topics using the Event Streams for IBM Cloud Admin REST API.
+This Java console application demonstrates how to connect to [IBM Event Streams for IBM Cloud](https://console.ng.bluemix.net/docs/services/EventStreams/index.html), send and receive messages using the [Kafka](https://kafka.apache.org) Java API. It also shows how to create topics using the Kafka Admin API.
 
 It can be run locally on your machine or deployed into [IBM Cloud](https://console.ng.bluemix.net/).
 

@@ -19,7 +19,7 @@ The command above creates a jar file under `build/libs`.
 ## Running the Sample
 Once built, to run the sample, execute the following command:
 ```shell
-java -jar ./build/libs/kafka-java-console-sample-2.0-all.jar <kafka_brokers_sasl> <kafka_admin_url> <api_key>
+java -jar ./build/libs/kafka-java-console-sample-2.0-all.jar <kafka_brokers_sasl> <api_key>
 ```
 
 To find the values for `<kafka_brokers_sasl>` and `<api_key>`, access your Event Streams instance in IBM Cloud®, go to the `Service Credentials` tab and select the `Credentials` you want to use.  If your user value is `token`, specify that with the password seperated by a `:`.

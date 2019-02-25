@@ -22,6 +22,7 @@ package com.eventstreams.samples;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import java.time.Duration;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -63,7 +64,7 @@ public class ConsumerRunnable implements Runnable {
             while (!closing) {
                 try {
                     // Poll on the Kafka consumer, waiting up to 3 secs if there's nothing to consume.
-                    ConsumerRecords<String, String> records = kafkaConsumer.poll(3000);
+                    ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(3000L));
                     
                     if (records.isEmpty()) {
                         logger.log(Level.INFO, "No messages consumed");

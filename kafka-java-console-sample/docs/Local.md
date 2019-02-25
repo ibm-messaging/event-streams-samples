@@ -5,7 +5,7 @@ We will not discuss establishing a connection from your laptop to Event Streams 
 
 ## Prerequisites
 * Provision an [Event Streams Service Instance](https://console.ng.bluemix.net/catalog/services/event-streams/) in [IBM Cloud®](https://console.ng.bluemix.net/)
-* Install [Gradle](https://gradle.org/)
+* Install [Gradle 4+](https://gradle.org/)
 * Install Java 7+
 
 ## Build the Sample

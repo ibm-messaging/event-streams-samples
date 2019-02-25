@@ -7,7 +7,7 @@ To build and run the sample, you must have the done the following:
 * Obtain this repository's contents, either use `git` or just download the samples as a ZIP
 * Install the [IBM Cloud CLI](https://console.bluemix.net/docs/cli/reference/bluemix_cli/download_cli.html)
 * Provision an [Event Streams Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) in [IBM Cloud®](https://console.ng.bluemix.net/)
-* Install [Gradle](https://gradle.org/)
+* Install [Gradle 4+](https://gradle.org/)
 * Install Java 7+
 
 ## Standard or Enterprise Plan?

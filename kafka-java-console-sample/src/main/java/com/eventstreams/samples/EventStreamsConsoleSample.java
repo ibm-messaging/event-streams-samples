@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.CreateTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -241,6 +242,7 @@ public class EventStreamsConsoleSample {
         configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
         configs.put(ProducerConfig.CLIENT_ID_CONFIG, "kafka-java-console-sample-producer");
         configs.put(ProducerConfig.ACKS_CONFIG, "-1");
+        configs.put(ProducerConfig.CLIENT_DNS_LOOKUP_CONFIG,"use_all_dns_ips");
         configs.putAll(getCommonConfigs(bootstrapServers, apikey));
         return configs;
     }
@@ -252,6 +254,8 @@ public class EventStreamsConsoleSample {
         configs.put(ConsumerConfig.CLIENT_ID_CONFIG, "kafka-java-console-sample-consumer");
         configs.put(ConsumerConfig.GROUP_ID_CONFIG, "kafka-java-console-sample-group");
         configs.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+        configs.put(ConsumerConfig.CLIENT_DNS_LOOKUP_CONFIG,"use_all_dns_ips");
+        configs.put(ConsumerConfig.DEFAULT_API_TIMEOUT_MS_CONFIG, 60000);
         configs.putAll(getCommonConfigs(bootstrapServers, apikey));
         return configs;
     }
@@ -271,6 +275,7 @@ public class EventStreamsConsoleSample {
     static final Properties getAdminConfigs(String bootstrapServers, String apikey) {
         Properties configs = new Properties();
         configs.put(ConsumerConfig.CLIENT_ID_CONFIG, "kafka-java-console-sample-admin");
+        configs.put(AdminClientConfig.CLIENT_DNS_LOOKUP_CONFIG, "use_all_dns_ips");
         configs.putAll(getCommonConfigs(bootstrapServers, apikey));
         return configs;
     }

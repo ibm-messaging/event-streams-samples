@@ -26,7 +26,7 @@ gradle clean build
 The command above creates a zip file under `build/distributions`.
 
 ## Deploy the Sample to IBM Cloud Foundry
-Before continuing, connect to IBM Cloud with the [IBM Cloud command line interface](https://console.bluemix.net/docs/cli/reference/bluemix_cli/get_started.html#getting-started).
+Before continuing, connect to IBM Cloud with the [IBM Cloud command line interface](https://cloud.ibm.com/docs/cli?topic=cloud-cli-ibmcloud-cli).
 
 Once connected to IBM Cloud, push the app:
 ```shell

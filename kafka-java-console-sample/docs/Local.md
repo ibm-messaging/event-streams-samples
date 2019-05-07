@@ -1,10 +1,10 @@
 # IBM Event Streams for IBM Cloud Kafka Java console sample application: Local Development guide
 As pushing the application into IBM Cloud® does not require you to build the application locally, this guide is here to guide you through the process, should you wish to build the application locally.
 
-We will not discuss establishing a connection from your laptop to Event Streams for IBM Cloud. This is described in the [connection guide](https://console.bluemix.net/docs/services/EventStreams/eventstreams127.html#connecting).
+We will not discuss establishing a connection from your laptop to Event Streams for IBM Cloud. This is described in the [connection guide](https://cloud.ibm.com/docs/services/EventStreams?topic=eventstreams-connecting#connecting).
 
 ## Prerequisites
-* Provision an [Event Streams Service Instance](https://console.ng.bluemix.net/catalog/services/event-streams/) in [IBM Cloud®](https://console.ng.bluemix.net/)
+* Provision an [Event Streams Service Instance](https://cloud.ibm.com/catalog/services/event-streams) in [IBM Cloud®](https://cloud.ibm.com/)
 * Install [Gradle 4+](https://gradle.org/)
 * Install Java 7+
 

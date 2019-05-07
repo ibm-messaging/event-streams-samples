@@ -1,7 +1,7 @@
 # IBM Event Streams for IBM Cloud Kafka Python console sample application: Local Development guide
 As pushing the application into IBM Cloud® does not require you to build the application locally, this guide is here to guide you through the process, should you wish to build the application locally.
 
-We will not discuss establishing a connection from your laptop to Event Streams for IBM Cloud. This is described in the [ connection guide](https://console.bluemix.net/docs/services/EventStreams/eventstreams127.html#connecting).
+We will not discuss establishing a connection from your laptop to Event Streams for IBM Cloud. This is described in the [ connection guide](https://cloud.ibm.com/docs/services/EventStreams?topic=eventstreams-connecting#connecting).
 
 ## Prerequisites
 * [Python](https://www.python.org/downloads/) 3.6 or later

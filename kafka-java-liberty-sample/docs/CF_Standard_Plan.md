@@ -40,7 +40,7 @@ gradle build war
 You should see a directory called `target` created in your project home directory. A WAR file is created under `target/defaultServer`, as well as a copy of the `server.xml` file.
 
 ## Deploy the Sample to IBM Cloud Foundry
-Before continuing, connect to IBM Cloud with the [IBM Cloud command line interface](https://console.bluemix.net/docs/cli/reference/bluemix_cli/get_started.html#getting-started).
+Before continuing, connect to IBM Cloud with the [IBM Cloud command line interface](https://cloud.ibm.com/docs/cli?topic=cloud-cli-ibmcloud-cli).
 
 
 Once connected to IBM Cloud, push the app, **make sure you capture this output as it display's your application's URL binding**:

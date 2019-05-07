@@ -5,8 +5,8 @@
 To build and run the sample, you must have the done the following:
 
 * Obtain this repository's contents, either use `git` or just download the samples as a ZIP
-* Install the [IBM Cloud CLI](https://console.bluemix.net/docs/cli/reference/bluemix_cli/download_cli.html)
-* Provision a [Event Streams Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) in [IBM Cloud®](https://console.ng.bluemix.net/)
+* Install the [IBM Cloud CLI](https://cloud.ibm.com/docs/cli?topic=cloud-cli-install-ibmcloud-cli)
+* Provision a [Event Streams Service Instance](https://cloud.ibm.com/catalog/services/event-streams) in [IBM Cloud®](https://cloud.ibm.com/)
 
 ## Standard or Enterprise Plan?
 
@@ -14,7 +14,7 @@ To build and run the sample, you must have the done the following:
 
 By this point, you should have an Event Streams for IBM Cloud instance provisioned. If you haven't done this step yet, please refer to the main [readme](../README.md).
 
-If you are not sure what type of Event Streams for IBM Cloud instance you have then you can find this information out by visiting IBM Cloud's web console [dashboard](https://console.bluemix.net/dashboard).
+If you are not sure what type of Event Streams for IBM Cloud instance you have then you can find this information out by visiting IBM Cloud's web console [dashboard](https://cloud.ibm.com/resources).
 
 *Please make sure you are in the appropriate Region, Account, Organization and Space where you provisioned your Event Streams instance!*
 

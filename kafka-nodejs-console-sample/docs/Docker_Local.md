@@ -5,7 +5,7 @@
 To build and run the sample, you must have the done the following:
 
 * Obtain this repository's contents, either use `git` or just download the samples as a ZIP
-* Provision an [Event Streams Service Instance](https://console.ng.bluemix.net/catalog/services/message-hub/) in [IBM Cloud®](https://console.ng.bluemix.net/)
+* Provision an [Event Streams Service Instance](https://cloud.ibm.com/catalog/services/event-streams) in [IBM Cloud®](https://cloud.ibm.com/)
 * Install [Docker](https://docs.docker.com/install/)
 
 ## Run the Application

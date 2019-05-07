@@ -9,17 +9,17 @@ Information and instructions regarding the use of these samples can be found in 
 The aim of the samples is to help you get started with Event Streams for IBM Cloud within minutes. They are not production-ready applications but should give you useful pointers at how to build, package and deploy applications as well as how to make basic API calls against us with error handling. We did all the heavy lifting so you can focus on developing exciting code with value!
 
 ## Provisioning your Event Streams for IBM Cloud Cluster
-In order to provision an Event Streams for IBM Cloud cluster, please visit the [IBM Cloud® catalog](https://console.bluemix.net/catalog/). Please also familiarise yourself with Event Streams for IBM Cloud and Apache Kafka basics and terminology. [Our documentation](https://console.bluemix.net/docs/services/EventStreams/) is a good starting point.
+In order to provision an Event Streams for IBM Cloud cluster, please visit the [IBM Cloud® catalog](https://cloud.ibm.com/catalog/). Please also familiarise yourself with Event Streams for IBM Cloud and Apache Kafka basics and terminology. [Our documentation](https://cloud.ibm.com/docs/services/EventStreams?topic=eventstreams-getting_started) is a good starting point.
 
 
 ### Pricing plans
-IBM Event Streams can be provisioned on IBM Cloud® in various pricing plans. Please refer to our [documentation](https://console.bluemix.net/docs/services/EventStreams/eventstreams085.html#plan_choose) to help choose a plan that works for you.
+IBM Event Streams can be provisioned on IBM Cloud® in various pricing plans. Please refer to our [documentation](https://cloud.ibm.com/docs/services/EventStreams?topic=eventstreams-plan_choose#plan_choose) to help choose a plan that works for you.
 
 __Important Note__: Provisioning an Event Streams service in IBM Cloud® incurs a fee. Please review pricing before provisioning. The samples in this repository will create topic(s) on your behalf - creating a topic might also incur a fee. For more information, please consult the IBM Cloud® documentation if necessary.
 
 
 ## Connecting to your Event Streams for IBM Cloud Cluster
-In each sample, we demonstrate a single connection path for both our Standard and Enterprise plans respectively. The aim was to get you started quickly. However your client's needs might be different. Therefore we wrote a [guide](https://console.bluemix.net/docs/services/EventStreams/eventstreams127.html#connecting) that discusses credential generation in detail and showing you all possible ways of doing this.
+In each sample, we demonstrate a single connection path for both our Standard and Enterprise plans respectively. The aim was to get you started quickly. However your client's needs might be different. Therefore we wrote a [guide](https://cloud.ibm.com/docs/services/EventStreams?topic=eventstreams-connecting#connecting) that discusses credential generation in detail and showing you all possible ways of doing this.
 
 ## Our APIs and Sample Applications
 
@@ -37,4 +37,4 @@ In each sample, we demonstrate a single connection path for both our Standard an
 If you have any issues, just ask us a question (tagged with event-streams) on [StackOverflow.com](http://stackoverflow.com/questions/tagged/event-streams).
 
 
-For more information regarding IBM Event Streams for IBM Cloud, [view the documentation on IBM Cloud](https://console.bluemix.net/docs/services/EventStreams/index.html).
+For more information regarding IBM Event Streams for IBM Cloud, [view the documentation on IBM Cloud](https://cloud.ibm.com/docs/services/EventStreams?topic=eventstreams-getting_started).

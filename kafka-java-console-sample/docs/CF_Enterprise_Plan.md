@@ -11,7 +11,7 @@ To deploy and run the sample:
 * Inspect the application's logs
 
 ## Set up a Cloud Foundry Service Alias
-Before continuing, connect to IBM Cloud with the [IBM Cloud command line interface](https://console.bluemix.net/docs/cli/reference/bluemix_cli/get_started.html#getting-started).
+Before continuing, connect to IBM Cloud with the [IBM Cloud command line interface](https://cloud.ibm.com/docs/cli?topic=cloud-cli-ibmcloud-cli).
 
 The Enterprise plan is IAM enabled. Therefore the following extra step is required to create a Cloud Foundry alias for your Service:
 

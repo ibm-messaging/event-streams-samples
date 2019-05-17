@@ -255,7 +255,6 @@ public class EventStreamsConsoleSample {
         configs.put(ConsumerConfig.GROUP_ID_CONFIG, "kafka-java-console-sample-group");
         configs.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
         configs.put(ConsumerConfig.CLIENT_DNS_LOOKUP_CONFIG,"use_all_dns_ips");
-        configs.put(ConsumerConfig.DEFAULT_API_TIMEOUT_MS_CONFIG, 60000);
         configs.putAll(getCommonConfigs(bootstrapServers, apikey));
         return configs;
     }

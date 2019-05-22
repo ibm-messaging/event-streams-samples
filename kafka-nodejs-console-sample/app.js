@@ -97,16 +97,40 @@ function shutdown(retcode) {
     if (admin) { // admin.isConnected() not present
         admin.disconnect();
     }
+
     if (producer && producer.isConnected()) {
-        producer.disconnect();
+        console.log("producer disconnecting") 
+        producer.disconnect(function(err,data) {
+            console.log("producer disconnected") 
+            if (!consumer) {
+                console.log("process exiting");
+                process.exit(retcode);
+            }
+        });
     }    
-    if (consumer && consumer.isConnected()) {
-        consumer.disconnect();
+
+    if (consumer) {
+        clearInterval(ConsumerLoop.consumerLoop);
     }
-    clearInterval(ConsumerLoop.consumerLoop);
+
+    if (consumer && consumer.isConnected()) {
+        console.log("consumer disconnecting") 
+        consumer.disconnect(function(err,data) {
+            console.log("consumer disconnected") 
+            // heuristic delay to allow for the producer to disconnect
+            setTimeout(function(){
+                console.log("process exit");
+                process.exit(retcode);
+            }, 2000);
+        });
+    }
     
-    // ideally we should wait on completion of the async calls
-    process.exit(retcode);
+    // Workaround for the rare case process(exit) may never be called
+    // see https://github.com/Blizzard/node-rdkafka/issues/222
+    setTimeout(function(){
+        console.log("process kill");
+        process.kill(process.pid, -9);
+    }, 10000);
 }
 
 process.on('SIGTERM', function() {
@@ -127,7 +151,7 @@ var driver_options = {
     'sasl.mechanisms': 'PLAIN',
     'sasl.username': 'token',
     'sasl.password': opts.api_key,
-    'broker.version.fallback': '0.10.2.1',  // still needed with librdkafka 0.11.5
+    'broker.version.fallback': '0.10.0',  // still needed with librdkafka 0.11.6 to avoid fallback to 0.9.0
     'log.connection.close' : false
 };
 

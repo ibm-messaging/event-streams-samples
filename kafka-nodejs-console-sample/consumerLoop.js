@@ -34,8 +34,11 @@ exports.consumerLoop = consumerLoop;
  * @return {KafkaConsumer} - the KafkaConsumer instance
  */
 exports.buildConsumer = function(Kafka, consumer_opts, topicName, shutdown) {
-    
-    consumer = new Kafka.KafkaConsumer(consumer_opts);
+    var topicOpts = {
+        'auto.offset.reset': 'latest'
+    };
+
+    consumer = new Kafka.KafkaConsumer(consumer_opts, topicOpts);
 
     // Register listener for debug information; only invoked if debug option set in driver_options
     consumer.on('event.log', function(log) {
@@ -45,13 +48,12 @@ exports.buildConsumer = function(Kafka, consumer_opts, topicName, shutdown) {
     // Register error listener
     consumer.on('event.error', function(err) {
         console.error('Error from consumer:' + JSON.stringify(err));
-        consumer.consume();
     });
 
     var consumedMessages = []
     // Register callback to be invoked when consumer has connected
     consumer.on('ready', function() {
-        console.log('The consumer has started');
+        console.log('The consumer has connected.');
 
         // request metadata for one topic
         consumer.getMetadata({
@@ -71,12 +73,16 @@ exports.buildConsumer = function(Kafka, consumer_opts, topicName, shutdown) {
             }
         });
 
-        // consumer.consume(...) starts a loop
-        // a 'data' event will be emitted for every message received.
-        // this swallows any errors - see node-rdkafka API docs
         consumer.subscribe([topicName]);
-        consumer.consume();
+
         consumerLoop = setInterval(function () {
+            if (consumer.isConnected()) { 
+                // The consume(num, cb) method can take a callback to process messages.
+                // In this sample code we use the ".on('data')" event listener instead,
+                // for illustrative purposes.
+                consumer.consume(10);
+            }    
+
             if (consumedMessages.length === 0) {
                 console.log('No messages consumed');
             } else {

@@ -56,13 +56,13 @@ exports.buildProducer = function(Kafka, producer_opts, topicName, shutdown) {
             console.error(err);
             // We could retry sending the message
         } else {
-            console.log('Message produced, offset: ' + dr.offset);
+            console.log('Message produced, partition: ' + dr.partition + ' offset: ' + dr.offset);
         }
     });
 
     function sendMessages(counter, topic, partition) {
         var message = new Buffer('This is a test message #' + counter);
-        var key = 'Key';
+        var key = 'Key' + counter;
         // Short sleep for flow control in this sample app
         // to make the output easily understandable
         var timeout = 2000;
@@ -83,7 +83,7 @@ exports.buildProducer = function(Kafka, producer_opts, topicName, shutdown) {
 
     // Register callback invoked when producer has connected
     producer.on('ready', function() {
-        console.log('The producer has started');
+        console.log('The producer has connected.');
 
         // request metadata for all topics
         producer.getMetadata({
@@ -107,7 +107,7 @@ exports.buildProducer = function(Kafka, producer_opts, topicName, shutdown) {
         var counter = 0;
 
         // Start sending messages
-        sendMessages(counter, topicName, 0);
+        sendMessages(counter, topicName, null);
     });
     return producer;
 }

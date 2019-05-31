@@ -1,4 +1,4 @@
-# IBM Cloud Foundry deployment to a Standard Plan Event Streams for IBM Cloud
+# IBM Cloud Foundry deployment to a Classic Plan Event Streams for IBM Cloud
 
 ## Overview
 

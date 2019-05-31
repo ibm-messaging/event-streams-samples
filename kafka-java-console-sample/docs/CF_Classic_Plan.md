@@ -1,9 +1,10 @@
-# IBM Cloud Foundry deployment to a Standard Plan Event Streams for IBM Cloud
+# IBM Cloud Foundry deployment to a Classic Plan Event Streams for IBM Cloud
 
 ## Overview
 
 To deploy and run the sample:
 * Setup your `manifest.yml` with your service details
+* Build your app with `gradle build`
 * Use `ibmcloud cf push` to deploy the app to IBM Cloud Foundry
 * Use `ibmcloud cf logs` to check the application.
 
@@ -16,6 +17,13 @@ To deploy and run the sample:
 ```
 2. Consider your domain: You might need to change this in the `manifest.yml` as the domain varies by IBM Cloud region. If unsure, just delete the domain line and IBM Cloud will pick the domain for you.
 
+## Build the Sample
+Build the project using gradle:
+```shell
+gradle clean build
+ ```
+
+The command above creates a zip file under `build/distributions`.
 
 ## Deploy the Sample to IBM Cloud Foundry
 Before continuing, connect to IBM Cloud with the [IBM Cloud command line interface](https://cloud.ibm.com/docs/cli?topic=cloud-cli-ibmcloud-cli).
@@ -28,5 +36,5 @@ ibmcloud app push
 ## Produce and Consume Messages
 The sample application should have created the default sample topic and started producing and consuming messages in an infinite loop. View the logs to verify this:
 ```shell
-ibmcloud app logs kafka-nodejs-console-sample
+ibmcloud app logs kafka-java-console-sample
 ```

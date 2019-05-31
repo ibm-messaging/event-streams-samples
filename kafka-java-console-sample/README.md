@@ -5,7 +5,7 @@ It can be run locally on your machine or deployed into [IBM Cloud](https://cloud
 
 For help with additional deployment modes, please refer to our [connection guide](https://cloud.ibm.com/docs/services/EventStreams?topic=eventstreams-connecting#connecting).
 
-__Important Note__: This sample creates a topic with one partition on your behalf. On the Standard plan, this will incur a fee if the topic does not already exist.
+__Important Note__: This sample creates a topic with one partition on your behalf. On the Classic and Standard plan, this will incur a fee if the topic does not already exist.
 
 ## Running the application
 

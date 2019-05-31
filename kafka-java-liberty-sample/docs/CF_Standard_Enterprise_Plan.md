@@ -1,9 +1,9 @@
-# IBM Cloud Foundry deployment to an Enterprise Plan Event Streams for IBM Cloud
+# IBM Cloud Foundry deployment to an Standard/Enterprise Plan Event Streams for IBM Cloud
 
 ## Overview
 
 To deploy and run the sample:
-* Create a Cloud Foundry Service Alias for your Enterprise Service
+* Create a Cloud Foundry Service Alias for your Standard/Enterprise Service
 * Setup your `manifest.yml` with your service details
 * Use `ibmcloud cf push --no-start` to deploy the app to IBM Cloud Foundry
 * Re-configure binding with Manager role
@@ -13,7 +13,7 @@ To deploy and run the sample:
 ## Set up a Cloud Foundry Service Alias
 Before continuing, connect to IBM Cloud with the [IBM Cloud command line interface](https://cloud.ibm.com/docs/cli?topic=cloud-cli-ibmcloud-cli).
 
-The Enterprise plan is IAM enabled. Therefore the following extra step is required to create a Cloud Foundry alias for your Service:
+The Standard/Enterprise plan is IAM enabled. Therefore the following extra step is required to create a Cloud Foundry alias for your Service:
 
 Create a Cloud Foundry alias for your service's associated CRN:
 ```shell

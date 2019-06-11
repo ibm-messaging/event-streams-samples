@@ -1,5 +1,5 @@
 # event-streams-samples
-IBM Event Streams for IBM Cloud  is a scalable, distributed, high throughput message bus to unite your on-premise and off-premise cloud technologies. You can wire micro-services together using open protocols, connect stream data to analytics to realise powerful insight and feed event data to multiple applications to react in real time.
+IBM Event Streams for IBM Cloud is a scalable, distributed, high throughput message bus to unite your on-premise and off-premise cloud technologies. You can wire micro-services together using open protocols, connect stream data to analytics to realise powerful insight and feed event data to multiple applications to react in real time.
 
 This repository is for samples which interact with the Event Streams for IBM Cloud service. 
 Currently, there are samples for the Kafka and MQ Light APIs.
@@ -31,7 +31,7 @@ In each sample, we demonstrate a single connection path for both our Classic and
 
 ## Get Further Assistance
 
-If you have any issues, just ask us a question (tagged with event-streams) on [StackOverflow.com](http://stackoverflow.com/questions/tagged/event-streams).
+If you have any issues, just ask us a question (tagged with `ibm-eventstreams`) on [StackOverflow.com](http://stackoverflow.com/questions/tagged/ibm-eventstreams).
 
 
 For more information regarding IBM Event Streams for IBM Cloud, [view the documentation on IBM Cloud](https://cloud.ibm.com/docs/services/EventStreams?topic=eventstreams-getting_started).

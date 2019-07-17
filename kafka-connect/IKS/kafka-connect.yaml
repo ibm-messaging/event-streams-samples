@@ -1,0 +1,63 @@
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafkaconnect-deploy
+  labels: 
+    app: kafkaconnect
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafkaconnect
+  template:
+    metadata:
+      namespace: default
+      labels:
+        app: kafkaconnect
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 5000
+      containers:
+        - name: kafkaconnect-container
+          image: ibmcom/eventstreams-kafkaconnect:latest
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8083
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8083
+          ports:
+          - containerPort: 8083
+          volumeMounts: 
+          - name: connect-config
+            mountPath: /opt/kafka/config/connect-distributed.properties
+            subPath: connect-distributed.properties
+          - name: connect-log4j
+            mountPath: /opt/kafka/config/connect-log4j.properties
+            subPath: connect-log4j.properties
+      volumes:
+      - name: connect-config
+        secret:
+          secretName: connect-distributed-config
+      - name: connect-log4j
+        configMap:
+          name: connect-log4j-config
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafkaconnect-service
+  labels:
+    app: kafkaconnect
+spec:
+  ports:
+    - name: kafkaconnect
+      protocol: TCP
+      port: 8083
+  selector:
+      app: kafkaconnect

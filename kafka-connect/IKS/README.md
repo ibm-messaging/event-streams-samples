@@ -4,7 +4,7 @@
 ### Prerequisites
 
 - `kubectl` access to a Kubernetes cluster.
-- Credentials to an IBM Event Streams instance that has the following permissions:
+- Credentials for an IBM Event Streams instance that has the following permissions:
     - to create topics required by the Kafka Connect configuration (see `connect-distributed.properties`)
     - to read/write to the topics accessed by the Connectors 
 
@@ -42,6 +42,6 @@ The Connect REST API is documented at https://kafka.apache.org/documentation/#co
 
 ### Run Connectors
 
-Once the Kafka Connect runtime is running, see the instructions for running the connectors:
+When the Kafka Connect runtime is running, see the instructions for running the connectors:
 - [Run the COS Sink connector](https://github.com/ibm-messaging/kafka-connect-ibmcos-sink#running-the-connector)
 - [Run the MQ Source connector](https://github.com/ibm-messaging/kafka-connect-mq-source#running-the-connector)

@@ -19,8 +19,8 @@ In case you don't want to use the image we provide, you can build an image by co
     ./build.sh
     ```
 
-2. Build the docker image
+2. Build the docker image:
     ```shell
     docker build .
     ```
-If you want to use the sample [YAML file](IKS/kafka-connect.yaml), be sure to update the image name with your image name.
+If you want to use the sample [YAML file](IKS/kafka-connect.yaml), be sure to update the image name with your own image name.

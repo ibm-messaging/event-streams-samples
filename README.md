@@ -29,6 +29,7 @@ In each sample, we demonstrate a single connection path for both our Classic and
 * [kafka-nodejs-console-sample](kafka-nodejs-console-sample/README.md) : Sample Node.js console application using the Event Streams for IBM Cloud Kafka API
 * [kafka-python-console-sample](/kafka-python-console-sample/README.md) : Sample Python console application using the Event Streams for IBM Cloud Kafka API
 * [kafka-connect](/kafka-connect/README.md) : Sample Docker image with Kafka Connect
+* [kafka-mirrormaker](/kafka-mirrormaker/README.md) : Sample Docker image with Kafka Mirror Maker
 
 ## Get Further Assistance
 

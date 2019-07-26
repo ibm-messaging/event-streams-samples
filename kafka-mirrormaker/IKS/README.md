@@ -9,7 +9,7 @@ These steps detail how to replicate data from a Kafka cluster (source) to anothe
 - Credentials for an IBM Event Streams instance that has the following permissions:
     - to read/write to the topics
 
-Mirror Maker does not automatically create topics in the destination cluster. These topics must be created prior to starting Mirror Maker.
+Mirror Maker does not automatically create topics in the destination cluster. You must create these topics before starting Mirror Maker.
 
 ### Configure Mirror Maker
 

@@ -12,10 +12,10 @@ Instructions for running the `eventstreams-kafkamirrormaker` image in Kubernetes
 
 ## Building the image
 
-In case you don't want to use the image we provide, you can build an image by completing these steps:
+If you don't want to use the image we provide, you can build an image by completing these steps:
 
 1. Build the docker image:
     ```shell
     docker build .
     ```
-If you want to use the sample [YAML file](IKS/kafka-mirrormaker.yaml), be sure to update the image name with your own image name.
+If you want to use the sample [YAML file](IKS/kafka-mirrormaker.yaml), ensure that you update the image name with your own image name.

@@ -12,7 +12,7 @@ Instructions for running the `eventstreams-kafkamirrormaker` image in Kubernetes
 
 ## Building the image
 
-If you don't want to use the image we provide, you can build an image by completing these steps:
+To build the image yourself, complete these steps:
 
 1. Build the docker image:
     ```shell

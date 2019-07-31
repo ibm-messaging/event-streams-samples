@@ -1,0 +1,47 @@
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafkamirrormaker-deploy
+  labels: 
+    app: kafkamirrormaker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafkamirrormaker
+  template:
+    metadata:
+      namespace: default
+      labels:
+        app: kafkamirrormaker
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 5000
+      containers:
+        - name: kafkamirrormaker-container
+          image: ibmcom/eventstreams-kafkamirrormaker:latest
+          env:
+          - name: TOPIC_REGEX
+            value: "mytopic"
+          volumeMounts: 
+          - name: source-config
+            mountPath: /opt/kafka/config/source.properties
+            subPath: source.properties
+          - name: destination-config
+            mountPath: /opt/kafka/config/destination.properties
+            subPath: destination.properties
+          - name: tools-log4j
+            mountPath: /opt/kafka/config/tools-log4j.properties
+            subPath: tools-log4j.properties
+      volumes:
+      - name: source-config
+        secret:
+          secretName: source-config
+      - name: destination-config
+        secret:
+          secretName: destination-config
+      - name: tools-log4j
+        configMap:
+          name: tools-log4j-config

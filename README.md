@@ -1,5 +1,5 @@
 # event-streams-samples
-IBM Event Streams for IBM Cloud is a scalable, distributed, high throughput message bus to unite your on-premise and off-premise cloud technologies. You can wire micro-services together using open protocols, connect stream data to analytics to realise powerful insight and feed event data to multiple applications to react in real time.
+IBM Event Streams for IBM Cloud is a scalable, distributed, high throughput message bus to unite your on-premise and off-premise cloud technologies. You can wire micro-services together using open protocols, connect stream data to analytics to realize powerful insight and feed event data to multiple applications to react in real time.
 
 This repository is for samples which interact with the Event Streams for IBM Cloud service. 
 Currently, there are samples for the Kafka and MQ Light APIs.
@@ -11,12 +11,10 @@ The aim of the samples is to help you get started with Event Streams for IBM Clo
 ## Provisioning your Event Streams for IBM Cloud Cluster
 In order to provision an Event Streams for IBM Cloud cluster, please visit the [IBM Cloud® catalog](https://cloud.ibm.com/catalog/). Please also familiarise yourself with Event Streams for IBM Cloud and Apache Kafka basics and terminology. [Our documentation](https://cloud.ibm.com/docs/services/EventStreams?topic=eventstreams-getting_started) is a good starting point.
 
-
 ### Pricing plans
 IBM Event Streams can be provisioned on IBM Cloud® in various pricing plans. Please refer to our [documentation](https://cloud.ibm.com/docs/services/EventStreams?topic=eventstreams-plan_choose#plan_choose) to help choose a plan that works for you.
 
 __Important Note__: Provisioning an Event Streams service in IBM Cloud® incurs a fee. Please review pricing before provisioning. The samples in this repository will create topic(s) on your behalf - creating a topic might also incur a fee. For more information, please consult the IBM Cloud® documentation if necessary.
-
 
 ## Connecting to your Event Streams for IBM Cloud Cluster
 In each sample, we demonstrate a single connection path for both our Classic and Standard/Enterprise plans respectively. The aim was to get you started quickly. However your client's needs might be different. Therefore we wrote a [guide](https://cloud.ibm.com/docs/services/EventStreams?topic=eventstreams-connecting#connecting) that discusses credential generation in detail and showing you all possible ways of doing this.
@@ -30,6 +28,10 @@ In each sample, we demonstrate a single connection path for both our Classic and
 * [kafka-python-console-sample](/kafka-python-console-sample/README.md) : Sample Python console application using the Event Streams for IBM Cloud Kafka API
 * [kafka-connect](/kafka-connect/README.md) : Sample Docker image with Kafka Connect
 * [kafka-mirrormaker](/kafka-mirrormaker/README.md) : Sample Docker image with Kafka Mirror Maker
+
+### Spring Kafka:
+* [spring kafka tutorial](https://developer.ibm.com/tutorials/use-spring-kafka-to-access-an-event-streams-service/) : Tutorial to quickly get you up and running using IBM Event Streams. 
+* [spring-kafka](https://github.com/wkorando/event-stream-kafka) : Sample app to connect to Event Streams using Spring Kafka
 
 ## Get Further Assistance
 

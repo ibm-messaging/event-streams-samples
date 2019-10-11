@@ -19,33 +19,8 @@
  */
 package com.eventstreams.samples.servlet;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Properties;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
-
+import com.eventstreams.samples.env.Environment;
+import com.eventstreams.samples.env.EventStreamsCredentials;
 import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -55,38 +30,49 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
-import com.eventstreams.samples.env.Environment;
-import com.eventstreams.samples.env.EventStreamsCredentials;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
 
-/**
- * Servlet implementation class KafkaServlet
- */
 @WebServlet("/KafkaServlet")
 public class KafkaServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private static final Logger logger = Logger.getLogger(KafkaServlet.class);
 
-    private final Logger logger = Logger.getLogger(KafkaServlet.class);
     private final String serverConfigDir = System.getProperty("server.config.dir");
-    private final String resourceDir = serverConfigDir + File.separator + "apps" + File.separator + "EventStreamsLibertyApp.war"
-            + File.separator + "resources";
-    private KafkaProducer<String, String> kafkaProducer;
-    private ConsumerRunnable consumerRunnable;
+    private final String resourceDir = serverConfigDir + File.separator
+            + "apps" + File.separator
+            + "EventStreamsLibertyApp.war" + File.separator
+            + "resources";
     private final String topic = "testTopic";
+
+    private KafkaProducer<String, String> kafkaProducer;
     private String producedMessage;
-    private String currentConsumedMessage;
-    private int producedMessages = 0;
+    private ConsumerRunnable consumerRunnable;
     private Thread consumerThread = null;
+    private int producedMessages = 0;
+    private String currentConsumedMessage;
     private boolean messageProduced = false;
 
     /**
      * Intialising the KafkaServlet
      */
-    public void init() throws ServletException {
+    public void init() {
         logger.log(Level.WARN, "Initialising Kafka Servlet");
         logger.log(Level.WARN, "Server Config directory: " + serverConfigDir);
         logger.log(Level.WARN, "Resource directory: " + resourceDir);
@@ -109,8 +95,8 @@ public class KafkaServlet extends HttpServlet {
         String topics = restApi.get("/admin/topics", false);
         logger.log(Level.WARN, "Topics: " + topics);
 
-        // Initialise Kafka Producer
-        kafkaProducer = new KafkaProducer<>(getClientConfiguration(bootstrapServers, credentials.getApiKey(), true));
+        // Initialize Kafka Producer
+        kafkaProducer = new KafkaProducer(getClientConfiguration(bootstrapServers, credentials.getApiKey(), true));
 
         // Initialise Kafka Consumer
         consumerRunnable = new ConsumerRunnable(bootstrapServers, credentials.getApiKey(), topic);
@@ -128,12 +114,11 @@ public class KafkaServlet extends HttpServlet {
      * Returns the latest messages received from the Kafka Consumer.
      */
     @Override
-    protected void doGet(HttpServletRequest request, final HttpServletResponse response)
-    throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html");
         response.getWriter().print("<h3>Already consumed messages: </h3>");
-        for (String s : consumerRunnable.consumedMessages) {
-            response.getWriter().print("<div class='message'><small class='code'>Message: " + s + "</small></div>");
+        for (String message : consumerRunnable.consumedMessages) {
+            response.getWriter().print("<div class='message'><small class='code'>Message: " + message + "</small></div>");
         }
     }
 
@@ -141,8 +126,7 @@ public class KafkaServlet extends HttpServlet {
      * Produces a message to an Event Streams endpoint.
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html");
 
         // Producing messages to a topic
@@ -151,17 +135,17 @@ public class KafkaServlet extends HttpServlet {
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.error("Interrupted", e);
         }
 
         if (messageProduced) {
             response.getWriter()
-            .print("<div class='message'><a>Message produced: </a><small class='code'>" + producedMessage
-                    + "</small> </div>,,");
+                    .print("<div class='message'><a>Message produced: </a><small class='code'>" + producedMessage
+                            + "</small> </div>,,");
             // Print out consumed messages
             response.getWriter()
-            .print("<div class ='message'><a>Message consumed : </a><small class='code'>" + currentConsumedMessage
-                    + "</small></div>");
+                    .print("<div class ='message'><a>Message consumed : </a><small class='code'>" + currentConsumedMessage
+                            + "</small></div>");
         }
     }
 
@@ -170,13 +154,13 @@ public class KafkaServlet extends HttpServlet {
      *
      * @param broker
      *            {String} A string representing a list of brokers the producer can contact.
-     * @param apiKey
+     * @param apikey
      *            {String} The API key of the IBM Event Streams service.
      * @param isProducer
      *            {Boolean} Flag used to determine whether or not the configuration is for a producer.
      * @return {Properties} A properties object which stores the client configuration info.
      */
-    public final Properties getClientConfiguration(String broker, String apikey, boolean isProducer) {
+    private Properties getClientConfiguration(String broker, String apikey, boolean isProducer) {
         Properties props = new Properties();
         InputStream propsStream;
         String fileName = resourceDir + File.separator;
@@ -214,12 +198,12 @@ public class KafkaServlet extends HttpServlet {
      *
      * @param topic
      */
-    public void produce(String topic) {
+    private void produce(String topic) {
         logger.log(Level.WARN, "Producer is starting.");
 
         String key = "key";
         // Push a message into the list to be sent.
-        MessageList list = new MessageList();
+        MessageList<String> list = new MessageList();
         producedMessage = "This is a test message, msgId=" + producedMessages;
         list.push(producedMessage);
 
@@ -245,64 +229,26 @@ public class KafkaServlet extends HttpServlet {
         logger.log(Level.WARN, "Producer is shutting down.");
     }
 
-    public String toPrettyString(String xml, int indent) {
-        try {
-            // Turn xml string into a document
-            Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-                    .parse(new InputSource(new ByteArrayInputStream(xml.getBytes("utf-8"))));
-
-            // Remove whitespaces outside tags
-            XPath xPath = XPathFactory.newInstance().newXPath();
-            NodeList nodeList = (NodeList) xPath.evaluate("//text()[normalize-space()='']", document,
-                    XPathConstants.NODESET);
-
-            for (int i = 0; i < nodeList.getLength(); ++i) {
-                Node node = nodeList.item(i);
-                node.getParentNode().removeChild(node);
-            }
-
-            // Setup pretty print options
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            transformerFactory.setAttribute("indent-number", indent);
-            Transformer transformer = transformerFactory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-
-            // Return pretty print xml string
-            StringWriter stringWriter = new StringWriter();
-            transformer.transform(new DOMSource(document), new StreamResult(stringWriter));
-            return stringWriter.toString();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     /**
      * Kafka consumer runnable which can be used to create and run consumer as a separate thread.
-     *
      */
     class ConsumerRunnable implements Runnable {
-        private KafkaConsumer<String, String> kafkaConsumer;
-        private ArrayList<String> topicList;
-        private boolean closing;
-        private ArrayList<String> consumedMessages;
+        private final KafkaConsumer<String, String> kafkaConsumer;
+        private final List<String> consumedMessages = new ArrayList<>();
+
+        private boolean closing = false;
 
         ConsumerRunnable(String broker, String apikey, String topic) {
-            consumedMessages = new ArrayList<String>();
-            closing = false;
-            topicList = new ArrayList<String>();
 
             kafkaConsumer = new KafkaConsumer<>(getClientConfiguration(broker, apikey, false));
-
-            topicList.add(topic);
-            kafkaConsumer.subscribe(topicList, new ConsumerRebalanceListener() {
+            kafkaConsumer.subscribe(Collections.singletonList(topic), new ConsumerRebalanceListener() {
 
                 @Override
-                public void onPartitionsRevoked(Collection<TopicPartition> partitions) {}
+                public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
+                }
 
                 @Override
-                public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
+                public void onPartitionsAssigned(Collection<org.apache.kafka.common.TopicPartition> partitions) {
                     try {
                         logger.log(Level.WARN, "Partitions " + partitions + " assigned, consumer seeking to end.");
 
@@ -318,7 +264,7 @@ public class KafkaServlet extends HttpServlet {
                         }
                         logger.log(Level.WARN, "Producer can now begin producing messages.");
                     } catch (final Exception e) {
-                        e.printStackTrace();
+                        logger.error("Error when assigning partitions", e);
                     }
 
                 }
@@ -332,12 +278,12 @@ public class KafkaServlet extends HttpServlet {
             while (!closing) {
                 try {
                     currentConsumedMessage = "consumer is waiting for messages to be consumed ...";
-                    // Poll on the Kafka consumer every second.
-                    Iterator<ConsumerRecord<String, String>> it = kafkaConsumer.poll(1000).iterator();
+                    Duration duration = Duration.of(1, ChronoUnit.SECONDS);
+                    Iterator<ConsumerRecord<String, String>> it = kafkaConsumer.poll(duration).iterator();
 
                     // Iterate through all the messages received and print their content.
                     while (it.hasNext()) {
-                        ConsumerRecord<String , String> record = it.next();
+                        ConsumerRecord<String, String> record = it.next();
                         currentConsumedMessage = record.value() + ". Offset: " + record.offset();
                         consumedMessages.add(currentConsumedMessage);
                     }
@@ -355,6 +301,7 @@ public class KafkaServlet extends HttpServlet {
 
             logger.log(Level.WARN, "Consumer is shutting down.");
             kafkaConsumer.close();
+            consumedMessages.clear();
         }
 
         public void shutdown() {

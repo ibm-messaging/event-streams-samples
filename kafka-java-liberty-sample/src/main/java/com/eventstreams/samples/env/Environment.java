@@ -18,65 +18,55 @@
  * (c) Copyright IBM Corp. 2018
  */
 package com.eventstreams.samples.env;
-import java.io.IOException;
-import java.util.Iterator;
-
-import org.apache.kafka.common.errors.IllegalSaslStateException;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
+import java.io.IOException;
+import java.util.Iterator;
 
 public class Environment {
 
     private static final Logger logger = Logger.getLogger(Environment.class);
-    private static final String SERVICE_NAME = "messagehub";
 
     public static EventStreamsCredentials getEventStreamsCredentials() {
         String vcapServices = System.getenv("VCAP_SERVICES");
         logger.log(Level.INFO, "VCAP_SERVICES: \n" + vcapServices);
-        try {
-            if (vcapServices != null) {
-                JsonNode mhub = parseVcapServices(vcapServices);
-                ObjectMapper mapper = new ObjectMapper();
-                return mapper.readValue(mhub.toString(), EventStreamsCredentials.class);
-            } else {
-                logger.log(Level.ERROR, "VCAP_SERVICES environment variable is null.");
-                throw new IllegalStateException("VCAP_SERVICES environment variable is null.");
-            }
-        } catch (IOException ioe) {
-            logger.log(Level.ERROR, "VCAP_SERVICES environment variable parses failed.");
-            throw new IllegalStateException("VCAP_SERVICES environment variable parses failed.", ioe);
+        if (vcapServices == null) {
+            logger.log(Level.ERROR, "VCAP_SERVICES environment variable is null.");
+            throw new IllegalStateException("VCAP_SERVICES environment variable is null.");
         }
+        return transformVcapServices(vcapServices);
     }
 
-    private static JsonNode parseVcapServices(String vcapServices) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode vcapServicesJson = mapper.readValue(vcapServices, JsonNode.class);
-
-        // when running in CloudFoundry VCAP_SERVICES is wrapped into a bigger JSON object
-        // so it needs to be extracted. We attempt to read the "instance_id" field to identify
-        // if it has been wrapped
-        if (vcapServicesJson.get("instance_id") != null) {
-            return vcapServicesJson;
-        } else {
-            String vcapKey = null;
-            Iterator<String> it = vcapServicesJson.fieldNames();
-            // Find the Event Streams service bound to this application.
-            while (it.hasNext() && vcapKey == null) {
-                String potentialKey = it.next();
-                if (potentialKey.startsWith(SERVICE_NAME)) {
-                    logger.log(Level.WARN, "Using the '" + potentialKey + "' key from VCAP_SERVICES.");
-                    vcapKey = potentialKey;
+    private static EventStreamsCredentials transformVcapServices(String vcapServices) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode instanceCredentials = mapper.readValue(vcapServices, JsonNode.class);
+            // when running in CloudFoundry VCAP_SERVICES is wrapped into a bigger JSON object
+            // so it needs to be extracted. We attempt to read the "instance_id" field to identify
+            // if it has been wrapped
+            if (instanceCredentials.get("instance_id") == null) {
+                Iterator<String> it = instanceCredentials.fieldNames();
+                // Find the Event Streams service bound to this application.
+                while (it.hasNext()) {
+                    String potentialKey = it.next();
+                    String messageHubJsonKey = "messagehub";
+                    if (potentialKey.startsWith(messageHubJsonKey)) {
+                        logger.log(Level.WARN, "Using the '" + potentialKey + "' key from VCAP_SERVICES.");
+                        instanceCredentials = instanceCredentials.get(potentialKey)
+                                .get(0)
+                                .get("credentials");
+                        break;
+                    }
                 }
             }
-
-            if (vcapKey == null) {
-                throw new IllegalSaslStateException("No EventStreams service bound");
-            } else {
-                return vcapServicesJson.get(vcapKey).get(0).get("credentials");
-            }
+            return mapper.readValue(instanceCredentials.toString(), EventStreamsCredentials.class);
+        } catch (IOException e) {
+            logger.log(Level.ERROR, "VCAP_SERVICES environment variable parses failed.");
+            throw new IllegalStateException("VCAP_SERVICES environment variable parses failed.", e);
         }
     }
 }

@@ -19,21 +19,17 @@
  */
 package com.eventstreams.samples.servlet;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
+public class MessageList<T> {
+    private final ArrayList<T> messages = new ArrayList<>();
 
-public class MessageList {
-    private ArrayList<String> messages;
-
-    MessageList() {
-        this.messages = new ArrayList<String>();
-    }
-
-    public void push(String message) {
+    public void push(T message) {
         this.messages.add(message);
     }
 
@@ -46,26 +42,18 @@ public class MessageList {
      */
     public String build() throws IOException {
         final JsonFactory jsonFactory = new JsonFactory();
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        JsonGenerator jsonGenerator = null;
-
-        jsonGenerator = jsonFactory.createGenerator(outputStream);
+        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        final JsonGenerator jsonGenerator = jsonFactory.createGenerator(outputStream);
 
         jsonGenerator.writeStartArray();
-
-        // Write each message as a JSON object in
-        // the form:
-        // { "value": base_64_string }
         for (int i = 0; i < this.messages.size(); i++) {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeFieldName("value");
             jsonGenerator.writeObject(this.messages.get(i));
             jsonGenerator.writeEndObject();
         }
-
         jsonGenerator.writeEndArray();
 
-        // Close underlying streams and return string representation.
         jsonGenerator.close();
         outputStream.close();
 

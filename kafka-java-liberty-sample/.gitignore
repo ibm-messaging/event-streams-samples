@@ -4,3 +4,8 @@
 /.gradle/
 /.settings/
 /.project
+
+#### intellij settings
+*.iml
+.idea
+gradle*

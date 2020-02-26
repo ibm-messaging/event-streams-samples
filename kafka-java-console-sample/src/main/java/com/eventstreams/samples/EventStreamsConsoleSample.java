@@ -22,6 +22,7 @@ package com.eventstreams.samples;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
@@ -37,8 +38,10 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.config.SslConfigs;
 import org.apache.kafka.common.errors.TopicExistsException;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.eventstreams.samples.env.Environment;
 import com.eventstreams.samples.env.EventStreamsCredentials;
@@ -55,7 +58,7 @@ public class EventStreamsConsoleSample {
     private static final String ARG_CONSUMER = "-consumer";
     private static final String ARG_PRODUCER_ = "-producer";
     private static final String ARG_TOPIC = "-topic";
-    private static final Logger logger = Logger.getLogger(EventStreamsConsoleSample.class);
+    private static final Logger logger = LoggerFactory.getLogger(EventStreamsConsoleSample.class);
 
     private static Thread consumerThread = null;
     private static ConsumerRunnable consumerRunnable = null;
@@ -67,14 +70,14 @@ public class EventStreamsConsoleSample {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                logger.log(Level.WARN, "Shutdown received.");
+                logger.warn("Shutdown received.");
                 shutdown();
             }
         });
         Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(Thread t, Throwable e) {
-                logger.log(Level.ERROR, "Uncaught Exception on " + t.getName() + " : " + e, e);
+                logger.error("Uncaught Exception on {} : {}", t.getName(), e, e);
                 shutdown();
             }
         });
@@ -117,24 +120,19 @@ public class EventStreamsConsoleSample {
             }
             // Check environment: VCAP_SERVICES vs command line arguments, to obtain configuration parameters
             if (args.length == 0) {
-
-                logger.log(Level.INFO, "Using VCAP_SERVICES to find credentials.");
-
+                logger.info("Using VCAP_SERVICES to find credentials.");
                 EventStreamsCredentials credentials = Environment.getEventStreamsCredentials();
-
                 bootstrapServers = stringArrayToCSV(credentials.getKafkaBrokersSasl());
                 apiKey = credentials.getApiKey();
-
             } else {
                 // If running locally, parse the command line
                 if (args.length < 2) {
-                    logger.log(Level.ERROR, "It appears the application is running without VCAP_SERVICES but the arguments are incorrect for local mode.");
+                    logger.error("It appears the application is running without VCAP_SERVICES but the arguments are incorrect for local mode.");
                     printUsage();
                     System.exit(-1);
                 }
 
-                logger.log(Level.INFO, "Using command line arguments to find credentials.");
-
+                logger.info("Using command line arguments to find credentials.");
                 bootstrapServers = args[0];
                 apiKey = args[1];
                 if (apiKey.contains(":")) {
@@ -162,50 +160,50 @@ public class EventStreamsConsoleSample {
                             topicName = parsedArgs.get(ARG_TOPIC);
                         }
                     } catch (IllegalArgumentException e) {
-                        logger.log(Level.ERROR, e.getMessage());
+                        logger.error(e.getMessage());
                         System.exit(-1);
                     }
                 }
             }
 
-            logger.log(Level.INFO, "Kafka Endpoints: " + bootstrapServers);
+            logger.info("Kafka Endpoints: {}", bootstrapServers);
 
             //Using Kafka Admin API to create topic
             try (AdminClient admin = AdminClient.create(getAdminConfigs(bootstrapServers, apiKey))) {
-                logger.log(Level.INFO, "Creating the topic " + topicName);
+                logger.info("Creating the topic {}", topicName);
                 NewTopic newTopic = new NewTopic(topicName, 1, (short) 3);
                 CreateTopicsResult ctr = admin.createTopics(Collections.singleton(newTopic));
                 ctr.all().get(10, TimeUnit.SECONDS);
             } catch (ExecutionException ee) {
                 if (ee.getCause() instanceof TopicExistsException) {
-                    logger.log(Level.INFO, "Topic " + topicName + " already exists");
+                    logger.info("Topic {} already exists", topicName);
                 } else {
-                    logger.log(Level.ERROR, "Error occurred creating the topic " + topicName, ee);
+                    logger.error("Error occurred creating the topic " + topicName, ee);
                     System.exit(-1);
                 }
             } catch (Exception e) {
-                logger.log(Level.ERROR, "Error occurred creating the topic " + topicName, e);
+                logger.error("Error occurred creating the topic {}", topicName, e);
                 System.exit(-1);
             }
 
             //create the Kafka clients
             if (runConsumer) {
-                Properties consumerProperties = getConsumerConfigs(bootstrapServers, apiKey);
-                consumerRunnable = new ConsumerRunnable(consumerProperties, topicName);
+                Map<String, Object> consumerConfigs = getConsumerConfigs(bootstrapServers, apiKey);
+                consumerRunnable = new ConsumerRunnable(consumerConfigs, topicName);
                 consumerThread = new Thread(consumerRunnable, "Consumer Thread");
                 consumerThread.start();
             }
 
             if (runProducer) {
-                Properties producerProperties = getProducerConfigs(bootstrapServers, apiKey);
-                producerRunnable = new ProducerRunnable(producerProperties, topicName);
+                Map<String, Object> producerConfigs = getProducerConfigs(bootstrapServers, apiKey);
+                producerRunnable = new ProducerRunnable(producerConfigs, topicName);
                 producerThread = new Thread(producerRunnable, "Producer Thread");
                 producerThread.start();
             }
 
-            logger.log(Level.INFO, "EventStreamsConsoleSample will run until interrupted.");
+            logger.info("EventStreamsConsoleSample will run until interrupted.");
         } catch (Exception e) {
-            logger.log(Level.ERROR, "Exception occurred, application will terminate", e);
+            logger.error("Exception occurred, application will terminate", e);
             System.exit(-1);
         }
     }
@@ -236,21 +234,21 @@ public class EventStreamsConsoleSample {
         return sb.toString();
     }
 
-    static final Properties getProducerConfigs(String bootstrapServers, String apikey) {
-        Properties configs = new Properties();
-        configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
-        configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+    static final Map<String, Object> getProducerConfigs(String bootstrapServers, String apikey) {
+        Map<String, Object> configs = new HashMap<>();
+        configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         configs.put(ProducerConfig.CLIENT_ID_CONFIG, "kafka-java-console-sample-producer");
-        configs.put(ProducerConfig.ACKS_CONFIG, "-1");
+        configs.put(ProducerConfig.ACKS_CONFIG, "all");
         configs.put(ProducerConfig.CLIENT_DNS_LOOKUP_CONFIG,"use_all_dns_ips");
         configs.putAll(getCommonConfigs(bootstrapServers, apikey));
         return configs;
     }
 
-    static final Properties getConsumerConfigs(String bootstrapServers, String apikey) {
-        Properties configs = new Properties();
-        configs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
-        configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+    static final Map<String, Object> getConsumerConfigs(String bootstrapServers, String apikey) {
+        Map<String, Object> configs = new HashMap<>();
+        configs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         configs.put(ConsumerConfig.CLIENT_ID_CONFIG, "kafka-java-console-sample-consumer");
         configs.put(ConsumerConfig.GROUP_ID_CONFIG, "kafka-java-console-sample-group");
         configs.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
@@ -259,8 +257,8 @@ public class EventStreamsConsoleSample {
         return configs;
     }
 
-    static final Properties getCommonConfigs(String boostrapServers, String apikey) {
-        Properties configs = new Properties();
+    static final Map<String, Object> getCommonConfigs(String boostrapServers, String apikey) {
+        Map<String, Object> configs = new HashMap<>();
         configs.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, boostrapServers);
         configs.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
         configs.put(SaslConfigs.SASL_MECHANISM, "PLAIN");

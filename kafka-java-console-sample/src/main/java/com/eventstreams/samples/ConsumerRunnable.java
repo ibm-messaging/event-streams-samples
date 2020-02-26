@@ -19,10 +19,10 @@
  */
 package com.eventstreams.samples;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
-import java.time.Duration;
+import java.util.Map;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -30,35 +30,35 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.errors.WakeupException;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ConsumerRunnable implements Runnable {
-    private static final Logger logger = Logger.getLogger(ConsumerRunnable.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConsumerRunnable.class);
 
     private final KafkaConsumer<String, String> kafkaConsumer;
     private volatile boolean closing = false;
 
-    public ConsumerRunnable(Properties consumerProperties, String topic) {
+    public ConsumerRunnable(Map<String, Object> consumerConfigs, String topic) {
         // Create a Kafka consumer with the provided client configuration
-        kafkaConsumer = new KafkaConsumer<String, String>(consumerProperties);
+        kafkaConsumer = new KafkaConsumer<String, String>(consumerConfigs);
 
         // Checking for topic existence before subscribing
         List<PartitionInfo> partitions = kafkaConsumer.partitionsFor(topic);
         if (partitions == null || partitions.isEmpty()) {
-            logger.log(Level.ERROR, "Topic '" + topic + "' does not exists - application will terminate");
-            kafkaConsumer.close();
+            logger.error("Topic '{}' does not exists - application will terminate", topic);
+            kafkaConsumer.close(Duration.ofSeconds(5L));
             throw new IllegalStateException("Topic '" + topic + "' does not exists - application will terminate");
         } else {
-            logger.log(Level.INFO, partitions.toString());
+            logger.info(partitions.toString());
         }
-        
+
         kafkaConsumer.subscribe(Arrays.asList(topic));
     }
 
     @Override
     public void run() {
-        logger.log(Level.INFO, ConsumerRunnable.class.toString() + " is starting.");
+        logger.info("{} is starting.", ConsumerRunnable.class);
 
         try {
             while (!closing) {
@@ -67,34 +67,34 @@ public class ConsumerRunnable implements Runnable {
                     ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(3000L));
                     
                     if (records.isEmpty()) {
-                        logger.log(Level.INFO, "No messages consumed");
+                        logger.info("No messages consumed");
                     } else {
                         // Iterate through all the messages received and print their content
                         for (ConsumerRecord<String, String> record : records) {
-                            logger.log(Level.INFO, "Message consumed: " + record.toString());
+                            logger.info("Message consumed: {}", record);
                         }
                     }
 
                 } catch (final WakeupException e) {
-                    logger.log(Level.WARN, "Consumer closing - caught exception: " + e);
+                    logger.warn("Consumer closing - caught exception: {}", e);
                 } catch (final KafkaException e) {
-                    logger.log(Level.ERROR, "Sleeping for 5s - Consumer has caught: " + e, e);
+                    logger.error("Sleeping for 5s - Consumer has caught: {}", e, e);
                     try {
                         Thread.sleep(5000); // Longer sleep before retrying
                     } catch (InterruptedException e1) {
-                        logger.log(Level.WARN, "Consumer closing - caught exception: " + e);
+                        logger.warn("Consumer closing - caught exception: {}", e);
                     }
                 }
             }
         } finally {
-            kafkaConsumer.close();
-            logger.log(Level.INFO, ConsumerRunnable.class.toString() + " has shut down.");
+            kafkaConsumer.close(Duration.ofSeconds(5L));
+            logger.info("{} has shut down.", ConsumerRunnable.class);
         }
     }
 
     public void shutdown() {
         closing = true;
         kafkaConsumer.wakeup();
-        logger.log(Level.INFO, ConsumerRunnable.class.toString() + " is shutting down.");
+        logger.info("{} is shutting down.", ConsumerRunnable.class);
     }
 }

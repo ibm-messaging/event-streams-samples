@@ -22,32 +22,32 @@ import java.io.IOException;
 import java.util.Iterator;
 
 import org.apache.kafka.common.errors.IllegalSaslStateException;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Environment {
 
-    private static final Logger logger = Logger.getLogger(Environment.class);
+    private static final Logger logger = LoggerFactory.getLogger(Environment.class);
     private static final String SERVICE_NAME = "messagehub";
 
     public static EventStreamsCredentials getEventStreamsCredentials() {
         String vcapServices = System.getenv("VCAP_SERVICES");
-        logger.log(Level.INFO, "VCAP_SERVICES: \n" + vcapServices);
+        logger.info("VCAP_SERVICES: \n{}", vcapServices);
         try {
             if (vcapServices != null) {
                 JsonNode mhub = parseVcapServices(vcapServices);
                 ObjectMapper mapper = new ObjectMapper();
                 return mapper.readValue(mhub.toString(), EventStreamsCredentials.class);
             } else {
-                logger.log(Level.ERROR, "VCAP_SERVICES environment variable is null.");
+                logger.error("VCAP_SERVICES environment variable is null.");
                 throw new IllegalStateException("VCAP_SERVICES environment variable is null.");
             }
         } catch (IOException ioe) {
-            logger.log(Level.ERROR, "VCAP_SERVICES environment variable parses failed.");
-            throw new IllegalStateException("VCAP_SERVICES environment variable parses failed.", ioe);
+            logger.error("VCAP_SERVICES environment variable parsing failed.");
+            throw new IllegalStateException("VCAP_SERVICES environment variable parsing failed.", ioe);
         }
     }
 
@@ -67,7 +67,7 @@ public class Environment {
             while (it.hasNext() && vcapKey == null) {
                 String potentialKey = it.next();
                 if (potentialKey.startsWith(SERVICE_NAME)) {
-                    logger.log(Level.WARN, "Using the '" + potentialKey + "' key from VCAP_SERVICES.");
+                    logger.warn("Using the '{}' key from VCAP_SERVICES.", potentialKey);
                     vcapKey = potentialKey;
                 }
             }

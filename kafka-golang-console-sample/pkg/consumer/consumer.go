@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/Shopify/sarama"
-	"github.com/ZiadAbass/event-streams-samples/pkg/config"
-	"github.com/ZiadAbass/event-streams-samples/pkg/producer"
+	"github.com/ZiadAbass/event-streams-samples/kafka-golang-console-sample/pkg/config"
+	"github.com/ZiadAbass/event-streams-samples/kafka-golang-console-sample/pkg/producer"
 )
 
 type (

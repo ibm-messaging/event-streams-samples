@@ -25,7 +25,7 @@ func main() {
 			fmt.Printf("failure to create admin client: %v", err)
 			os.Exit(1)
 		}
-		err = a.MaybeCreateTopic(cfg.TopicName, cfg.PartitionNumber)
+		err = a.MaybeCreateTopic(cfg.TopicName, 1)
 		if err != nil {
 			fmt.Printf("failure to create topic: %v", err)
 			os.Exit(1)
@@ -48,7 +48,7 @@ func main() {
 			os.Exit(1)
 		}
 	case "consumer":
-		c, err := consumer.NewConsumer(cfg) //TODO:
+		c, err := consumer.NewConsumer(cfg)
 		if err != nil {
 			fmt.Printf("failure to create consumer:  %v", err)
 			os.Exit(1)
@@ -66,7 +66,7 @@ func main() {
 			os.Exit(1)
 		}
 	default:
-		fmt.Printf("failed to run. `TO_RUN` env variable not set to `producer` nor `consumer`:  %v", err)
+		fmt.Println("failed to run. `TO_RUN` env variable not set to `producer` nor `consumer`")
 		os.Exit(1)
 	}
 }

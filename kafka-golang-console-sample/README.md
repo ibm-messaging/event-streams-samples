@@ -73,31 +73,32 @@ We will not discuss establishing a connection from your laptop to Event Streams 
    ```
 
    <br/>
-   When the repository is cloned, from the command line change into the <code>kafka-golang-sample</code> directory.
+   When the repository is cloned, from the command line change into the <code>kafka-golang-console-sample</code> directory.
 
    ```
-   cd event-streams-samples/kafka-golang-sample
+   cd event-streams-samples/kafka-golang-console-sample
    ```
 
    <br/>
-   Downloading and install the packages the contents of the <code>kafka-golang-sample</code> directory.
+   Download and install the packages, and then build.
 
    ```
+   go get -v
    go build
    ```
 ---
 
 ### 4.  **Run the consuming application**
    
-   Edit the file `parameters.sh`, replacing the `kafka_brokers_sasl`, `api_key`, and any other values you may wish to change
+   Edit the file `parameters.sh`, replacing the `KAFKA_ENDPOINTS`, `API_KEY`, and any other values you may wish to change
    
-   Use the `kafka_brokers_sasl` from the **Service credentials** created in Step 2. We recommend using all the `kafka_brokers_sasl` listed in the **Service credentials** that you created.
+   Use the `KAFKA_ENDPOINTS` from the **Service credentials** created in Step 2. We recommend using all the endpoints listed in the **Service credentials** that you created.
 
-   >The `kafka_brokers_sasl` must be formatted as `"host:port,host2:port2"`. </br> Format the contents of `kafka_brokers_sasl` in a text editor before entering it in the command line.
+   >The `KAFKA_ENDPOINTS` must be formatted as `"host:port,host2:port2"`. </br> Format the contents in a text editor before entering it in the command line.
 
-   Then, use the `api_key` from the **Service credentials** created in Step 2. 
+   Then, use the `API_KEY` from the **Service credentials** created in Step 2. 
 
-   You can set `topic-name` if you have a specific topic to consume from. Otherwise, the application would default to a topic called `kafka-golang-sample-topic`.
+   You can set `TOPIC_NAME` if you have a specific topic to consume from. Otherwise, the application would default to a topic called `kafka-golang-sample-topic`.
 
    Change `TO_RUN` to `consumer` to run the consumer rather than the producer.
 
@@ -106,16 +107,16 @@ We will not discuss establishing a connection from your laptop to Event Streams 
    ./golang-sample
    ```
 
-   An `Waiting for messages to consume...` is displayed when the consuming application is running, but there is no data being consumed. 
+   A1 `Waiting for messages to consume...` is displayed when the consuming application is running, but there is no data being consumed. 
 
 ---
 
 ### 5. **Run the producing application**
 
-   Open a new command line window and change into the <code>kafka-golang-sample</code> directory.
+   Open a new command line window and change into the <code>kafka-golang-console-sample</code> directory.
 
    ```
-   cd event-streams-samples/kafka-golang-sample
+   cd event-streams-samples/kafka-golang-console-sample
    ```
    
    Then, update the `parameters.sh` file and start the sample producing application from the command line, keeping the `KAFKA_ENDPOINTS` and `API_KEY` the same ones used to run the consumer.

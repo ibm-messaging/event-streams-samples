@@ -69,6 +69,9 @@ func newSaramaConfig(apikey string) *sarama.Config {
 // MaybeCreateTopic creates a topic with the specified name
 // if it doesn't exist. If it does exist already, this function
 // does not do anything.
+// `partitions` is hard-coded to 1 (when this function is called
+// from main()) in this sample app as the Lite plan currently
+// supports only having one partition.
 func (ac *Client) MaybeCreateTopic(topicName string, partitions int) error {
 	// Return early if the topic already exists - we cannot simply call CreateTopic
 	// and check for an 'ErrTopicAlreadyExists' error code because Kafka will return

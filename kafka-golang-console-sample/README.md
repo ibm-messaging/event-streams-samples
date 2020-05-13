@@ -107,7 +107,7 @@ We will not discuss establishing a connection from your laptop to Event Streams 
    ./golang-sample
    ```
 
-   A1 `Waiting for messages to consume...` is displayed when the consuming application is running, but there is no data being consumed. 
+   `Waiting for messages to consume...` is displayed when the consuming application is running, but there is no data being consumed. 
 
 ---
 

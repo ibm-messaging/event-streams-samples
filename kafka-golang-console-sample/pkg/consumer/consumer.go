@@ -79,19 +79,17 @@ func (sc *SeqConsumer) Run() error {
 // It also provides hooks for your consumer group session life-cycle and allow you to
 // trigger logic before or after the consume loop(s)
 type consumerGroupHandler struct {
-	toConsume int64
+	// toConsume int64
 }
 
 // Setup is run at the beginning of a new session
 func (c consumerGroupHandler) Setup(_ sarama.ConsumerGroupSession) error {
-	fmt.Println("Setup called")
 	return nil
 }
 
 // Cleanup is run at the end of a session, once all ConsumeClaim goroutines have exited
 // but before the offsets are committed for the very last time.
 func (c consumerGroupHandler) Cleanup(_ sarama.ConsumerGroupSession) error {
-	fmt.Println("Cleanup called")
 	return nil
 }
 
@@ -100,7 +98,7 @@ func (c consumerGroupHandler) ConsumeClaim(s sarama.ConsumerGroupSession, claim 
 		// msgKey := string(msg.Key)
 		payload := &producer.MessagePayload{}
 		_ = json.Unmarshal(msg.Value, payload)
-		fmt.Printf("Consumed message with value %v with offset %v\n", payload.MessageNumber, msg.Offset)
+		fmt.Printf("Consumed message with value %v at offset %v\n", payload.MessageNumber, msg.Offset)
 		s.MarkMessage(msg, "") // commit offset to mark the message as read
 	}
 	return nil

@@ -5,7 +5,7 @@
 # OR
 # docker run --rm -it node-rdkafka <kafka_brokers_sasl> <api_key> /etc/ssl/certs
 #
-FROM ubuntu
+FROM ubuntu:18.04
 
 RUN  apt-get update -qqy \
   && apt-get install -y --no-install-recommends \

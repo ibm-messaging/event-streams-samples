@@ -33,11 +33,12 @@ import org.apache.kafka.common.errors.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.eventstreams.samples.Message;
 
 public class ProducerRunnable implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(ProducerRunnable.class);
 
-    private final KafkaProducer<String, String> kafkaProducer;
+    private final KafkaProducer<String, Message> kafkaProducer;
     private final String topic;
     private volatile boolean closing = false;
 
@@ -45,7 +46,7 @@ public class ProducerRunnable implements Runnable {
         this.topic = topic;
 
         // Create a Kafka producer with the provided client configuration
-        kafkaProducer = new KafkaProducer<String, String>(producerConfigs);
+        kafkaProducer = new KafkaProducer<String, Message>(producerConfigs);
 
         try {
             // Checking for topic existence.
@@ -70,11 +71,13 @@ public class ProducerRunnable implements Runnable {
         try {
             while (!closing) {
                 String key = "key";
-                String message = "{\"message\":\"This is a test message #\",\"message number\":" + producedMessages + "}";
+                String messageString = "This is a test message";
 
                 try {
                     // If a partition is not specified, the client will use the default partitioner to choose one.
-                    ProducerRecord<String, String> record = new ProducerRecord<String, String>(topic,key,message);
+                    //ProducerRecord<String, Message> record = new ProducerRecord<String, Message>(topic,key,message);
+                    final Message message = new Message(messageString, producedMessages);
+                    final ProducerRecord<String, Message> record = new ProducerRecord<String, Message>(topic, key, message);
 
                     // Send record asynchronously
                     Future<RecordMetadata> future = kafkaProducer.send(record);

@@ -12,14 +12,12 @@ To build and run the sample, you must have the done the following:
 
 ## Deploy the Application
 
-1. From the Event Streams for IBM Cloud instance dashboard, click `Service Credentials` and select or create a new one. Copy its            content. 
-
-2. To deploy the application you first need to bind the Event Streams for IBM Cloud service instance to the cluster. Replace `<Service Credentials>` with the content copied in step 1.
+1. From the Event Streams for IBM Cloud instance dashboard, click `Service Credentials` and select or create a new one. Copy its content, create a file `credentials.json` and paste the content.
+2. To deploy the application you first need to bind the Event Streams for IBM Cloud service instance to the cluster. Create a secret using the content from the file `credentials.json`
     ```shell
-    kubectl create secret generic eventstreams-binding --from-literal=binding='<Service Credentials>'
+    kubectl create secret generic eventstreams-binding --from-file=binding=credentials.json
     ```
     The command above creates a secret in your cluster named  `eventstreams-binding`. 
-
 3. [Configure the CLI to run kubectl](https://cloud.ibm.com/docs/containers?topic=containers-cs_cli_install#cs_cli_configure)
 
 4. Deploy the application in the cluster:
@@ -28,6 +26,7 @@ To build and run the sample, you must have the done the following:
     ```
 5. Access the application logs:
     ```shell
+    kubectl wait pod kafka-java-console-schema-sample --for=condition=Ready
     kubectl logs kafka-java-console-schema-sample --follow
     ```
 

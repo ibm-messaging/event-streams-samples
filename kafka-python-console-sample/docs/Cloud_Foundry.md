@@ -8,7 +8,7 @@ To build and run the sample, you must have the done the following:
 * Install the [IBM Cloud CLI](https://cloud.ibm.com/docs/cli?topic=cloud-cli-install-ibmcloud-cli)
 * Provision a [Event Streams Service Instance](https://cloud.ibm.com/catalog/services/event-streams) in [IBM Cloud®](https://cloud.ibm.com/)
 
-## Classic or Standard/Enterprise Plan?
+## Standard/Enterprise Plan?
 
 **It's important to know which Event Streams for IBM Cloud plan you're using as the sample deployment steps are subtly different on each plan respectively.**
 
@@ -18,14 +18,13 @@ If you are not sure what type of Event Streams for IBM Cloud instance you have t
 
 *Please make sure you are in the appropriate Region, Account, Organization and Space where you provisioned your Event Streams instance!*
 
-* Event Streams for IBM Cloud Classic plan services are "Cloud Foundry Services" with the plan column showing "Classic".
 * Event Streams for IBM Cloud Standard plan services are "Services" with the plan column showing "Standard".
 * Event Streams for IBM Cloud Enterprise plan services are "Services" with the plan column showing "Enterprise".
 
 
 ## Deploy the Application
 
-As the Classic and Standard/Enterprise Plan deployment steps are subtly different, we split the deployment steps into separate sections. Please navigate to the appropriate page(s):
+The deployment for the Standard/Enterprise plan can be found in the link listed below
 
 ### [Classic Plan Deployment Guide](CF_Classic_Plan.md)
 

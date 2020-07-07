@@ -1,0 +1,10 @@
+applications:
+- name: kafka-java-console-schema-sample
+  buildpack: "https://github.com/cloudfoundry/java-buildpack.git"
+  memory: 1G
+  disk_quota: 512M
+  path: build/distributions/kafka-java-console-schema-sample-2.0.zip
+  no-route: true
+  health-check-type: none
+  services:
+    - "YOUR_SERVICE_ALIAS_INSTANCE_NAME"

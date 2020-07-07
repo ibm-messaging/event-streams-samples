@@ -17,7 +17,7 @@ IBM Event Streams can be provisioned on IBM Cloud® in various pricing plans. Pl
 __Important Note__: Provisioning an Event Streams service in IBM Cloud® incurs a fee. Please review pricing before provisioning. The samples in this repository will create topic(s) on your behalf - creating a topic might also incur a fee. For more information, please consult the IBM Cloud® documentation if necessary.
 
 ## Connecting to your Event Streams for IBM Cloud Cluster
-In each sample, we demonstrate a single connection path for both our Classic and Standard/Enterprise plans respectively. The aim was to get you started quickly. However your client's needs might be different. Therefore we wrote a [guide](https://cloud.ibm.com/docs/services/EventStreams?topic=eventstreams-connecting#connecting) that discusses credential generation in detail and showing you all possible ways of doing this.
+In each sample, we demonstrate a single connection path for our Standard/Enterprise plans respectively. The aim was to get you started quickly. However your client's needs might be different. Therefore we wrote a [guide](https://cloud.ibm.com/docs/services/EventStreams?topic=eventstreams-connecting#connecting) that discusses credential generation in detail and showing you all possible ways of doing this.
 
 ## Our APIs and Sample Applications
 

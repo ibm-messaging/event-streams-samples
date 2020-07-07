@@ -7,3 +7,4 @@ rest-nodejs-express-sample/node_modules
 *.iml
 .idea
 gradle*
+.gradle

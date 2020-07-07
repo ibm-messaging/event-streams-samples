@@ -10,7 +10,7 @@ To build and run the sample, you must have the done the following:
 * Install [Gradle 4+](https://gradle.org/)
 * Install Java 7+
 
-## Classic or Standard/Enterprise Plan?
+## Standard/Enterprise Plan?
 
 **It's important to know which Event Streams for IBM Cloud plan you're using as the sample deployment steps are subtly different on each plan respectively.**
 
@@ -20,14 +20,13 @@ If you are not sure what type of Event Streams for IBM Cloud instance you have t
 
 *Please make sure you are in the appropriate Region, Account, Organization and Space where you provisioned your Event Streams instance!*
 
-* Event Streams for IBM Cloud Classic plan services are "Cloud Foundry Services" with the plan column showing "Classic".
 * Event Streams for IBM Cloud Standard plan services are "Services" with the plan column showing "Standard".
 * Event Streams for IBM Cloud Enterprise plan services are "Services" with the plan column showing "Enterprise".
 
 
 ## Deploy the Application
 
-As the Classic and Standard/Enterprise Plan deployment steps are subtly different, we split the deployment steps into separate sections. Please navigate to the appropriate page(s):
+The deployment for the Standard/Enterprise Plan can be found in the links listed below
 
 ### [Classic Plan Deployment Guide](CF_Classic_Plan.md)
 

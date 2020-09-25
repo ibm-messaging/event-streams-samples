@@ -45,7 +45,7 @@ public class ProducerRunnable implements Runnable {
         this.topic = topic;
 
         // Create a Kafka producer with the provided client configuration
-        kafkaProducer = new KafkaProducer<String, String>(producerConfigs);
+        kafkaProducer = new KafkaProducer<>(producerConfigs);
 
         try {
             // Checking for topic existence.
@@ -74,7 +74,7 @@ public class ProducerRunnable implements Runnable {
 
                 try {
                     // If a partition is not specified, the client will use the default partitioner to choose one.
-                    ProducerRecord<String, String> record = new ProducerRecord<String, String>(topic,key,message);
+                    ProducerRecord<String, String> record = new ProducerRecord<>(topic,key,message);
 
                     // Send record asynchronously
                     Future<RecordMetadata> future = kafkaProducer.send(record);

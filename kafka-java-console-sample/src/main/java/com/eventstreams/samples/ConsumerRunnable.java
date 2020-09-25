@@ -41,7 +41,7 @@ public class ConsumerRunnable implements Runnable {
 
     public ConsumerRunnable(Map<String, Object> consumerConfigs, String topic) {
         // Create a Kafka consumer with the provided client configuration
-        kafkaConsumer = new KafkaConsumer<String, String>(consumerConfigs);
+        kafkaConsumer = new KafkaConsumer<>(consumerConfigs);
 
         // Checking for topic existence before subscribing
         List<PartitionInfo> partitions = kafkaConsumer.partitionsFor(topic);

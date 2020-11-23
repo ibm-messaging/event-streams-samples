@@ -39,7 +39,7 @@ To find the values for `<kafka_brokers_sasl>` and `<api_key>`, access your Event
 For example:
 * Ubuntu: /etc/ssl/certs
 * RedHat: /etc/pki/tls/cert.pem
-* macOS: /usr/local/etc/openssl/cert.pem from openssl installed by brew
+* macOS: /usr/local/etc/openssl/cert.pem or /usr/local/etc/openssl@1.1/cert.pem from openssl installed by brew
 
 __Note__: `<kafka_brokers_sasl>` must be a single string enclosed in quotes. For example: `"host1:port1,host2:port2"`. We recommend using all the Kafka hosts listed in the `Credentials` you selected.
 

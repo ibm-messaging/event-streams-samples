@@ -20,7 +20,6 @@
 plugins {
   id 'application'
   id 'java'
-  id 'com.github.johnrengelman.shadow' version '4.0.2'
   id 'eclipse'
 }
 
@@ -36,81 +35,17 @@ repositories {
 }
 
 dependencies {
-  compile 'org.apache.kafka:kafka-clients:2.4.+'
-  compile 'log4j:log4j:1.2.17'
-  compile 'org.slf4j:slf4j-log4j12:1.7.25'
-  compile 'com.fasterxml.jackson.core:jackson-databind:2.9.7'
-}
-
-task downloadDependencies(type: Exec) {
-  configurations.testRuntime.files
-  commandLine 'echo', 'Downloaded all dependencies'
-}
-
-// Compile source code
-compileJava {
-    doFirst {
-        copy {
-            from configurations.runtime
-            into 'lib'
-        }
-    }
-
-    source = 'src'
-    options.encoding = 'ISO-8859-1'
+  implementation 'org.apache.kafka:kafka-clients:2.7.+'
+  implementation 'log4j:log4j:1.2.17'
+  implementation 'org.slf4j:slf4j-log4j12:1.7.25'
+  implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.+'
 }
 
 jar {
-    from "resources/log4j.properties"
-    
-    doLast {
-        copy {
-            from 'resources'
-            into 'build/libs/resources'
-        }
-    
-        copy {
-            from 'lib'
-            into 'build/libs/lib'
-        }
-    }
-    
-    // Provide Main-Class so the JAR executes properly, along with the required classpath data.
-    manifest {
-        attributes('Main-Class': mainClassName,
-        'Class-Path': configurations.runtime.files.collect { './lib/' + it.name }.join(' '))
-    }
-}
-
-// Save JAR in build directory.
-uploadArchives {
-    repositories {
-        flatDir {
-            dirs 'build'
-        }
-    }
-}
-
-['Zip', 'Tar'].each { suffix ->
-    "dist$suffix" {
-        def basePath = baseName + '-' + version
-
-        from('resources') {
-            into { basePath + '/resources' }
-            exclude 'log4j.properties'
-        }
-
-        from('resources') {
-            into { basePath + '/lib' }
-            include 'log4j.properties'
-        }
-    }
-}
-
-sourceSets {
-    main {
-        java {
-            srcDirs = ["src/main/java", "src/main/resources"]
-        }
-    }
+  manifest {
+    attributes('Main-Class': mainClassName)
+  }
+  from {
+    configurations.compileClasspath.filter{ it.exists() }.collect { it.isDirectory() ? it : zipTree(it) }
+  }
 }

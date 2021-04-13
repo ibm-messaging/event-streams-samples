@@ -96,7 +96,7 @@ public class KafkaServlet extends HttpServlet {
         logger.log(Level.WARN, "Topics: " + topics);
 
         // Initialize Kafka Producer
-        kafkaProducer = new KafkaProducer(getClientConfiguration(bootstrapServers, credentials.getApiKey(), true));
+        kafkaProducer = new KafkaProducer<>(getClientConfiguration(bootstrapServers, credentials.getApiKey(), true));
 
         // Initialise Kafka Consumer
         consumerRunnable = new ConsumerRunnable(bootstrapServers, credentials.getApiKey(), topic);
@@ -203,7 +203,7 @@ public class KafkaServlet extends HttpServlet {
 
         String key = "key";
         // Push a message into the list to be sent.
-        MessageList<String> list = new MessageList();
+        MessageList<String> list = new MessageList<>();
         producedMessage = "This is a test message, msgId=" + producedMessages;
         list.push(producedMessage);
 

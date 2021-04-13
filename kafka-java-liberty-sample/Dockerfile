@@ -11,7 +11,7 @@ FROM websphere-liberty:javaee8
 
 COPY --from=jdk /bin/busybox.static /bin/unzip
 COPY --from=jdk --chown=1001:0 /usr/src/app/target/defaultServer/apps/EventStreamsLibertyApp.war /tmp
-COPY --from=jdk --chown=1001:0 /usr/src//app/target/defaultServer/server.xml /config/server.xml
+COPY --from=jdk --chown=1001:0 /usr/src/app/target/defaultServer/server.xml /config/server.xml
 
 RUN mkdir -p /opt/ibm/wlp/usr/servers/defaultServer/apps/EventStreamsLibertyApp.war \
   && unzip -q /tmp/EventStreamsLibertyApp.war \

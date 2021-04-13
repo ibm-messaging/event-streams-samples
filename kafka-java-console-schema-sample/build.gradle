@@ -21,7 +21,6 @@
 plugins {
   id 'application'
   id 'java'
-  id 'com.github.johnrengelman.shadow' version '4.0.2'
   id 'eclipse'
   id 'com.commercehub.gradle.plugin.avro' version '0.21.0'
 }
@@ -41,17 +40,12 @@ repositories {
 }
 
 dependencies {
-  compile 'org.apache.kafka:kafka-clients:2.4.+'
-  compile 'log4j:log4j:1.2.17'
-  compile 'org.slf4j:slf4j-log4j12:1.7.25'
-  compile 'com.fasterxml.jackson.core:jackson-databind:2.9.7'
-  compile 'io.confluent:kafka-avro-serializer:5.3.1'
-  compile "org.apache.avro:avro:1.10.0"
-}
-
-task downloadDependencies(type: Exec) {
-  configurations.testRuntime.files
-  commandLine 'echo', 'Downloaded all dependencies'
+  implementation 'org.apache.kafka:kafka-clients:2.7.+'
+  implementation 'log4j:log4j:1.2.17'
+  implementation 'org.slf4j:slf4j-log4j12:1.7.25'
+  implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.+'
+  implementation 'io.confluent:kafka-avro-serializer:5.3.+'
+  implementation 'org.apache.avro:avro:1.10.+'
 }
 
 task generateAvro(type: com.commercehub.gradle.plugin.avro.GenerateAvroJavaTask) {
@@ -69,7 +63,7 @@ avro {
 compileJava {
     doFirst {
         copy {
-            from configurations.runtime
+            from configurations.runtimeClasspath
             into 'lib'
         }
     }
@@ -96,32 +90,7 @@ jar {
     // Provide Main-Class so the JAR executes properly, along with the required classpath data.
     manifest {
         attributes('Main-Class': mainClassName,
-        'Class-Path': configurations.runtime.files.collect { './lib/' + it.name }.join(' '))
-    }
-}
-
-// Save JAR in build directory.
-uploadArchives {
-    repositories {
-        flatDir {
-            dirs 'build'
-        }
-    }
-}
-
-['Zip', 'Tar'].each { suffix ->
-    "dist$suffix" {
-        def basePath = baseName + '-' + version
-
-        from('resources') {
-            into { basePath + '/resources' }
-            exclude 'log4j.properties'
-        }
-
-        from('resources') {
-            into { basePath + '/lib' }
-            include 'log4j.properties'
-        }
+        'Class-Path': configurations.runtimeClasspath.files.collect { './lib/' + it.name }.join(' '))
     }
 }
 

@@ -257,7 +257,6 @@ public class EventStreamsConsoleSample {
         configs.put(KafkaAvroSerializerConfig.BASIC_AUTH_CREDENTIALS_SOURCE, "URL");
         configs.put(ProducerConfig.CLIENT_ID_CONFIG, "kafka-java-console-sample-producer");
         configs.put(ProducerConfig.ACKS_CONFIG, "all");
-        configs.put(ProducerConfig.CLIENT_DNS_LOOKUP_CONFIG,"use_all_dns_ips");
         configs.putAll(getCommonConfigs(bootstrapServers, apikey));
         return configs;
     }
@@ -271,7 +270,6 @@ public class EventStreamsConsoleSample {
         configs.put(ConsumerConfig.CLIENT_ID_CONFIG, "kafka-java-console-sample-consumer");
         configs.put(ConsumerConfig.GROUP_ID_CONFIG, "kafka-java-console-sample-group");
         configs.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
-        configs.put(ConsumerConfig.CLIENT_DNS_LOOKUP_CONFIG,"use_all_dns_ips");
         configs.putAll(getCommonConfigs(bootstrapServers, apikey));
         return configs;
     }
@@ -282,16 +280,12 @@ public class EventStreamsConsoleSample {
         configs.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
         configs.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
         configs.put(SaslConfigs.SASL_JAAS_CONFIG, "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"token\" password=\"" + apikey + "\";");
-        configs.put(SslConfigs.SSL_PROTOCOL_CONFIG, "TLSv1.2");
-        configs.put(SslConfigs.SSL_ENABLED_PROTOCOLS_CONFIG, "TLSv1.2");
-        configs.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "HTTPS");
         return configs;
     }
 
     static final Properties getAdminConfigs(String bootstrapServers, String apikey) {
         Properties configs = new Properties();
         configs.put(ConsumerConfig.CLIENT_ID_CONFIG, "kafka-java-console-sample-admin");
-        configs.put(AdminClientConfig.CLIENT_DNS_LOOKUP_CONFIG, "use_all_dns_ips");
         configs.putAll(getCommonConfigs(bootstrapServers, apikey));
         return configs;
     }

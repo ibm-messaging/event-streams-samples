@@ -76,13 +76,13 @@ public class ConsumerRunnable implements Runnable {
                     }
 
                 } catch (final WakeupException e) {
-                    logger.warn("Consumer closing - caught exception: {}", e);
+                    logger.warn("Consumer closing - caught exception: {}", e, e);
                 } catch (final KafkaException e) {
                     logger.error("Sleeping for 5s - Consumer has caught: {}", e, e);
                     try {
                         Thread.sleep(5000); // Longer sleep before retrying
                     } catch (InterruptedException e1) {
-                        logger.warn("Consumer closing - caught exception: {}", e);
+                        logger.warn("Consumer closing - caught exception: {}", e, e);
                     }
                 }
             }

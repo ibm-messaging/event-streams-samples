@@ -46,7 +46,7 @@ public class ProducerRunnable implements Runnable {
         this.topic = topic;
 
         // Create a Kafka producer with the provided client configuration
-        kafkaProducer = new KafkaProducer<String, Message>(producerConfigs);
+        kafkaProducer = new KafkaProducer<>(producerConfigs);
 
         try {
             // Checking for topic existence.
@@ -84,7 +84,7 @@ public class ProducerRunnable implements Runnable {
 
                     // Synchronously wait for a response from Event Streams / Kafka on every message produced.
                     // For high throughput the future should be handled asynchronously.
-                    RecordMetadata recordMetadata = future.get(5000, TimeUnit.MILLISECONDS);
+                    RecordMetadata recordMetadata = future.get(5, TimeUnit.SECONDS);
                     producedMessages++;
 
                     logger.info("Message produced, offset: {}", recordMetadata.offset());
@@ -94,13 +94,13 @@ public class ProducerRunnable implements Runnable {
                     Thread.sleep(2000L); 
 
                 } catch (final InterruptedException e) {
-                    logger.warn("Producer closing - caught exception: {}", e);
+                    logger.warn("Producer closing - caught exception: {}", e, e);
                 } catch (final Exception e) {
                     logger.error("Sleeping for 5s - Producer has caught : {}", e, e);
                     try {
                         Thread.sleep(5000L); // Longer sleep before retrying
                     } catch (InterruptedException e1) {
-                        logger.warn("Producer closing - caught exception: {}", e);
+                        logger.warn("Producer closing - caught exception: {}", e, e);
                     }
                 }
             }

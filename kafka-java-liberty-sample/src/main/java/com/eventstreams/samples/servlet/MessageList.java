@@ -25,9 +25,10 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MessageList<T> {
-    private final ArrayList<T> messages = new ArrayList<>();
+    private final List<T> messages = new ArrayList<>();
 
     public void push(T message) {
         this.messages.add(message);
@@ -46,10 +47,10 @@ public class MessageList<T> {
         final JsonGenerator jsonGenerator = jsonFactory.createGenerator(outputStream);
 
         jsonGenerator.writeStartArray();
-        for (int i = 0; i < this.messages.size(); i++) {
+        for (T message : messages) {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeFieldName("value");
-            jsonGenerator.writeObject(this.messages.get(i));
+            jsonGenerator.writeObject(message);
             jsonGenerator.writeEndObject();
         }
         jsonGenerator.writeEndArray();

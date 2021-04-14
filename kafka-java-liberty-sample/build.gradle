@@ -20,6 +20,7 @@
 plugins {
   id 'java'
   id 'war'
+  id 'eclipse'
 }
 
 group = 'com.ibm.eventstreams.samples'
@@ -34,22 +35,22 @@ repositories {
 }
 
 dependencies {
-  compile 'org.apache.geronimo.specs:geronimo-servlet_3.0_spec:1.0'
-  compile 'org.apache.kafka:kafka-clients:2.2.+'
-  compile 'log4j:log4j:1.2.17'
-  compile 'org.slf4j:slf4j-log4j12:1.7.25'
-  compile 'com.fasterxml.jackson.core:jackson-annotations:2.9.5'
-  compile 'com.fasterxml.jackson.core:jackson-core:2.9.5'
-  compile 'com.fasterxml.jackson.core:jackson-databind:2.9.5'
+  implementation 'org.apache.geronimo.specs:geronimo-servlet_3.0_spec:1.0'
+  implementation 'org.apache.kafka:kafka-clients:2.7.+'
+  implementation 'log4j:log4j:1.2.17'
+  implementation 'org.slf4j:slf4j-log4j12:1.7.25'
+  implementation 'com.fasterxml.jackson.core:jackson-annotations:2.9.+'
+  implementation 'com.fasterxml.jackson.core:jackson-core:2.9.+'
+  implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.+'
 }
 
 // move generated war file into the DefaultServer/apps diretory
 tasks.withType(Jar) {
-  destinationDir = file("$projectDir/target/defaultServer/apps")
+  destinationDirectory = file("$projectDir/target/defaultServer/apps")
 }
 
 war {
-  archiveName "EventStreamsLibertyApp.war"
+  archiveFileName = "EventStreamsLibertyApp.war"
   from('resources'){
     include '*'
     into "resources"

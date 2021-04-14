@@ -21,6 +21,7 @@
 plugins {
   id 'application'
   id 'java'
+  id 'com.github.johnrengelman.shadow' version '4.0.2'
   id 'eclipse'
   id 'com.commercehub.gradle.plugin.avro' version '0.21.0'
 }
@@ -46,6 +47,11 @@ dependencies {
   implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.+'
   implementation 'io.confluent:kafka-avro-serializer:5.3.+'
   implementation 'org.apache.avro:avro:1.10.+'
+}
+
+task downloadDependencies(type: Exec) {
+  configurations.testRuntimeClasspath.files
+  commandLine 'echo', 'Downloaded all dependencies'
 }
 
 task generateAvro(type: com.commercehub.gradle.plugin.avro.GenerateAvroJavaTask) {
@@ -91,6 +97,15 @@ jar {
     manifest {
         attributes('Main-Class': mainClassName,
         'Class-Path': configurations.runtimeClasspath.files.collect { './lib/' + it.name }.join(' '))
+    }
+}
+
+// Save JAR in build directory.
+uploadArchives {
+    repositories {
+        flatDir {
+            dirs 'build'
+        }
     }
 }
 

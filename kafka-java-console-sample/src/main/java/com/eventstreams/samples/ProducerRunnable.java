@@ -91,13 +91,13 @@ public class ProducerRunnable implements Runnable {
                     Thread.sleep(2000L); 
 
                 } catch (final InterruptedException e) {
-                    logger.warn("Producer closing - caught exception: {}", e);
+                    logger.warn("Producer closing - caught exception: {}", e, e);
                 } catch (final Exception e) {
                     logger.error("Sleeping for 5s - Producer has caught : {}", e, e);
                     try {
                         Thread.sleep(5000L); // Longer sleep before retrying
                     } catch (InterruptedException e1) {
-                        logger.warn("Producer closing - caught exception: {}", e);
+                        logger.warn("Producer closing - caught exception: {}", e, e);
                     }
                 }
             }

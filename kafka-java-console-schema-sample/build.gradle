@@ -100,15 +100,6 @@ jar {
     }
 }
 
-// Save JAR in build directory.
-uploadArchives {
-    repositories {
-        flatDir {
-            dirs 'build'
-        }
-    }
-}
-
 sourceSets {
     main {
         java {

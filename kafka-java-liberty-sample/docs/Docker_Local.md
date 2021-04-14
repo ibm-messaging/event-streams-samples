@@ -21,7 +21,6 @@ To build and run the sample, you must have the done the following:
     ```shell
     export VCAP_SERVICES='{
         "instance_id": "...",
-        "mqlight_lookup_url": "...",
         "api_key": "...",
         "kafka_admin_url": "....",
         "kafka_rest_url": "...",

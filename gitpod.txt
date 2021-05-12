@@ -1,0 +1,7 @@
+sudo apt-get install build-essential procps curl file git
+brew install hello
+brew install gradle
+cd kafka-java-console-sample/
+gradle clean && gradle build
+
+java -jar ./build/libs/kafka-java-console-sample-2.0.jar 

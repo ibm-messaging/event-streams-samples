@@ -9,7 +9,7 @@ gradle clean && gradle build
 #java -jar ./build/libs/kafka-java-console-sample-2.0.jar 
 #<kafka_brokers_sasl> <api_key> -consumer
 
-java -jar ./kafka-java-console-sample/build/libs/kafka-java-console-sample-2.0.jar <kafka_brokers_sasl> <api_key> -consumer
+java -jar ./kafka-java-console-sample/build/libs/kafka-java-console-sample-2.0.jar "broker-4-0df80jmcsqs2j5ks.kafka.svc08.us-south.eventstreams.cloud.ibm.com:9093" bFXBws_Vs7u7LHv1dRnkUM97EtRCWdPZVvRIvkmv4siW -consumer
 
 #Terminal #3
-java -jar ./kafka-java-console-sample/build/libs/kafka-java-console-sample-2.0.jar <kafka_brokers_sasl> <api_key> -producer
+java -jar ./kafka-java-console-sample/build/libs/kafka-java-console-sample-2.0.jar "broker-4-0df80jmcsqs2j5ks.kafka.svc08.us-south.eventstreams.cloud.ibm.com:9093" bFXBws_Vs7u7LHv1dRnkUM97EtRCWdPZVvRIvkmv4siW -producer

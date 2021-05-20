@@ -70,7 +70,7 @@ public class ProducerRunnable implements Runnable {
         try {
             while (!closing) {
                 String key = "key";
-                String message = "{\"message\":\"This is a test message #\",\"message number\":" + producedMessages + "}";
+                String message = "{\"message\":\"This is a test message #\",\"message_number\":" + producedMessages + "}";
 
                 try {
                     // If a partition is not specified, the client will use the default partitioner to choose one.

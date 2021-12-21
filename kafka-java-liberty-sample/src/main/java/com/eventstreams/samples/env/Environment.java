@@ -21,21 +21,21 @@ package com.eventstreams.samples.env;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Iterator;
 
 public class Environment {
 
-    private static final Logger logger = Logger.getLogger(Environment.class);
+    private static final Logger logger = LoggerFactory.getLogger(Environment.class);
 
     public static EventStreamsCredentials getEventStreamsCredentials() {
         String vcapServices = System.getenv("VCAP_SERVICES");
-        logger.log(Level.INFO, "VCAP_SERVICES: \n" + vcapServices);
+        logger.info("VCAP_SERVICES: \n" + vcapServices);
         if (vcapServices == null) {
-            logger.log(Level.ERROR, "VCAP_SERVICES environment variable is null.");
+            logger.error("VCAP_SERVICES environment variable is null.");
             throw new IllegalStateException("VCAP_SERVICES environment variable is null.");
         }
         return transformVcapServices(vcapServices);
@@ -55,7 +55,7 @@ public class Environment {
                     String potentialKey = it.next();
                     String messageHubJsonKey = "messagehub";
                     if (potentialKey.startsWith(messageHubJsonKey)) {
-                        logger.log(Level.WARN, "Using the '" + potentialKey + "' key from VCAP_SERVICES.");
+                        logger.warn("Using the '" + potentialKey + "' key from VCAP_SERVICES.");
                         instanceCredentials = instanceCredentials.get(potentialKey)
                                 .get(0)
                                 .get("credentials");
@@ -65,7 +65,7 @@ public class Environment {
             }
             return mapper.readValue(instanceCredentials.toString(), EventStreamsCredentials.class);
         } catch (IOException e) {
-            logger.log(Level.ERROR, "VCAP_SERVICES environment variable parses failed.");
+            logger.error("VCAP_SERVICES environment variable parses failed.");
             throw new IllegalStateException("VCAP_SERVICES environment variable parses failed.", e);
         }
     }

@@ -28,8 +28,8 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.TopicPartition;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -52,7 +52,7 @@ import java.util.Properties;
 @WebServlet("/KafkaServlet")
 public class KafkaServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger(KafkaServlet.class);
+    private static final Logger logger = LoggerFactory.getLogger(KafkaServlet.class);
 
     private final String serverConfigDir = System.getProperty("server.config.dir");
     private final String resourceDir = serverConfigDir + File.separator
@@ -73,9 +73,9 @@ public class KafkaServlet extends HttpServlet {
      * Intialising the KafkaServlet
      */
     public void init() {
-        logger.log(Level.WARN, "Initialising Kafka Servlet");
-        logger.log(Level.WARN, "Server Config directory: " + serverConfigDir);
-        logger.log(Level.WARN, "Resource directory: " + resourceDir);
+        logger.warn("Initialising Kafka Servlet");
+        logger.warn("Server Config directory: " + serverConfigDir);
+        logger.warn("Resource directory: " + resourceDir);
 
         // Retrieve credentials from environment
         EventStreamsCredentials credentials = Environment.getEventStreamsCredentials();
@@ -93,7 +93,7 @@ public class KafkaServlet extends HttpServlet {
         restApi.post("/admin/topics", "{ \"name\": \"" + topic + "\" }", new int[]{422});
 
         String topics = restApi.get("/admin/topics", false);
-        logger.log(Level.WARN, "Topics: " + topics);
+        logger.warn("Topics: " + topics);
 
         // Initialize Kafka Producer
         kafkaProducer = new KafkaProducer<>(getClientConfiguration(bootstrapServers, credentials.getApiKey(), true));
@@ -172,12 +172,12 @@ public class KafkaServlet extends HttpServlet {
         }
 
         try {
-            logger.log(Level.WARN, "Reading properties file from: " + fileName);
+            logger.warn("Reading properties file from: " + fileName);
             propsStream = new FileInputStream(fileName);
             props.load(propsStream);
             propsStream.close();
         } catch (IOException e) {
-            logger.log(Level.ERROR, e);
+            logger.error(e.toString());
             return props;
         }
 
@@ -188,7 +188,7 @@ public class KafkaServlet extends HttpServlet {
         saslJaasConfig = saslJaasConfig.replace("APIKEY", apikey);
         props.setProperty("sasl.jaas.config", saslJaasConfig);
 
-        logger.log(Level.WARN, "Using properties: " + props);
+        logger.warn("Using properties: " + props);
 
         return props;
     }
@@ -199,7 +199,7 @@ public class KafkaServlet extends HttpServlet {
      * @param topic
      */
     private void produce(String topic) {
-        logger.log(Level.WARN, "Producer is starting.");
+        logger.warn("Producer is starting.");
 
         String key = "key";
         // Push a message into the list to be sent.
@@ -217,7 +217,7 @@ public class KafkaServlet extends HttpServlet {
             RecordMetadata m = kafkaProducer.send(record).get();
             producedMessages++;
 
-            logger.log(Level.WARN, "Message produced, offset: " + m.offset());
+            logger.warn("Message produced, offset: " + m.offset());
 
             Thread.sleep(1000);
         } catch (final Exception e) {
@@ -226,7 +226,7 @@ public class KafkaServlet extends HttpServlet {
             System.exit(-1);
         }
         messageProduced = true;
-        logger.log(Level.WARN, "Producer is shutting down.");
+        logger.warn("Producer is shutting down.");
     }
 
     /**
@@ -250,19 +250,19 @@ public class KafkaServlet extends HttpServlet {
                 @Override
                 public void onPartitionsAssigned(Collection<org.apache.kafka.common.TopicPartition> partitions) {
                     try {
-                        logger.log(Level.WARN, "Partitions " + partitions + " assigned, consumer seeking to end.");
+                        logger.warn("Partitions " + partitions + " assigned, consumer seeking to end.");
 
                         for (TopicPartition partition : partitions) {
                             long position = kafkaConsumer.position(partition);
-                            logger.log(Level.WARN, "current Position: " + position);
+                            logger.warn( "current Position: " + position);
 
-                            logger.log(Level.WARN, "Seeking to end...");
+                            logger.warn( "Seeking to end...");
                             kafkaConsumer.seekToEnd(Arrays.asList(partition));
-                            logger.log(Level.WARN,
+                            logger.warn(
                                     "Seek from the current position: " + kafkaConsumer.position(partition));
                             kafkaConsumer.seek(partition, position);
                         }
-                        logger.log(Level.WARN, "Producer can now begin producing messages.");
+                        logger.warn("Producer can now begin producing messages.");
                     } catch (final Exception e) {
                         logger.error("Error when assigning partitions", e);
                     }
@@ -273,7 +273,7 @@ public class KafkaServlet extends HttpServlet {
 
         @Override
         public void run() {
-            logger.log(Level.WARN, "Consumer is starting.");
+            logger.warn("Consumer is starting.");
 
             while (!closing) {
                 try {
@@ -291,15 +291,15 @@ public class KafkaServlet extends HttpServlet {
 
                     Thread.sleep(1000);
                 } catch (final InterruptedException e) {
-                    logger.log(Level.ERROR, "Producer/Consumer loop has been unexpectedly interrupted");
+                    logger.error("Producer/Consumer loop has been unexpectedly interrupted");
                     shutdown();
                 } catch (final Exception e) {
-                    logger.log(Level.ERROR, "Consumer has failed with exception: " + e);
+                    logger.error("Consumer has failed with exception: " + e);
                     shutdown();
                 }
             }
 
-            logger.log(Level.WARN, "Consumer is shutting down.");
+            logger.warn("Consumer is shutting down.");
             kafkaConsumer.close();
             consumedMessages.clear();
         }

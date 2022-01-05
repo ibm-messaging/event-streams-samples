@@ -177,7 +177,7 @@ public class KafkaServlet extends HttpServlet {
             props.load(propsStream);
             propsStream.close();
         } catch (IOException e) {
-            logger.error(e.toString());
+            logger.error(e.getMessage(),e);
             return props;
         }
 

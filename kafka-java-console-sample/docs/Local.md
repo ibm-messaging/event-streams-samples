@@ -20,7 +20,7 @@ We will not discuss establishing a connection from your laptop to Event Streams 
 2. **If you don't already have them, install the following prerequisites:**
 	
 	* [git](https://git-scm.com/)
-	* [Gradle](https://gradle.org/)
+	* [Gradle 7 of higher](https://gradle.org/)
 	* Java 8 or higher
 
 

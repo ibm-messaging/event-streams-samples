@@ -2,7 +2,7 @@
 #
 FROM ibmcom/eventstreams-kafka-ce-icp-linux-amd64:2019.2.1-3a2f93e as builder
 
-FROM ibmjava:8-jre
+FROM ibmjava:11
 
 RUN addgroup --gid 5000 --system esgroup && \
     adduser --uid 5000 --ingroup esgroup --system esuser

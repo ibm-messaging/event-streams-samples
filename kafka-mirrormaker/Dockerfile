@@ -1,6 +1,13 @@
-FROM ibmcom/eventstreams-kafka-ce-icp-linux-amd64:2019.2.1-3a2f93e as builder
+FROM alpine as builder
 
-FROM ibmjava:8-jre
+RUN apk update
+RUN apk --no-cache add curl
+
+RUN curl -L "https://downloads.apache.org/kafka/3.4.0/kafka_2.12-3.4.0.tgz" -o kafka.tgz
+RUN mkdir /opt/kafka \
+    && tar -xf kafka.tgz -C /opt/kafka --strip-components=1
+
+FROM ibmjava:11
 
 RUN addgroup --gid 5000 --system esgroup && \
     adduser --uid 5000 --ingroup esgroup --system esuser

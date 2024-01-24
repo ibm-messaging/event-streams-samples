@@ -5,7 +5,7 @@ metadata:
   namespace: default
 spec:
   containers:
-  - image: ibmcom/kafka-python-console-sample:latest
+  - image: event-streams-samples/kafka-python-console-sample:latest
     imagePullPolicy: IfNotPresent
     name: python-sample
     env:

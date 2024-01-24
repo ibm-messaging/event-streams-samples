@@ -4,6 +4,11 @@ on:
     branches: ['master']
     paths:
       - 'kafka-java-console-sample/**'
+      - 'kafka-mirrormaker/**'
+      - 'kafka-java-console-schema-sample/**'
+      - 'kafka-nodejs-console-sample/**'
+      - 'kafka-python-console-sample/**'
+
 
 env:
   REGISTRY: ghcr.io
@@ -17,6 +22,15 @@ jobs:
         include:
           - directory: kafka-java-console-sample
             image:     kafka-java-console-sample:latest
+          - directory: kafka-java-console-schema-sample
+            image:     kafka-java-console-schema-sample:latest
+          - directory: kafka-mirrormaker
+            image:     kafka-mirrormaker:latest
+          - directory: kafka-nodejs-console-sample
+            image:     kafka-nodejs-console-sample:latest
+          - directory: kafka-python-console-sample
+            image:     kafka-python-console-sample:latest
+          
     permissions:
       contents: read
       packages: write

@@ -21,7 +21,7 @@ spec:
         runAsUser: 5000
       containers:
         - name: kafkamirrormaker-container
-          image: ibmcom/eventstreams-kafkamirrormaker:latest
+          image: event-streams-samples/kafkamirrormaker:latest
           env:
           - name: TOPIC_REGEX
             value: "mytopic"

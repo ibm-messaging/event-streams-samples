@@ -5,7 +5,7 @@ metadata:
   namespace: default
 spec:
   containers:
-  - image: ibmcom/kafka-nodejs-console-sample:latest
+  - image: event-streams-samples/kafka-nodejs-console-sample:latest
     imagePullPolicy: IfNotPresent
     name: nodejs-sample
     env:

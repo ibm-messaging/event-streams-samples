@@ -5,7 +5,7 @@ metadata:
   namespace: default
 spec:
   containers:
-  - image: ibmcom/kafka-java-liberty-sample:latest
+  - image: event-streams-samples/kafka-java-liberty-sample:latest
     imagePullPolicy: IfNotPresent
     name: liberty-sample
     env:

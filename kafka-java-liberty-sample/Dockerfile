@@ -1,4 +1,4 @@
-FROM gradle:jdk8-alpine as jdk
+FROM gradle:jdk11-alpine as jdk
 
 COPY --chown=1000 . /usr/src/app
 WORKDIR /usr/src/app

@@ -27,8 +27,6 @@ jobs:
       
       - name: Log in to registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
-      #- name: Run bash script
-        #run: bash ${{ matrix.script }}
       - name: Build image
         run: |
            cd ${{ matrix.directory }}

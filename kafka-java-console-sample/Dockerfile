@@ -8,7 +8,7 @@ COPY src /usr/src/app/src
 
 RUN gradle -s --no-daemon assemble
 
-FROM ibmjava:8-sfj-alpine
+FROM openjdk:11
 
 COPY --from=jdk /usr/src/app/build/libs/kafka-java-console-sample-2.0.jar /usr/src/app/
 

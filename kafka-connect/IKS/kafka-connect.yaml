@@ -21,7 +21,7 @@ spec:
         runAsUser: 5000
       containers:
         - name: kafkaconnect-container
-          image: ibmcom/eventstreams-kafkaconnect:latest
+          image: event-streams-samples/eventstreams-kafkaconnect:latest
           readinessProbe:
             httpGet:
               path: /

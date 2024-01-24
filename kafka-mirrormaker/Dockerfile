@@ -7,7 +7,7 @@ RUN curl -L "https://downloads.apache.org/kafka/3.4.1/kafka_2.12-3.4.1.tgz" -o k
 RUN mkdir /opt/kafka \
     && tar -xf kafka.tgz -C /opt/kafka --strip-components=1
 
-FROM ibmjava:11
+FROM openjdk:11 
 
 RUN addgroup --gid 5000 --system esgroup && \
     adduser --uid 5000 --ingroup esgroup --system esuser
@@ -25,4 +25,4 @@ ENV TOPIC_REGEX=.*
 
 USER esuser
 
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["kafka-mirrormaker/entrypoint.sh"]

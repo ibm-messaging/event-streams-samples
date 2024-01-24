@@ -1,3 +1,4 @@
+# test
 FROM gradle:jdk11-alpine as jdk
 
 COPY --chown=1000 . /usr/src/app

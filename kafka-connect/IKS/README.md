@@ -1,5 +1,5 @@
 
-## Deploying `eventstreams-kafkaconnect` to Kubernetes connecting to IBM Event Streams
+## Deploying `eventstreams-kafka-connect` to Kubernetes connecting to IBM Event Streams
 
 ### Prerequisites
 
@@ -21,7 +21,7 @@ kubectl create configmap connect-log4j-config --from-file=connect-log4j.properti
 
 ### Run Kafka Connect in distributed mode in your Kubernetes cluster
 
-Deploy the `ibmcom/eventstreams-kafkaconnect` Docker image:
+Deploy the `event-streams-samples/eventstreams-kafka-connect` Docker image:
 
 ```shell
 kubectl apply -f ./kafka-connect.yaml

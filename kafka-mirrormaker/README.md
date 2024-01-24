@@ -1,14 +1,17 @@
 # kafka-mirrormaker
 
-This repository contains the artifacts required to build the `ibmcom/eventstreams-kafkamirrormaker` Docker image.
+This repository contains the artifacts required to build the `event-streams-samples/kafka-mirrormaker` Docker image.
 
 This image contains [Kafka Mirror Maker](http://kafka.apache.org/documentation/#basic_ops_mirror_maker) and can be used to replicate data between clusters.
 
-A prebuilt image is provided on DockerHub: https://hub.docker.com/r/ibmcom/eventstreams-kafkamirrormaker.
+A prebuilt image is provided on Github Packages, you can use the following command to pull the image:
+
+```docker pull ghcr.io/ibm-messaging/event-streams-samples/kafka-mirrormaker:latest
+```
 
 ## Running the image in Kubernetes
 
-Instructions for running the `eventstreams-kafkamirrormaker` image in Kubernetes can be found [here](IKS/README.md).
+Instructions for running the `event-streams-samples/kafka-mirrormaker` image in Kubernetes can be found [here](IKS/README.md).
 
 ## Building the image
 

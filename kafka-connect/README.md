@@ -1,14 +1,17 @@
 # kafka-connect
 
-This repository contains the artifacts required to build the `ibmcom/eventstreams-kafkaconnect` Docker image.
+This repository contains the artifacts required to build the `event-streams-samples/eventstreams-kafka-connect` Docker image.
 
 This image contains the Kafka Connect runtime and the [IBM Cloud Object Storage sink connector](https://github.com/ibm-messaging/kafka-connect-ibmcos-sink) and the [IBM MQ source connector](https://github.com/ibm-messaging/kafka-connect-mq-source).
 
-A prebuilt image is provided on DockerHub: https://hub.docker.com/r/ibmcom/eventstreams-kafkaconnect.
+A prebuilt image is provided on Github Packages, you can use the following command to pull the image:
+
+```docker pull ghcr.io/ibm-messaging/event-streams-samples/eventstreams-kafka-connect:latest
+```
 
 ## Running the image in Kubernetes
 
-Instructions for running the `eventstreams-kafkaconnect` image in Kubernetes can be found [here](IKS/README.md).
+Instructions for running the `event-streams-samples/eventstreams-kafka-connect` image in Kubernetes can be found [here](IKS/README.md).
 
 ## Building the image
 

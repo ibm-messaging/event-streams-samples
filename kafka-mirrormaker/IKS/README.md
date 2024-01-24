@@ -1,7 +1,7 @@
 
-## Deploying `eventstreams-kafkamirrormaker` to Kubernetes to replicate data between 2 Event Streams clusters
+## Deploying `event-streams-samples/kafka-mirrormaker` to Kubernetes to replicate data between 2 Event Streams clusters
 
-These steps detail how to replicate data from a Kafka cluster (source) to another Kafka cluster (destination) using the `eventstreams-kafkamirrormaker` image.
+These steps detail how to replicate data from a Kafka cluster (source) to another Kafka cluster (destination) using the `event-streams-samples/kafka-mirrormaker` image.
 
 ### Prerequisites
 
@@ -27,7 +27,7 @@ kubectl create configmap tools-log4j-config --from-file=tools-log4j.properties
 
 ### Run Mirror Maker in your Kubernetes cluster
 
-Deploy the `ibmcom/eventstreams-kafkamirrormaker` Docker image:
+Deploy the `event-streams-samples/kafka-mirrormaker` Docker image:
 
 ```shell
 kubectl apply -f ./kafka-mirrormaker.yaml

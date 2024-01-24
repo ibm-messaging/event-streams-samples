@@ -1,0 +1,36 @@
+name: Build & publish event-streams-samples images
+on:
+  push:
+    branches: ['master']
+    paths: 
+      - 'kafka-connect/**'
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Log in to registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
+      - name: Run bash script
+        run: bash kafka-connect/build.sh
+      - name: Build image
+        run: |
+           docker build . --file kafka-connect/Dockerfile --tag eventstreams-kafka-connect:latest --label "latest"
+      - name: Push image
+        run: |
+          IMAGE_ID=ghcr.io/${{ github.repository }}/eventstreams-kafka-connect:latest 
+          # This changes all uppercase characters to lowercase.
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          echo IMAGE_ID=$IMAGE_ID
+          docker tag eventstreams-kafka-connect:latest $IMAGE_ID
+          docker push $IMAGE_ID

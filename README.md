@@ -33,6 +33,9 @@ In each sample, we demonstrate a single connection path for our Standard/Enterpr
 * [spring kafka tutorial](https://developer.ibm.com/tutorials/use-spring-kafka-to-access-an-event-streams-service/) : Tutorial to quickly get you up and running using IBM Event Streams. 
 * [spring-kafka](https://github.com/wkorando/event-stream-kafka) : Sample app to connect to Event Streams using Spring Kafka
 
+### Utilities:
+* [kafka-topic-stats](/kafka-topic-stats/README.md): Utility for displaying Kafka topic usage and configuration.
+
 ## Get Further Assistance
 
 If you have any issues, just ask us a question (tagged with `ibm-eventstreams`) on [StackOverflow.com](http://stackoverflow.com/questions/tagged/ibm-eventstreams).

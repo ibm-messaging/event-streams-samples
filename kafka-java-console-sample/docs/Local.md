@@ -94,15 +94,14 @@ We will not discuss establishing a connection from your laptop to Event Streams 
 
    The `java -jar ./build/libs/kafka-java-console-sample-2.0.jar` part of the command identifies the locations of the .JAR file to run within the cloned repository. You do not need to change this. 
    
-   Use the `kafka_brokers_sasl` from the **Service credentials** created in Step 2. We recommend using all the `kafka_brokers_sasl` listed in the **Service credentials** that you created.
+   Use the `kafka_brokers_sasl` from the **Service credentials** created in Step 2. We recommend using only one of the `kafka_brokers_sasl` at first and then growing to multiple brokers later, this makes running the samples much simpler however it is important to use all the `kafka_brokers_sasl` in your production workloads
 
-   >The `kafka_brokers_sasl` must be formatted as `"host:port,host2:port2"`. </br> Format the contents of `kafka_brokers_sasl` in a text editor before entering it in the command line.
+   >The `kafka_brokers_sasl` must be formatted as `"host:port,host2:port2"`. </br> Format the contents of `kafka_brokers_sasl` in a text editor before entering it in the command line. 
 
    Then, use the `api_key` from the **Service credentials** created in Step 2. `-consumer` specifies that the consumer should start. 
 
    ```
-   java -jar ./build/libs/kafka-java-console-sample-2.0.jar 
-   <kafka_brokers_sasl> <api_key> -consumer
+   java -jar ./build/libs/kafka-java-console-sample-2.0.jar "kafka_brokers_sasl_host:port" "api_key" -consumer
    ```
 
    An `INFO No messages consumed` is displayed when the consuming application is running, but there is no data being consumed. 
@@ -122,8 +121,7 @@ We will not discuss establishing a connection from your laptop to Event Streams 
    Use the `api_key` from the **Service credentials** created in Step 2. `-producer` specifies that the producer should start. 
 
    ```
-   java -jar ./build/libs/kafka-java-console-sample-2.0.jar
-	<kafka_brokers_sasl> <api_key> -producer
+   java -jar ./build/libs/kafka-java-console-sample-2.0.jar "kafka_brokers_sasl_host:port" "api_key" -producer
    ```
 
 ---

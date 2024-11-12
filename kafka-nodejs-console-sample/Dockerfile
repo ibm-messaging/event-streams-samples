@@ -5,20 +5,18 @@
 # OR
 # docker run --rm -it node-rdkafka <kafka_brokers_sasl> <api_key> /etc/ssl/certs
 #
-FROM ubuntu:18.04
+FROM ubuntu:22.04
 
 RUN  apt-get update -qqy \
   && apt-get install -y --no-install-recommends \
      build-essential \
      node-gyp \
-     nodejs-dev \
-     libssl1.0-dev \
+     libssl-dev \
      liblz4-dev \
      libpthread-stubs0-dev \
      libsasl2-dev \
      libsasl2-modules \
      make \
-     python \
      nodejs npm ca-certificates \
   && rm -rf /var/cache/apt/* /var/lib/apt/lists/*
 

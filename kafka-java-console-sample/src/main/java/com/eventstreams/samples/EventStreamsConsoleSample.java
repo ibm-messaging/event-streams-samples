@@ -1,5 +1,5 @@
 /**
- * Copyright 2015-2016 IBM
+ * Copyright 2015-2024 IBM
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 /**
  * Licensed Materials - Property of IBM
- * (c) Copyright IBM Corp. 2015-2016
+ * (c) Copyright IBM Corp. 2015-2024
  */
 package com.eventstreams.samples;
 
@@ -30,24 +30,24 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.CreateTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.SaslConfigs;
-import org.apache.kafka.common.config.SslConfigs;
 import org.apache.kafka.common.errors.TopicExistsException;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.eventstreams.samples.env.Environment;
-import com.eventstreams.samples.env.EventStreamsCredentials;
+import com.ibm.cloud.eventstreams.oauth.client.IAMOAuthBearerLoginCallbackHandler;
 
+
+//import com.ibm.cloud.eventstreams.oauth.client.IAMOAuthBearerLoginCallbackHandler;
 /**
- * Console-based sample interacting with Event Streams, authenticating with SASL/PLAIN over an SSL connection.
+ * Console-based sample interacting with Event Streams, authenticating with
+ * SASL/PLAIN over an SSL connection.
  *
  * @author IBM
  */
@@ -55,9 +55,15 @@ public class EventStreamsConsoleSample {
 
     private static final String APP_NAME = "kafka-java-console-sample-2.0";
     private static final String DEFAULT_TOPIC_NAME = "kafka-java-console-sample-topic";
+    private static final String ARG_APIKEY = "-apikey";
     private static final String ARG_CONSUMER = "-consumer";
-    private static final String ARG_PRODUCER_ = "-producer";
+    private static final String ARG_PRODUCER = "-producer";
     private static final String ARG_TOPIC = "-topic";
+    private static final String ARG_TRUSTED_PROFILE_ID_FILE_PATH = "-trustedProfileIdFilePath";                                                                                               
+    private static final String ARG_SERVICE_ACCOUNT_TOKEN_FILE_APTH = "-serviceAccountTokenFilePath";                                                                                                      // /tmp/service-account-token
+    private static final String DEFAULT_TRUSTED_PROFILE_ID_FILE_PATH = "/tmp/trusted-profile-id";
+    private static final String DEFAULT_SERVICE_ACCOUNT_TOKEN_FILE_APTH = "/tmp/service-account-token";
+    private static final String DEFAULT_IAM_ENDPOINT = "https://iam.cloud.ibm.com";
     private static final Logger logger = LoggerFactory.getLogger(EventStreamsConsoleSample.class);
 
     private static Thread consumerThread = null;
@@ -65,7 +71,7 @@ public class EventStreamsConsoleSample {
     private static Thread producerThread = null;
     private static ProducerRunnable producerRunnable = null;
 
-    //add shutdown hooks (intercept CTRL-C etc.)
+    // add shutdown hooks (intercept CTRL-C etc.)
     static {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
@@ -87,89 +93,104 @@ public class EventStreamsConsoleSample {
         System.out.println("\n"
                 + "Usage:\n"
                 + "    java -jar build/libs/" + APP_NAME + ".jar \\\n"
-                + "              <kafka_brokers_sasl> { <api_key> | <user = token>:<password> } [" + ARG_CONSUMER + "] \\\n"
-                + "              [" + ARG_PRODUCER_ + "] [" + ARG_TOPIC + "]\n"
+                + "              <kafka_brokers_sasl> [" + ARG_APIKEY + "] \\\n"
+                + "              [" + ARG_TRUSTED_PROFILE_ID_FILE_PATH + "] [" + ARG_SERVICE_ACCOUNT_TOKEN_FILE_APTH + "]\\\n"
+                + "              [" + ARG_CONSUMER + "] [" + ARG_PRODUCER + "] [" + ARG_TOPIC + "]\\\n"
                 + "Where:\n"
                 + "    kafka_broker_sasl\n"
                 + "        Required. Comma separated list of broker endpoints to connect to, for\n"
                 + "        example \"host1:port1,host2:port2\".\n"
-                + "    api_key or user/password\n"
-                + "        Required. An Event Streams API key or user/password used to authenticate access to Kafka.\n"
-                + "        Use user/password if the user is defined as \"token\"\n"
+                + "    " + ARG_APIKEY + "\n"
+                + "        Optional. An Event Streams API key used to authenticate access to Kafka.\n"
+                + "        If not provided trusted profile will be used for authentication.\n"
+                + "    " + ARG_TRUSTED_PROFILE_ID_FILE_PATH + "\n"
+                + "        Optional. Specifies file path storing the trusted profile Id which will be used to obtain IAM access token for authentication.\n"
+                + "        default used is '" + DEFAULT_TRUSTED_PROFILE_ID_FILE_PATH + "'\n"
+                + "    " + ARG_SERVICE_ACCOUNT_TOKEN_FILE_APTH + "\n"
+                + "        Optional. Specifies file path storing the service account token which will be used to obtain IAM access token for authentication.\n"
+                + "        default used is '" + DEFAULT_SERVICE_ACCOUNT_TOKEN_FILE_APTH + "'\n"
                 + "    " + ARG_CONSUMER + "\n"
                 + "        Optional. Only consume message (do not produce messages to the topic).\n"
                 + "        If omitted this sample will both produce and consume messages.\n"
-                + "    " + ARG_PRODUCER_ + "\n"
+                + "    " + ARG_PRODUCER + "\n"
                 + "        Optional. Only produce messages (do not consume messages from the\n"
                 + "        topic). If omitted this sample will both produce and consume messages.\n"
                 + "    " + ARG_TOPIC + "\n"
                 + "        Optional. Specifies the Kafka topic name to use. If omitted the\n"
-                + "        default used is '" + DEFAULT_TOPIC_NAME + "'\n");
+                + "        default used is '" + DEFAULT_TOPIC_NAME + "'\n"
+        );
     }
 
-    public static void main(String args[])  {
+    public static void main(String args[]) {
         try {
             String bootstrapServers = null;
             String apiKey = null;
+            String trustedProfileIdFilePath = DEFAULT_TRUSTED_PROFILE_ID_FILE_PATH;
+            String serviceAccountTokenFilePath = DEFAULT_SERVICE_ACCOUNT_TOKEN_FILE_APTH;
             boolean runConsumer = true;
             boolean runProducer = true;
             String topicName = DEFAULT_TOPIC_NAME;
-            if (args.length == 0 && System.getenv("VCAP_SERVICES") == null) {
+            String iamEndpoint = DEFAULT_IAM_ENDPOINT;
+            if (args.length == 0 && System.getenv("KAFKA_BROKERS_SASL") == null) {
                 printUsage();
                 System.exit(-1);
             }
-            // Check environment: VCAP_SERVICES vs command line arguments, to obtain configuration parameters
+            if (System.getenv("IAM_ENDPOINT") != null) {
+                iamEndpoint = System.getenv("IAM_ENDPOINT");
+            }
             if (args.length == 0) {
-                logger.info("Using VCAP_SERVICES to find credentials.");
-                EventStreamsCredentials credentials = Environment.getEventStreamsCredentials();
-                bootstrapServers = stringArrayToCSV(credentials.getKafkaBrokersSasl());
-                apiKey = credentials.getApiKey();
-            } else {
-                // If running locally, parse the command line
-                if (args.length < 2) {
-                    logger.error("It appears the application is running without VCAP_SERVICES but the arguments are incorrect for local mode.");
-                    printUsage();
-                    System.exit(-1);
-                }
+                logger.info("Using KAFKA_BROKERS_SASL to find brokers addresses.");
+                bootstrapServers = System.getenv("KAFKA_BROKERS_SASL");
+            } else if (args.length < 1) {
+                logger.error("It appears the application is running without KAFKA_BROKERS_SASL but the arguments are incorrect for local mode.");
+                printUsage();
+                System.exit(-1);
+            }
 
-                logger.info("Using command line arguments to find credentials.");
-                bootstrapServers = args[0];
-                apiKey = args[1];
-                if (apiKey.contains(":")) {
-                    String[] credentials = apiKey.split(":");
-                    apiKey = credentials[1];
-                } else {
-                    apiKey = args[1];
-                }
-                if (args.length > 2) {
-                    try {
-                        final ArgumentParser argParser = ArgumentParser.builder()
-                                .flag(ARG_CONSUMER)
-                                .flag(ARG_PRODUCER_)
-                                .option(ARG_TOPIC)
-                                .build();
-                        final Map<String, String> parsedArgs =
-                                argParser.parseArguments(Arrays.copyOfRange(args, 2, args.length));
-                        if (parsedArgs.containsKey(ARG_CONSUMER) && !parsedArgs.containsKey(ARG_PRODUCER_)) {
-                            runProducer = false;
-                        }
-                        if (parsedArgs.containsKey(ARG_PRODUCER_) && !parsedArgs.containsKey(ARG_CONSUMER)) {
-                            runConsumer = false;
-                        }
-                        if (parsedArgs.containsKey(ARG_TOPIC)) {
-                            topicName = parsedArgs.get(ARG_TOPIC);
-                        }
-                    } catch (IllegalArgumentException e) {
-                        logger.error(e.getMessage());
-                        System.exit(-1);
+            logger.info("Using command line arguments to find credentials.");
+            bootstrapServers = args[0];
+            if (args.length > 1) {
+                try {
+                    final ArgumentParser argParser = ArgumentParser.builder()
+                            .flag(ARG_CONSUMER)
+                            .flag(ARG_PRODUCER)
+                            .option(ARG_TOPIC)
+                            .option(ARG_APIKEY)
+                            .option(ARG_TRUSTED_PROFILE_ID_FILE_PATH)
+                            .option(ARG_SERVICE_ACCOUNT_TOKEN_FILE_APTH)
+                            .build();
+                    final Map<String, String> parsedArgs = argParser
+                            .parseArguments(Arrays.copyOfRange(args, 1, args.length));
+                    logger.info(parsedArgs.toString());
+                    if (parsedArgs.containsKey(ARG_APIKEY)) {
+                        apiKey = parsedArgs.get(ARG_APIKEY);
                     }
+                    if (parsedArgs.containsKey(ARG_TRUSTED_PROFILE_ID_FILE_PATH)) {
+                        trustedProfileIdFilePath = parsedArgs.get(ARG_TRUSTED_PROFILE_ID_FILE_PATH);
+                    }
+                    if (parsedArgs.containsKey(ARG_SERVICE_ACCOUNT_TOKEN_FILE_APTH)) {
+                        serviceAccountTokenFilePath = parsedArgs.get(ARG_SERVICE_ACCOUNT_TOKEN_FILE_APTH);
+                    }
+                    if (parsedArgs.containsKey(ARG_CONSUMER) && !parsedArgs.containsKey(ARG_PRODUCER)) {
+                        runProducer = false;
+                    }
+                    if (parsedArgs.containsKey(ARG_PRODUCER) && !parsedArgs.containsKey(ARG_CONSUMER)) {
+                        runConsumer = false;
+                    }
+                    if (parsedArgs.containsKey(ARG_TOPIC)) {
+                        topicName = parsedArgs.get(ARG_TOPIC);
+                    }
+                } catch (IllegalArgumentException e) {
+                    logger.error(e.getMessage());
+                    System.exit(-1);
                 }
             }
 
             logger.info("Kafka Endpoints: {}", bootstrapServers);
 
-            //Using Kafka Admin API to create topic
-            try (AdminClient admin = AdminClient.create(getAdminConfigs(bootstrapServers, apiKey))) {
+            // Using Kafka Admin API to create topic
+            try (AdminClient admin = AdminClient.create(getAdminConfigs(bootstrapServers, apiKey,
+                    trustedProfileIdFilePath, serviceAccountTokenFilePath, iamEndpoint))) {
                 logger.info("Creating the topic {}", topicName);
                 NewTopic newTopic = new NewTopic(topicName, 1, (short) 3);
                 CreateTopicsResult ctr = admin.createTopics(Collections.singleton(newTopic));
@@ -186,16 +207,18 @@ public class EventStreamsConsoleSample {
                 System.exit(-1);
             }
 
-            //create the Kafka clients
+            // create the Kafka clients
             if (runConsumer) {
-                Map<String, Object> consumerConfigs = getConsumerConfigs(bootstrapServers, apiKey);
+                Map<String, Object> consumerConfigs = getConsumerConfigs(bootstrapServers, apiKey,
+                        trustedProfileIdFilePath, serviceAccountTokenFilePath, iamEndpoint);
                 consumerRunnable = new ConsumerRunnable(consumerConfigs, topicName);
                 consumerThread = new Thread(consumerRunnable, "Consumer Thread");
                 consumerThread.start();
             }
 
             if (runProducer) {
-                Map<String, Object> producerConfigs = getProducerConfigs(bootstrapServers, apiKey);
+                Map<String, Object> producerConfigs = getProducerConfigs(bootstrapServers, apiKey,
+                        trustedProfileIdFilePath, serviceAccountTokenFilePath, iamEndpoint);
                 producerRunnable = new ProducerRunnable(producerConfigs, topicName);
                 producerThread = new Thread(producerRunnable, "Producer Thread");
                 producerThread.start();
@@ -222,52 +245,59 @@ public class EventStreamsConsoleSample {
             consumerThread.interrupt();
     }
 
-    /*
-     * Return a CSV-String from a String array
-     */
-    private static String stringArrayToCSV(String[] sArray) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < sArray.length; i++) {
-            sb.append(sArray[i]);
-            if (i < sArray.length -1) sb.append(",");
-        }
-        return sb.toString();
-    }
-
-    static final Map<String, Object> getProducerConfigs(String bootstrapServers, String apikey) {
+    static final Map<String, Object> getProducerConfigs(String bootstrapServers, String apikey,
+            String trustedProfileIdFilePath, String serviceAccountTokenFilePath, String iamEndpoint) {
         Map<String, Object> configs = new HashMap<>();
         configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         configs.put(ProducerConfig.CLIENT_ID_CONFIG, "kafka-java-console-sample-producer");
         configs.put(ProducerConfig.ACKS_CONFIG, "all");
-        configs.putAll(getCommonConfigs(bootstrapServers, apikey));
+        configs.putAll(getCommonConfigs(bootstrapServers, apikey, trustedProfileIdFilePath, serviceAccountTokenFilePath, iamEndpoint));
         return configs;
     }
 
-    static final Map<String, Object> getConsumerConfigs(String bootstrapServers, String apikey) {
+    static final Map<String, Object> getConsumerConfigs(String bootstrapServers, String apikey,
+            String trustedProfileIdFilePath, String serviceAccountTokenFilePath, String iamEndpoint) {
         Map<String, Object> configs = new HashMap<>();
         configs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         configs.put(ConsumerConfig.CLIENT_ID_CONFIG, "kafka-java-console-sample-consumer");
         configs.put(ConsumerConfig.GROUP_ID_CONFIG, "kafka-java-console-sample-group");
         configs.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
-        configs.putAll(getCommonConfigs(bootstrapServers, apikey));
+        configs.putAll(getCommonConfigs(bootstrapServers, apikey, trustedProfileIdFilePath, serviceAccountTokenFilePath, iamEndpoint));
         return configs;
     }
 
-    static final Map<String, Object> getCommonConfigs(String boostrapServers, String apikey) {
+    static final Map<String, Object> getCommonConfigs(String boostrapServers, String apikey,
+            String trustedProfileIdFilePath, String serviceAccountTokenFilePath, String iamEndpoint) {
+        //AuthenticateCallbackHandler handler = new IAMOAuthBearerLoginCallbackHandler();
         Map<String, Object> configs = new HashMap<>();
         configs.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, boostrapServers);
         configs.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
-        configs.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
-        configs.put(SaslConfigs.SASL_JAAS_CONFIG, "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"token\" password=\"" + apikey + "\";");
+        configs.put(SaslConfigs.SASL_MECHANISM, "OAUTHBEARER");
+        configs.put("sasl.oauthbearer.token.endpoint.url", iamEndpoint + "/identity/token");
+        configs.put("sasl.oauthbearer.jwks.endpoint.url", iamEndpoint + "/identity/keys");
+        configs.put(SaslConfigs.SASL_LOGIN_CALLBACK_HANDLER_CLASS,
+                "com.ibm.cloud.eventstreams.oauth.client.IAMOAuthBearerLoginCallbackHandler");
+        if (null != apikey) {
+            String jaasConfig = String.format("org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required grant_type=\"%s\" apikey=\"%s\";",
+            "urn:ibm:params:oauth:grant-type:apikey", apikey);
+            logger.info("jaas config: {}",jaasConfig );
+            configs.put(SaslConfigs.SASL_JAAS_CONFIG, jaasConfig);
+        } else {
+            String jaasConfig = String.format("org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required grant_type=\"%s\" profile_id=\"%s\" cr_token=\"%s\";",
+            "urn:ibm:params:oauth:grant-type:cr-token", trustedProfileIdFilePath, serviceAccountTokenFilePath);
+            logger.info("jaas config: {}",jaasConfig );
+            configs.put(SaslConfigs.SASL_JAAS_CONFIG, jaasConfig);
+        }
         return configs;
     }
 
-    static final Properties getAdminConfigs(String bootstrapServers, String apikey) {
+    static final Properties getAdminConfigs(String bootstrapServers, String apikey, String trustedProfileIdFilePath,
+            String serviceAccountTokenFilePath, String iamEndpoint) {
         Properties configs = new Properties();
         configs.put(ConsumerConfig.CLIENT_ID_CONFIG, "kafka-java-console-sample-admin");
-        configs.putAll(getCommonConfigs(bootstrapServers, apikey));
+        configs.putAll(getCommonConfigs(bootstrapServers, apikey, trustedProfileIdFilePath, serviceAccountTokenFilePath, iamEndpoint));
         return configs;
     }
 

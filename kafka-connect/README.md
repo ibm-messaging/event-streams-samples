@@ -6,7 +6,8 @@ This image contains the Kafka Connect runtime and the [IBM Cloud Object Storage 
 
 A prebuilt image is provided on Github Packages, you can use the following command to pull the image:
 
-```docker pull ghcr.io/ibm-messaging/event-streams-samples/eventstreams-kafka-connect:latest
+``` shell
+docker pull ghcr.io/ibm-messaging/event-streams-samples/eventstreams-kafka-connect:latest
 ```
 
 ## Running the image in Kubernetes

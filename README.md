@@ -33,6 +33,9 @@ In each sample, we demonstrate a single connection path for our Standard/Enterpr
 * [spring kafka tutorial](https://developer.ibm.com/tutorials/use-spring-kafka-to-access-an-event-streams-service/) : Tutorial to quickly get you up and running using IBM Event Streams. 
 * [spring-kafka](https://github.com/wkorando/event-stream-kafka) : Sample app to connect to Event Streams using Spring Kafka
 
+### Schema Registry:
+* [schema-registry](/schema-registry/README.md): Utility scripts for managing IBM Event Streams Schema Registry, including batch schema import.
+
 ### Utilities:
 * [kafka-topic-stats](/kafka-topic-stats/README.md): Utility for displaying Kafka topic usage and configuration.
 

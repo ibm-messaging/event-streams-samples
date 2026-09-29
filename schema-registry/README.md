@@ -18,7 +18,7 @@ This is useful when migrating schemas from IBM Event Streams schema registry to 
 
 #### Expected export directory layout
 
-The script expects schemas to be arranged in the following layout, as produced by a compatible export process:
+The script expects schemas to be arranged in the layout created by Event Streams CLI schema export command:
 
 ```
 schema-export/
@@ -29,7 +29,7 @@ schema-export/
     ...
 ```
 
-`manifest.json` lists the subjects in the order they must be imported, so that a schema referencing another subject is imported after its dependency:
+`manifest.json` lists the subjec`manifest.json` lists the subjects in the order they must be imported, so that a schema referencing another subject is imported after its dependency:
 
 ```json
 {
@@ -37,7 +37,7 @@ schema-export/
 }
 ```
 
-It is required - the script exits if it is missing. Subject directories are named after the subject with the characters `/\:*?"<>|` replaced by `_`. A subject exported only as a dependency may contain a single version file that is not `v1.json`.
+Subject directories are named after the subject with the characters `/\:*?"<>|` replaced by `_`. A subject exported only as a dependency may contain a single version file that is not `v1.json`.
 
 Each JSON file must contain the fields exported by the Schema Registry API, at minimum:
 
@@ -63,7 +63,7 @@ You can also override the export directory (default: `./schema-export`):
 
 ```bash
 SR_URL=https://<your-schema-registry-url> \
-  OUT_DIR=/path/to/schema-export \
+  EXPORT_DIR=/path/to/schema-export \
   ./import_schemas.sh
 ```
 
@@ -79,10 +79,10 @@ If a schema fails to register, the subject is restored to `READWRITE` before the
 
 #### Authentication
 
-If your Schema Registry requires authentication, edit the `AUTH` variable near the top of the script. It is passed to every `curl` call:
+If your Schema Registry requires authentication, set the `AUTH` environment variable (or edit the `AUTH` variable in the script). It is passed to every `curl` call:
 
 ```bash
-AUTH="-u token:<api-key>"
+AUTH="-u token:<api-key>" SR_URL=https://<your-schema-registry-url> ./import_schemas.sh
 ```
 
 The same variable can carry other curl flags your registry needs, for example `AUTH="--cacert /path/to/ca.pem"`.

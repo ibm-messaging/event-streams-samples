@@ -3,15 +3,15 @@
 # Import schemas into Confluent Schema Registry, keeping their original
 # schema IDs and version numbers.
 #
-#   SR_URL=http://localhost:8081 OUT_DIR=./schema-export ./import_schemas.sh
+#   SR_URL=http://localhost:8081 EXPORT_DIR=./schema-export ./import_schemas.sh
 #
 # Needs: curl, jq.  The registry must allow subject mode changes
 # (SCHEMA_REGISTRY_MODE_MUTABILITY=true).
 #
 # Expected input — the layout written by the schemas-ccompat-export command:
 #
-#   <OUT_DIR>/manifest.json        {"subjects": [...]} in dependency order
-#   <OUT_DIR>/<subject>/v<n>.json  one file per version, posted unchanged
+#   <EXPORT_DIR>/manifest.json        {"subjects": [...]} in dependency order
+#   <EXPORT_DIR>/<subject>/v<n>.json  one file per version, posted unchanged
 #
 # Each version file is already a valid Confluent request body:
 #   {"subject":..., "version":n, "id":n, "schema":"...", "references":[...]}
@@ -28,7 +28,7 @@
 set -e
 
 SR_URL="${SR_URL:-http://localhost:8081}"
-OUT_DIR="${OUT_DIR:-./schema-export}"
+EXPORT_DIR="${EXPORT_DIR:-./schema-export}"
 
 # ---------------------------------------------------------------------------
 # Customise here: extra curl flags for your registry, for example
@@ -36,18 +36,18 @@ OUT_DIR="${OUT_DIR:-./schema-export}"
 #   AUTH="--cacert /path/to/ca.pem"
 # Leave empty if the registry needs neither.
 # ---------------------------------------------------------------------------
-AUTH=""
+AUTH="${AUTH:-}"
 
 CONTENT_TYPE="Content-Type: application/vnd.schemaregistry.v1+json"
 
 
-if [ ! -d "$OUT_DIR" ]; then
-  echo "No such directory: $OUT_DIR" >&2
+if [ ! -d "$EXPORT_DIR" ]; then
+  echo "No such directory: $EXPORT_DIR" >&2
   exit 1
 fi
 
-if [ ! -f "$OUT_DIR/manifest.json" ]; then
-  echo "No manifest.json in $OUT_DIR." >&2
+if [ ! -f "$EXPORT_DIR/manifest.json" ]; then
+  echo "No manifest.json in $EXPORT_DIR." >&2
   echo "It records the order subjects must be imported in; re-run the export." >&2
   exit 1
 fi
@@ -55,14 +55,14 @@ fi
 # The subject list goes to a file first. Reading it with a pipe instead would
 # run the loop in a subshell, where "exit" cannot stop the whole script.
 order_file=$(mktemp)
-jq -r '.subjects[]' "$OUT_DIR/manifest.json" > "$order_file"
+jq -r '.subjects[]' "$EXPORT_DIR/manifest.json" > "$order_file"
 
 
 while read -r subject; do
 
   # The exporter swaps these characters for "_" when naming the directory
   # (sanitiseFileName), so apply the same rule to find it again.
-  dir="$OUT_DIR/$(printf '%s' "$subject" | tr '/\\:*?"<>|' '_')"
+  dir="$EXPORT_DIR/$(printf '%s' "$subject" | tr '/\\:*?"<>|' '_')"
 
   # Newest-last list of version files. sort -V keeps v10 after v2, which
   # plain alphabetical order would not.
